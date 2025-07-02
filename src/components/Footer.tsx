@@ -8,13 +8,11 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Code2 className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">תכנותא</h3>
-                <p className="text-sm opacity-80">חוגי תכנות לילדים</p>
-              </div>
+              <img 
+                src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png" 
+                alt="תכנותא - חוגי תכנות לילדים" 
+                className="h-10 w-auto filter brightness-0 invert"
+              />
             </div>
             <p className="text-sm opacity-80 leading-relaxed">
               מובילים בחינוך טכנולוגי לילדים מהמגזר החרדי, עם דגש על איכות ומקצועיות.

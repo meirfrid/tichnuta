@@ -11,13 +11,11 @@ const Header = () => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <Code2 className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-primary">תכנותא</h1>
-              <p className="text-sm text-muted-foreground">חוגי תכנות לילדים</p>
-            </div>
+            <img 
+              src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png" 
+              alt="תכנותא - חוגי תכנות לילדים" 
+              className="h-12 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}
