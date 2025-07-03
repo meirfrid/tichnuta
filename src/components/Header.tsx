@@ -24,6 +24,7 @@ const Header = () => {
             <a href="#courses" className="text-foreground hover:text-primary transition-colors">קורסים</a>
             <a href="#about" className="text-foreground hover:text-primary transition-colors">אודות</a>
             <a href="#contact" className="text-foreground hover:text-primary transition-colors">צור קשר</a>
+            <a href="/admin" className="text-muted-foreground hover:text-primary transition-colors text-sm">אזור ניהול</a>
           </nav>
 
           {/* Desktop CTA Button */}
@@ -50,6 +51,7 @@ const Header = () => {
               <a href="#courses" className="text-foreground hover:text-primary transition-colors">קורסים</a>
               <a href="#about" className="text-foreground hover:text-primary transition-colors">אודות</a>
               <a href="#contact" className="text-foreground hover:text-primary transition-colors">צור קשר</a>
+              <a href="/admin" className="text-muted-foreground hover:text-primary transition-colors text-sm">אזור ניהול</a>
               <Button className="bg-gradient-primary hover:opacity-90 transition-opacity w-full">
                 הרשמה לקורס
               </Button>
