@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Code2, Gamepad2, Smartphone, Monitor } from "lucide-react";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const Hero = () => {
+  const { siteContent } = useSiteContent();
+  
   return (
     <section id="home" className="min-h-screen bg-gradient-hero relative overflow-hidden">
       {/* Background Pattern */}
@@ -16,16 +19,16 @@ const Hero = () => {
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="text-center text-primary-foreground mb-16">
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            תכנותא
+            {siteContent.heroTitle}
           </h1>
           <p className="text-xl md:text-2xl mb-4 opacity-90">
-            חוגי תכנות מקצועיים לילדים חרדים
+            {siteContent.heroSubtitle}
           </p>
           <p className="text-lg opacity-80 max-w-2xl mx-auto mb-8">
-            לימוד תכנות, פיתוח משחקים ואפליקציות בסביבה מותאמת ומקצועית
+            {siteContent.heroDescription}
           </p>
           <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-3">
-            גלה את הקורסים שלנו
+            {siteContent.heroButtonText}
           </Button>
         </div>
 

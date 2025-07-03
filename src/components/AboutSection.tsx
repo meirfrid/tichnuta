@@ -1,29 +1,16 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, Heart, Trophy, Users } from "lucide-react";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const AboutSection = () => {
-  const values = [
-    {
-      icon: Heart,
-      title: "חינוך ערכי",
-      description: "לימוד תכנות בסביבה מותאמת לילדים חרדים עם דגש על ערכים יהודיים"
-    },
-    {
-      icon: Trophy,
-      title: "איכות מקצועית",
-      description: "מורים מקצועיים ומנוסים עם תוכניות לימוד מתקדמות ומותאמות"
-    },
-    {
-      icon: Users,
-      title: "קבוצות קטנות",
-      description: "למידה אישית וממוקדת בקבוצות קטנות למקסימום התקדמות"
-    },
-    {
-      icon: CheckCircle,
-      title: "הוכחת הצלחה",
-      description: "תלמידים שלנו ממשיכים ללימודי הנדסה ומחשבים ברמה גבוהה"
-    }
-  ];
+  const { siteContent } = useSiteContent();
+  
+  const iconMap = [Heart, Trophy, Users, CheckCircle];
+  
+  const values = siteContent.values.map((value, index) => ({
+    ...value,
+    icon: iconMap[index] || CheckCircle
+  }));
 
   return (
     <section id="about" className="py-20 bg-background">
@@ -31,35 +18,31 @@ const AboutSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <div>
-            <h2 className="text-4xl font-bold text-foreground mb-6">אודות תכנותא</h2>
+            <h2 className="text-4xl font-bold text-foreground mb-6">{siteContent.aboutTitle}</h2>
             <div className="space-y-4 text-muted-foreground">
               <p className="text-lg">
-                תכנותא היא מובילה בחינוך טכנולוגי לילדים מהמגזר החרדי. אנחנו מאמינים שכל ילד 
-                יכול ללמוד תכנות ולהצליח בעולם הטכנולוגיה, תוך שמירה על הערכים והמסורת שלנו.
+                {siteContent.aboutDescription1}
               </p>
               <p>
-                הקורסים שלנו מעוצבים במיוחד כדי להתאים לילדים חרדים, עם תכנים מותאמים 
-                ופדגוגיה שמתחשבת בצרכים הייחודיים של הקהילה. אנחנו גאים במאות הילדים שעברו 
-                דרכנו וממשיכים ללימודים גבוהים בתחום.
+                {siteContent.aboutDescription2}
               </p>
               <p>
-                המטרה שלנו היא לפתח את הדור הבא של מתכנתים ומפתחים מהמגזר החרדי, 
-                ולתת להם את הכלים הנדרשים להצלחה בעולם הטכנולוגיה המודרני.
+                {siteContent.aboutDescription3}
               </p>
             </div>
 
             {/* Statistics */}
             <div className="grid grid-cols-3 gap-6 mt-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">200+</div>
+                <div className="text-3xl font-bold text-primary mb-2">{siteContent.studentsCount}</div>
                 <div className="text-sm text-muted-foreground">תלמידים</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">5</div>
+                <div className="text-3xl font-bold text-primary mb-2">{siteContent.experienceYears}</div>
                 <div className="text-sm text-muted-foreground">שנות ניסיון</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">95%</div>
+                <div className="text-3xl font-bold text-primary mb-2">{siteContent.satisfactionRate}</div>
                 <div className="text-sm text-muted-foreground">שביעות רצון</div>
               </div>
             </div>
@@ -91,10 +74,9 @@ const AboutSection = () => {
         {/* Mission Statement */}
         <Card className="mt-16 bg-gradient-card border-2 border-primary/20">
           <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold text-foreground mb-4">המשימה שלנו</h3>
+            <h3 className="text-2xl font-bold text-foreground mb-4">{siteContent.missionTitle}</h3>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              להכשיר את הדור הבא של מתכנתים ומפתחים מהמגזר החרדי, תוך שמירה על הזהות 
-              והערכים היהודיים, ולאפשר להם להשתלב בהצלחה בעולם הטכנולוגיה המתפתח.
+              {siteContent.missionDescription}
             </p>
           </CardContent>
         </Card>

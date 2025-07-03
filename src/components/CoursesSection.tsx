@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, Star } from "lucide-react";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const courses = [
   {
@@ -94,13 +95,15 @@ const getLevelColor = (level: string) => {
 };
 
 const CoursesSection = () => {
+  const { siteContent } = useSiteContent();
+  
   return (
     <section id="courses" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-4">הקורסים שלנו</h2>
+          <h2 className="text-4xl font-bold text-foreground mb-4">{siteContent.coursesTitle}</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            קורסי תכנות מותאמים לכל גיל ורמה, עם דגש על למידה מהנה ויעילה
+            {siteContent.coursesSubtitle}
           </p>
         </div>
 

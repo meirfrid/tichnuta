@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useSiteContent } from '@/hooks/useSiteContent';
 import { 
   Settings, 
   BookOpen, 
@@ -14,23 +15,16 @@ import {
   BarChart3, 
   LogOut,
   Save,
-  Eye
+  Eye,
+  RefreshCw,
+  Trash2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // Site content state
-  const [siteContent, setSiteContent] = useState({
-    heroTitle: "חוגי תכנות לילדים מהמגזר החרדי",
-    heroSubtitle: "למדו תכנות בצורה מהנה ומותאמת לערכים שלכם",
-    aboutText: "אנחנו מספקים חינוך טכנולוגי איכותי המותאם לקהילה החרדית",
-    contactPhone: "050-123-4567",
-    contactEmail: "info@programta.co.il",
-    contactAddress: "רחוב הרב קוק 15, בני ברק"
-  });
+  const { siteContent, saveSiteContent, resetToDefault } = useSiteContent();
 
   const [courses, setCourses] = useState([
     { id: 1, name: "פיתוח משחקים בקוד", age: "א'-ב'", price: 150 },
@@ -40,10 +34,20 @@ const AdminDashboard = () => {
   ]);
 
   const handleSaveContent = () => {
-    // TODO: Save to Supabase
+    const success = saveSiteContent(siteContent);
+    if (success) {
+      toast({
+        title: "התוכן נשמר בהצלחה",
+        description: "השינויים יוצגו באתר מיד",
+      });
+    }
+  };
+
+  const handleResetContent = () => {
+    resetToDefault();
     toast({
-      title: "התוכן נשמר בהצלחה",
-      description: "השינויים יוצגו באתר",
+      title: "התוכן איופס",
+      description: "חזרנו להגדרות המקוריות",
     });
   };
 
@@ -114,61 +118,228 @@ const AdminDashboard = () => {
           <TabsContent value="content">
             <Card>
               <CardHeader>
-                <CardTitle>עריכת תוכן האתר</CardTitle>
-                <CardDescription>
-                  ערוך את הטקסטים והתוכן שמוצגים באתר
-                </CardDescription>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>עריכת תוכן האתר</CardTitle>
+                    <CardDescription>
+                      ערוך את כל הטקסטים והתוכן שמוצגים באתר
+                    </CardDescription>
+                  </div>
+                  <Button variant="outline" onClick={handleResetContent} className="text-destructive hover:text-destructive">
+                    <RefreshCw className="h-4 w-4 ml-2" />
+                    איפוס לברירת מחדל
+                  </Button>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
+              <CardContent className="space-y-8">
+                {/* Hero Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-2">סקציית הפתיחה (Hero)</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="heroTitle">כותרת ראשית</Label>
                       <Input
                         id="heroTitle"
                         value={siteContent.heroTitle}
-                        onChange={(e) => setSiteContent(prev => ({
-                          ...prev,
-                          heroTitle: e.target.value
-                        }))}
+                        onChange={(e) => saveSiteContent({ heroTitle: e.target.value })}
                       />
                     </div>
                     
                     <div>
+                      <Label htmlFor="heroButtonText">טקסט כפתור</Label>
+                      <Input
+                        id="heroButtonText"
+                        value={siteContent.heroButtonText}
+                        onChange={(e) => saveSiteContent({ heroButtonText: e.target.value })}
+                      />
+                    </div>
+                    
+                    <div className="md:col-span-2">
                       <Label htmlFor="heroSubtitle">תת כותרת</Label>
                       <Textarea
                         id="heroSubtitle"
                         value={siteContent.heroSubtitle}
-                        onChange={(e) => setSiteContent(prev => ({
-                          ...prev,
-                          heroSubtitle: e.target.value
-                        }))}
+                        onChange={(e) => saveSiteContent({ heroSubtitle: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <Label htmlFor="heroDescription">תיאור</Label>
+                      <Textarea
+                        id="heroDescription"
+                        value={siteContent.heroDescription}
+                        onChange={(e) => saveSiteContent({ heroDescription: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* About Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-2">סקציית האודות</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="aboutTitle">כותרת אודות</Label>
+                      <Input
+                        id="aboutTitle"
+                        value={siteContent.aboutTitle}
+                        onChange={(e) => saveSiteContent({ aboutTitle: e.target.value })}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="aboutDescription1">פסקה ראשונה</Label>
+                      <Textarea
+                        id="aboutDescription1"
+                        value={siteContent.aboutDescription1}
+                        onChange={(e) => saveSiteContent({ aboutDescription1: e.target.value })}
+                        rows={3}
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="aboutText">טקסט אודות</Label>
+                      <Label htmlFor="aboutDescription2">פסקה שנייה</Label>
                       <Textarea
-                        id="aboutText"
-                        value={siteContent.aboutText}
-                        onChange={(e) => setSiteContent(prev => ({
-                          ...prev,
-                          aboutText: e.target.value
-                        }))}
+                        id="aboutDescription2"
+                        value={siteContent.aboutDescription2}
+                        onChange={(e) => saveSiteContent({ aboutDescription2: e.target.value })}
+                        rows={3}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="aboutDescription3">פסקה שלישית</Label>
+                      <Textarea
+                        id="aboutDescription3"
+                        value={siteContent.aboutDescription3}
+                        onChange={(e) => saveSiteContent({ aboutDescription3: e.target.value })}
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="missionTitle">כותרת המשימה</Label>
+                        <Input
+                          id="missionTitle"
+                          value={siteContent.missionTitle}
+                          onChange={(e) => saveSiteContent({ missionTitle: e.target.value })}
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <Label htmlFor="missionDescription">תיאור המשימה</Label>
+                        <Textarea
+                          id="missionDescription"
+                          value={siteContent.missionDescription}
+                          onChange={(e) => saveSiteContent({ missionDescription: e.target.value })}
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Statistics */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-2">סטטיסטיקות</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="studentsCount">מספר תלמידים</Label>
+                      <Input
+                        id="studentsCount"
+                        value={siteContent.studentsCount}
+                        onChange={(e) => saveSiteContent({ studentsCount: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="experienceYears">שנות ניסיון</Label>
+                      <Input
+                        id="experienceYears"
+                        value={siteContent.experienceYears}
+                        onChange={(e) => saveSiteContent({ experienceYears: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="satisfactionRate">אחוז שביעות רצון</Label>
+                      <Input
+                        id="satisfactionRate"
+                        value={siteContent.satisfactionRate}
+                        onChange={(e) => saveSiteContent({ satisfactionRate: e.target.value })}
                       />
                     </div>
                   </div>
+                </div>
 
+                {/* Values */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-2">ערכים</h3>
                   <div className="space-y-4">
+                    {siteContent.values.map((value, index) => (
+                      <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
+                        <div>
+                          <Label htmlFor={`valueTitle${index}`}>כותרת ערך {index + 1}</Label>
+                          <Input
+                            id={`valueTitle${index}`}
+                            value={value.title}
+                            onChange={(e) => {
+                              const newValues = [...siteContent.values];
+                              newValues[index] = { ...newValues[index], title: e.target.value };
+                              saveSiteContent({ values: newValues });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`valueDescription${index}`}>תיאור ערך {index + 1}</Label>
+                          <Textarea
+                            id={`valueDescription${index}`}
+                            value={value.description}
+                            onChange={(e) => {
+                              const newValues = [...siteContent.values];
+                              newValues[index] = { ...newValues[index], description: e.target.value };
+                              saveSiteContent({ values: newValues });
+                            }}
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Courses Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-2">סקציית הקורסים</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="coursesTitle">כותרת סקציית קורסים</Label>
+                      <Input
+                        id="coursesTitle"
+                        value={siteContent.coursesTitle}
+                        onChange={(e) => saveSiteContent({ coursesTitle: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="coursesSubtitle">תת כותרת קורסים</Label>
+                      <Textarea
+                        id="coursesSubtitle"
+                        value={siteContent.coursesSubtitle}
+                        onChange={(e) => saveSiteContent({ coursesSubtitle: e.target.value })}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-2">פרטי יצירת קשר</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <Label htmlFor="contactPhone">טלפון</Label>
                       <Input
                         id="contactPhone"
                         value={siteContent.contactPhone}
-                        onChange={(e) => setSiteContent(prev => ({
-                          ...prev,
-                          contactPhone: e.target.value
-                        }))}
+                        onChange={(e) => saveSiteContent({ contactPhone: e.target.value })}
                       />
                     </div>
 
@@ -178,10 +349,7 @@ const AdminDashboard = () => {
                         id="contactEmail"
                         type="email"
                         value={siteContent.contactEmail}
-                        onChange={(e) => setSiteContent(prev => ({
-                          ...prev,
-                          contactEmail: e.target.value
-                        }))}
+                        onChange={(e) => saveSiteContent({ contactEmail: e.target.value })}
                       />
                     </div>
 
@@ -190,19 +358,35 @@ const AdminDashboard = () => {
                       <Input
                         id="contactAddress"
                         value={siteContent.contactAddress}
-                        onChange={(e) => setSiteContent(prev => ({
-                          ...prev,
-                          contactAddress: e.target.value
-                        }))}
+                        onChange={(e) => saveSiteContent({ contactAddress: e.target.value })}
                       />
                     </div>
                   </div>
                 </div>
 
-                <Button onClick={handleSaveContent} className="w-full">
-                  <Save className="h-4 w-4 ml-2" />
-                  שמור שינויים
-                </Button>
+                {/* Footer */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-2">כותרת תחתונה</h3>
+                  <div>
+                    <Label htmlFor="footerDescription">תיאור בכותרת התחתונה</Label>
+                    <Input
+                      id="footerDescription"
+                      value={siteContent.footerDescription}
+                      onChange={(e) => saveSiteContent({ footerDescription: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <Button onClick={handleSaveContent} className="flex-1">
+                    <Save className="h-4 w-4 ml-2" />
+                    שמור שינויים
+                  </Button>
+                  <Button variant="outline" onClick={handlePreview}>
+                    <Eye className="h-4 w-4 ml-2" />
+                    תצוגה מקדימה
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
