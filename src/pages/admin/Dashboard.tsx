@@ -34,11 +34,18 @@ const AdminDashboard = () => {
   ]);
 
   const handleSaveContent = () => {
-    const success = saveSiteContent(siteContent);
-    if (success) {
+    try {
+      // Force save the current content
+      localStorage.setItem('siteContent', JSON.stringify(siteContent));
       toast({
         title: "התוכן נשמר בהצלחה",
         description: "השינויים יוצגו באתר מיד",
+      });
+    } catch (error) {
+      toast({
+        title: "שגיאה בשמירה",
+        description: "אנא נסה שוב",
+        variant: "destructive"
       });
     }
   };
