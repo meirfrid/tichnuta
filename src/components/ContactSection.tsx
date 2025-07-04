@@ -3,8 +3,73 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const ContactSection = () => {
+  const { toast } = useToast();
+  const { siteContent } = useSiteContent();
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    course: "",
+    message: ""
+  });
+  const [quickPhone, setQuickPhone] = useState("");
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.firstName || !formData.phone || !formData.email) {
+      toast({
+        title: "שגיאה",
+        description: "אנא מלא את כל השדות הנדרשים",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Simulate form submission
+    toast({
+      title: "הודעה נשלחה בהצלחה!",
+      description: "נחזור אליך תוך 24 שעות",
+    });
+
+    // Reset form
+    setFormData({
+      firstName: "",
+      lastName: "",
+      phone: "",
+      email: "",
+      course: "",
+      message: ""
+    });
+  };
+
+  const handleQuickContact = () => {
+    if (!quickPhone) {
+      toast({
+        title: "שגיאה",
+        description: "אנא הכנס מספר טלפון",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "בקשה נרשמה!",
+      description: "נחזור אליך תוך 30 דקות",
+    });
+    setQuickPhone("");
+  };
+
   return (
     <section id="contact" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -22,43 +87,72 @@ const ContactSection = () => {
               <CardTitle className="text-2xl">שלח לנו הודעה</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">שם פרטי</label>
-                  <Input placeholder="הכנס את השם הפרטי" />
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">שם פרטי *</label>
+                    <Input 
+                      placeholder="הכנס את השם הפרטי" 
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange("firstName", e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">שם משפחה</label>
+                    <Input 
+                      placeholder="הכנס את שם המשפחה" 
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    />
+                  </div>
                 </div>
+                
                 <div>
-                  <label className="block text-sm font-medium mb-2">שם משפחה</label>
-                  <Input placeholder="הכנס את שם המשפחה" />
+                  <label className="block text-sm font-medium mb-2">טלפון *</label>
+                  <Input 
+                    placeholder="הכנס מספר טלפון" 
+                    type="tel" 
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                    required
+                  />
                 </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">טלפון</label>
-                <Input placeholder="הכנס מספר טלפון" type="tel" />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">כתובת אימייל</label>
-                <Input placeholder="הכנס כתובת אימייל" type="email" />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">קורס מעניין</label>
-                <Input placeholder="איזה קורס מעניין אותך?" />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">הודעה</label>
-                <Textarea 
-                  placeholder="כתב לנו מה אתה רוצה לדעת..." 
-                  className="min-h-[120px]"
-                />
-              </div>
-              
-              <Button className="w-full bg-gradient-primary hover:opacity-90 transition-opacity">
-                שלח הודעה
-              </Button>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">כתובת אימייל *</label>
+                  <Input 
+                    placeholder="הכנס כתובת אימייל" 
+                    type="email" 
+                    value={formData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">קורס מעניין</label>
+                  <Input 
+                    placeholder="איזה קורס מעניין אותך?" 
+                    value={formData.course}
+                    onChange={(e) => handleInputChange("course", e.target.value)}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">הודעה</label>
+                  <Textarea 
+                    placeholder="כתב לנו מה אתה רוצה לדעת..." 
+                    className="min-h-[120px]"
+                    value={formData.message}
+                    onChange={(e) => handleInputChange("message", e.target.value)}
+                  />
+                </div>
+                
+                <Button type="submit" className="w-full bg-gradient-primary hover:opacity-90 transition-opacity">
+                  שלח הודעה
+                </Button>
+              </form>
             </CardContent>
           </Card>
 
@@ -71,8 +165,8 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">טלפון</h3>
-                  <p className="text-muted-foreground mb-1">050-123-4567</p>
-                  <p className="text-sm text-muted-foreground">ראש להקשיב במשך שעות העבודה</p>
+                  <p className="text-muted-foreground mb-1">{siteContent.contactPhone}</p>
+                  <p className="text-sm text-muted-foreground">זמין להתשיב במשך שעות העבודה</p>
                 </div>
               </div>
             </Card>
@@ -84,7 +178,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">אימייל</h3>
-                  <p className="text-muted-foreground mb-1">info@programta.co.il</p>
+                  <p className="text-muted-foreground mb-1">{siteContent.contactEmail}</p>
                   <p className="text-sm text-muted-foreground">נחזור אליך תוך 24 שעות</p>
                 </div>
               </div>
@@ -97,7 +191,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">מיקום</h3>
-                  <p className="text-muted-foreground mb-1">רחוב הרב קוק 15, בני ברק</p>
+                  <p className="text-muted-foreground mb-1">{siteContent.contactAddress}</p>
                   <p className="text-sm text-muted-foreground">קומה שנייה, חדר 203</p>
                 </div>
               </div>
@@ -126,8 +220,18 @@ const ContactSection = () => {
                 רוצה לדבר איתנו עכשיו? השאר פרטים ונחזור אליך תוך 30 דקות
               </p>
               <div className="flex gap-2">
-                <Input placeholder="מספר טלפון" className="flex-1" />
-                <Button className="bg-gradient-primary hover:opacity-90">צור קשר</Button>
+                <Input 
+                  placeholder="מספר טלפון" 
+                  className="flex-1" 
+                  value={quickPhone}
+                  onChange={(e) => setQuickPhone(e.target.value)}
+                />
+                <Button 
+                  className="bg-gradient-primary hover:opacity-90"
+                  onClick={handleQuickContact}
+                >
+                  צור קשר
+                </Button>
               </div>
             </Card>
           </div>
