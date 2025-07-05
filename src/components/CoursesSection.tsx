@@ -130,13 +130,30 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה" 
   });
 
   const onSubmit = (data: ContactFormData) => {
+    console.log("Form submission started");
     console.log("Contact form data:", data);
-    toast({
-      title: "הודעה נשלחה בהצלחה!",
-      description: "ניצור איתך קשר בהקדם האפשרי",
-    });
-    form.reset();
-    setOpen(false);
+    
+    try {
+      toast({
+        title: "הודעה נשלחה בהצלחה!",
+        description: "ניצור איתך קשר בהקדם האפשרי",
+      });
+      console.log("Toast displayed successfully");
+      
+      form.reset();
+      console.log("Form reset completed");
+      
+      setOpen(false);
+      console.log("Dialog closed");
+    } catch (error) {
+      console.error("Error in form submission:", error);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    console.log("Form submit event triggered");
+    console.log("Form errors:", form.formState.errors);
+    form.handleSubmit(onSubmit)(e);
   };
 
   return (
@@ -153,7 +170,7 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה" 
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
