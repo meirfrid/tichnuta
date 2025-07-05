@@ -1,8 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, Star } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const courses = [
   {
@@ -94,6 +104,152 @@ const getLevelColor = (level: string) => {
   }
 };
 
+const contactFormSchema = z.object({
+  name: z.string().min(2, "שם חייב להכיל לפחות 2 תווים"),
+  phone: z.string().min(10, "מספר טלפון לא תקין"),
+  email: z.string().email("כתובת מייל לא תקינה"),
+  course: z.string().min(1, "יש לבחור קורס"),
+  message: z.string().optional(),
+});
+
+type ContactFormData = z.infer<typeof contactFormSchema>;
+
+const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה" }: { selectedCourse?: string; buttonText?: string }) => {
+  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  
+  const form = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      email: "",
+      course: selectedCourse || "",
+      message: "",
+    },
+  });
+
+  const onSubmit = (data: ContactFormData) => {
+    console.log("Contact form data:", data);
+    toast({
+      title: "הודעה נשלחה בהצלחה!",
+      description: "ניצור איתך קשר בהקדם האפשרי",
+    });
+    form.reset();
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="w-full bg-gradient-primary hover:opacity-90 transition-opacity">
+          {buttonText}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-center">
+            יצירת קשר להרשמה
+          </DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>שם מלא</FormLabel>
+                  <FormControl>
+                    <Input placeholder="הכנס את שמך המלא" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>מספר טלפון</FormLabel>
+                  <FormControl>
+                    <Input placeholder="050-1234567" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>כתובת מייל</FormLabel>
+                  <FormControl>
+                    <Input placeholder="example@email.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="course"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>קורס מעניין</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="בחר קורס" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {courses.map((course) => (
+                        <SelectItem key={course.id} value={course.title}>
+                          {course.title} - {course.subtitle}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>הודעה נוספת (אופציונלי)</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="שאלות או הערות נוספות..."
+                      className="resize-none"
+                      rows={3}
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <Button type="submit" className="w-full bg-gradient-primary hover:opacity-90">
+              שלח הודעה
+            </Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const CoursesSection = () => {
   const { siteContent } = useSiteContent();
   
@@ -161,9 +317,7 @@ const CoursesSection = () => {
                     </div>
                   </div>
 
-                  <Button className="w-full bg-gradient-primary hover:opacity-90 transition-opacity">
-                    לפרטים והרשמה
-                  </Button>
+                  <ContactForm selectedCourse={course.title} />
                 </CardContent>
               </Card>
             );
@@ -176,9 +330,7 @@ const CoursesSection = () => {
             <p className="text-muted-foreground mb-6">
               נשמח לספר לך עוד על הקורסים ולעזור לך לבחור את הקורס המתאים ביותר
             </p>
-            <Button size="lg" className="bg-gradient-primary hover:opacity-90 transition-opacity">
-              צור קשר לייעוץ חינם
-            </Button>
+            <ContactForm buttonText="צור קשר לייעוץ חינם" />
           </Card>
         </div>
       </div>
