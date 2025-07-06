@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const courses = [
   {
@@ -129,11 +130,32 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה" 
     },
   });
 
-  const onSubmit = (data: ContactFormData) => {
+  const onSubmit = async (data: ContactFormData) => {
     console.log("Form submission started");
     console.log("Contact form data:", data);
     
     try {
+      // Save to database
+      const { error } = await supabase
+        .from('registrations')
+        .insert({
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          course: data.course,
+          message: data.message || null,
+        });
+
+      if (error) {
+        console.error("Database error:", error);
+        toast({
+          title: "שגיאה בשמירה",
+          description: "אנא נסה שוב או צור קשר ישירות",
+          variant: "destructive"
+        });
+        return;
+      }
+
       toast({
         title: "הודעה נשלחה בהצלחה!",
         description: "ניצור איתך קשר בהקדם האפשרי",
@@ -147,6 +169,11 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה" 
       console.log("Dialog closed");
     } catch (error) {
       console.error("Error in form submission:", error);
+      toast({
+        title: "שגיאה בשמירה",
+        description: "אנא נסה שוב או צור קשר ישירות",
+        variant: "destructive"
+      });
     }
   };
 

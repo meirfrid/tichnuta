@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,6 +20,9 @@ import {
   Trash2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCaption } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -32,6 +35,77 @@ const AdminDashboard = () => {
     { id: 3, name: "פיתוח אפליקציות", age: "ה'-ו'", price: 180 },
     { id: 4, name: "פיתוח משחקים בפייתון", age: "ז'-ח'", price: 200 }
   ]);
+
+  const [registrations, setRegistrations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchRegistrations();
+  }, []);
+
+  const fetchRegistrations = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('registrations')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching registrations:', error);
+        toast({
+          title: "שגיאה בטעינת נתונים",
+          description: "לא ניתן לטעון את רשימת הנרשמים",
+          variant: "destructive"
+        });
+      } else {
+        setRegistrations(data || []);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'new':
+        return 'bg-blue-100 text-blue-800';
+      case 'contacted':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'enrolled':
+        return 'bg-green-100 text-green-800';
+      case 'declined':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const updateRegistrationStatus = async (id: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('registrations')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) {
+        toast({
+          title: "שגיאה בעדכון סטטוס",
+          description: "לא ניתן לעדכן את הסטטוס",
+          variant: "destructive"
+        });
+      } else {
+        fetchRegistrations();
+        toast({
+          title: "סטטוס עודכן בהצלחה",
+        });
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+  };
 
   const handleSaveContent = () => {
     try {
@@ -449,15 +523,97 @@ const AdminDashboard = () => {
           <TabsContent value="students">
             <Card>
               <CardHeader>
-                <CardTitle>ניהול תלמידים</CardTitle>
-                <CardDescription>
-                  רשימת התלמידים וההרשמות
-                </CardDescription>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>ניהול תלמידים</CardTitle>
+                    <CardDescription>
+                      רשימת התלמידים וההרשמות ({registrations.length} פניות)
+                    </CardDescription>
+                  </div>
+                  <Button onClick={fetchRegistrations} variant="outline">
+                    <RefreshCw className="h-4 w-4 ml-2" />
+                    רענן
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
-                  אזור זה יוכל להציג רשימת תלמידים רשומים כאשר יהיו הרשמות דרך האתר
-                </p>
+                {loading ? (
+                  <p className="text-center text-muted-foreground py-8">טוען נתונים...</p>
+                ) : registrations.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    אין פניות בינתיים. ברגע שמישהו ישלח טופס יצירת קשר, הפרטים יופיעו כאן.
+                  </p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableCaption>רשימת הפניות וההרשמות</TableCaption>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>שם</TableHead>
+                          <TableHead>טלפון</TableHead>
+                          <TableHead>אימייל</TableHead>
+                          <TableHead>קורס</TableHead>
+                          <TableHead>הודעה</TableHead>
+                          <TableHead>סטטוס</TableHead>
+                          <TableHead>תאריך</TableHead>
+                          <TableHead>פעולות</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {registrations.map((registration) => (
+                          <TableRow key={registration.id}>
+                            <TableCell className="font-medium">{registration.name}</TableCell>
+                            <TableCell>
+                              <a href={`tel:${registration.phone}`} className="text-primary hover:underline">
+                                {registration.phone}
+                              </a>
+                            </TableCell>
+                            <TableCell>
+                              <a href={`mailto:${registration.email}`} className="text-primary hover:underline">
+                                {registration.email}
+                              </a>
+                            </TableCell>
+                            <TableCell>{registration.course}</TableCell>
+                            <TableCell className="max-w-xs truncate" title={registration.message || ''}>
+                              {registration.message || '-'}
+                            </TableCell>
+                            <TableCell>
+                              <Badge className={getStatusColor(registration.status)}>
+                                {registration.status === 'new' && 'חדש'}
+                                {registration.status === 'contacted' && 'נוצר קשר'}
+                                {registration.status === 'enrolled' && 'נרשם'}
+                                {registration.status === 'declined' && 'דחה'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {new Date(registration.created_at).toLocaleDateString('he-IL')}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => updateRegistrationStatus(registration.id, 'contacted')}
+                                  disabled={registration.status === 'contacted'}
+                                >
+                                  יצרתי קשר
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => updateRegistrationStatus(registration.id, 'enrolled')}
+                                  disabled={registration.status === 'enrolled'}
+                                >
+                                  נרשם
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
