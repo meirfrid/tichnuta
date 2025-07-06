@@ -12,83 +12,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const courses = [
-  {
-    id: 1,
-    title: "פיתוח משחקים בקוד",
-    subtitle: "כיתות א'-ב'",
-    icon: Code2,
-    color: "bg-gradient-to-br from-blue-500 to-blue-600",
-    description: "היכרות ראשונית עם עולם התכנות דרך יצירת משחקים פשוטים וכיפיים",
-    features: [
-      "יסודות תכנות בסביבה ידידותית",
-      "יצירת משחקים אינטראקטיביים",
-      "פיתוח חשיבה לוגית",
-      "עבודה עם אנימציות פשוטות"
-    ],
-    duration: "שעה וחצי שבועית",
-    groupSize: "עד 8 ילדים",
-    level: "מתחילים",
-    price: "₪280 לחודש"
-  },
-  {
-    id: 2,
-    title: "פיתוח משחקים בסקראץ",
-    subtitle: "כיתות ג'-ד'",
-    icon: Gamepad2,
-    color: "bg-gradient-to-br from-orange-500 to-red-500",
-    description: "למידת תכנות באמצעות סקראץ - פלטפורמה חזותית ומהנה ליצירת משחקים",
-    features: [
-      "תכנות חזותי עם בלוקים",
-      "יצירת משחקים מתקדמים יותר",
-      "עבודה עם דמויות ורקעים",
-      "הבנת מושגי תכנות בסיסיים"
-    ],
-    duration: "שעה וחצי שבועית",
-    groupSize: "עד 8 ילדים",
-    level: "בסיסי",
-    price: "₪300 לחודש"
-  },
-  {
-    id: 3,
-    title: "פיתוח אפליקציות",
-    subtitle: "כיתות ה'-ו'",
-    icon: Smartphone,
-    color: "bg-gradient-to-br from-green-500 to-emerald-600",
-    description: "בניית אפליקציות אמיתיות לטלפון החכם באמצעות App Inventor",
-    features: [
-      "פיתוח אפליקציות לאנדרואיד",
-      "עיצוב ממשק משתמש",
-      "עבודה עם חיישנים",
-      "פרסום אפליקציות"
-    ],
-    duration: "שעתיים שבועית",
-    groupSize: "עד 6 ילדים",
-    level: "בינוני",
-    price: "₪350 לחודש"
-  },
-  {
-    id: 4,
-    title: "פיתוח משחקים בפייתון",
-    subtitle: "כיתות ז'-ח'",
-    icon: Bot,
-    color: "bg-gradient-to-br from-purple-500 to-indigo-600",
-    description: "למידת שפת תכנות מקצועית ופיתוח משחקים מתקדמים",
-    features: [
-      "שפת פייתון מקצועית",
-      "פיתוח משחקים מתקדמים",
-      "אלגוריתמים ומבני נתונים",
-      "הכנה לעתיד טכנולוגי"
-    ],
-    duration: "שעתיים שבועית",
-    groupSize: "עד 6 ילדים",
-    level: "מתקדם",
-    price: "₪400 לחודש"
-  }
-];
+const courses = [];
 
 const getLevelColor = (level: string) => {
   switch (level) {
@@ -115,7 +42,7 @@ const contactFormSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
 
-const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה" }: { selectedCourse?: string; buttonText?: string }) => {
+const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [] }: { selectedCourse?: string; buttonText?: string; courses?: any[] }) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   
@@ -296,6 +223,40 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה" 
 
 const CoursesSection = () => {
   const { siteContent } = useSiteContent();
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('active', true)
+        .order('sort_order');
+
+      if (error) {
+        console.error('Error fetching courses:', error);
+      } else {
+        setCourses(data || []);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Map icon names to components
+  const iconMap = {
+    Code2,
+    Gamepad2,
+    Smartphone,
+    Bot
+  } as any;
   
   return (
     <section id="courses" className="py-20 bg-muted/30">
@@ -308,64 +269,74 @@ const CoursesSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {courses.map((course) => {
-            const IconComponent = course.icon;
-            return (
-              <Card key={course.id} className="overflow-hidden hover:shadow-card transition-shadow duration-300">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`p-3 rounded-lg ${course.color}`}>
-                        <IconComponent className="h-6 w-6 text-white" />
+          {loading ? (
+            <div className="col-span-2 text-center py-8">
+              <p className="text-muted-foreground">טוען קורסים...</p>
+            </div>
+          ) : courses.length === 0 ? (
+            <div className="col-span-2 text-center py-8">
+              <p className="text-muted-foreground">אין קורסים זמינים כרגע</p>
+            </div>
+          ) : (
+            courses.map((course) => {
+              const IconComponent = iconMap[course.icon] || Code2;
+              return (
+                <Card key={course.id} className="overflow-hidden hover:shadow-card transition-shadow duration-300">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className={`p-3 rounded-lg ${course.color}`}>
+                          <IconComponent className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-xl mb-1">{course.title}</CardTitle>
+                          <p className="text-muted-foreground font-medium">{course.subtitle}</p>
+                        </div>
                       </div>
-                      <div>
-                        <CardTitle className="text-xl mb-1">{course.title}</CardTitle>
-                        <p className="text-muted-foreground font-medium">{course.subtitle}</p>
-                      </div>
+                      <Badge className={getLevelColor(course.level)}>
+                        {course.level}
+                      </Badge>
                     </div>
-                    <Badge className={getLevelColor(course.level)}>
-                      {course.level}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-6">
-                  <p className="text-muted-foreground">{course.description}</p>
+                  </CardHeader>
                   
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-foreground">מה נלמד:</h4>
-                    <ul className="space-y-2">
-                      {course.features.map((feature, index) => (
-                        <li key={index} className="flex items-center gap-2 text-sm">
-                          <Star className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <CardContent className="space-y-6">
+                    <p className="text-muted-foreground">{course.description}</p>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-foreground">מה נלמד:</h4>
+                      <ul className="space-y-2">
+                        {course.features.map((feature: string, index: number) => (
+                          <li key={index} className="flex items-center gap-2 text-sm">
+                            <Star className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
 
-                  <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
-                    <div className="text-center">
-                      <Clock className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                      <p className="text-xs text-muted-foreground">משך שיעור</p>
-                      <p className="text-sm font-medium">{course.duration}</p>
+                    <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
+                      <div className="text-center">
+                        <Clock className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">משך שיעור</p>
+                        <p className="text-sm font-medium">{course.duration}</p>
+                      </div>
+                      <div className="text-center">
+                        <Users className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">גודל קבוצה</p>
+                        <p className="text-sm font-medium">{course.group_size}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">מחיר</p>
+                        <p className="text-lg font-bold text-primary">{course.price_text}</p>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <Users className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                      <p className="text-xs text-muted-foreground">גודל קבוצה</p>
-                      <p className="text-sm font-medium">{course.groupSize}</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">מחיר</p>
-                      <p className="text-lg font-bold text-primary">{course.price}</p>
-                    </div>
-                  </div>
 
-                  <ContactForm selectedCourse={course.title} />
-                </CardContent>
-              </Card>
-            );
-          })}
+                    <ContactForm selectedCourse={course.title} courses={courses} />
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
         </div>
 
         <div className="text-center mt-12">
@@ -374,7 +345,7 @@ const CoursesSection = () => {
             <p className="text-muted-foreground mb-6">
               נשמח לספר לך עוד על הקורסים ולעזור לך לבחור את הקורס המתאים ביותר
             </p>
-            <ContactForm buttonText="צור קשר לייעוץ חינם" />
+            <ContactForm buttonText="צור קשר לייעוץ חינם" courses={courses} />
           </Card>
         </div>
       </div>

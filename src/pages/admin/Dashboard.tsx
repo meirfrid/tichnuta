@@ -17,11 +17,14 @@ import {
   Save,
   Eye,
   RefreshCw,
-  Trash2
+  Trash2,
+  Plus,
+  Edit
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCaption } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 
 const AdminDashboard = () => {
@@ -29,19 +32,175 @@ const AdminDashboard = () => {
   const { toast } = useToast();
   const { siteContent, saveSiteContent, resetToDefault } = useSiteContent();
 
-  const [courses, setCourses] = useState([
-    { id: 1, name: "פיתוח משחקים בקוד", age: "א'-ב'", price: 150 },
-    { id: 2, name: "פיתוח משחקים בסקראץ", age: "ג'-ד'", price: 120 },
-    { id: 3, name: "פיתוח אפליקציות", age: "ה'-ו'", price: 180 },
-    { id: 4, name: "פיתוח משחקים בפייתון", age: "ז'-ח'", price: 200 }
-  ]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [editingCourse, setEditingCourse] = useState<any>(null);
+  const [showNewCourseForm, setShowNewCourseForm] = useState(false);
+  const [courseForm, setCourseForm] = useState({
+    title: '',
+    subtitle: '',
+    description: '',
+    icon: 'Code2',
+    color: 'bg-gradient-to-br from-blue-500 to-blue-600',
+    features: [''],
+    duration: '',
+    group_size: '',
+    level: 'מתחילים',
+    price_text: '',
+    price_number: 0
+  });
 
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchRegistrations();
+    fetchCourses();
   }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .order('sort_order');
+
+      if (error) {
+        console.error('Error fetching courses:', error);
+        toast({
+          title: "שגיאה בטעינת קורסים",
+          description: "לא ניתן לטעון את רשימת הקורסים",
+          variant: "destructive"
+        });
+      } else {
+        setCourses(data || []);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const saveCourse = async () => {
+    try {
+      if (editingCourse) {
+        // Update existing course
+        const { error } = await supabase
+          .from('courses')
+          .update({
+            ...courseForm,
+            features: courseForm.features.filter(f => f.trim() !== '')
+          })
+          .eq('id', editingCourse.id);
+
+        if (error) throw error;
+        
+        toast({
+          title: "קורס עודכן בהצלחה",
+        });
+      } else {
+        // Create new course
+        const { error } = await supabase
+          .from('courses')
+          .insert({
+            ...courseForm,
+            features: courseForm.features.filter(f => f.trim() !== ''),
+            sort_order: courses.length + 1
+          });
+
+        if (error) throw error;
+        
+        toast({
+          title: "קורס נוסף בהצלחה",
+        });
+      }
+
+      setEditingCourse(null);
+      setShowNewCourseForm(false);
+      setCourseForm({
+        title: '',
+        subtitle: '',
+        description: '',
+        icon: 'Code2',
+        color: 'bg-gradient-to-br from-blue-500 to-blue-600',
+        features: [''],
+        duration: '',
+        group_size: '',
+        level: 'מתחילים',
+        price_text: '',
+        price_number: 0
+      });
+      fetchCourses();
+    } catch (error) {
+      console.error('Error saving course:', error);
+      toast({
+        title: "שגיאה בשמירת קורס",
+        description: "אנא נסה שוב",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const editCourse = (course: any) => {
+    setEditingCourse(course);
+    setCourseForm({
+      title: course.title,
+      subtitle: course.subtitle,
+      description: course.description,
+      icon: course.icon,
+      color: course.color,
+      features: course.features.length > 0 ? course.features : [''],
+      duration: course.duration,
+      group_size: course.group_size,
+      level: course.level,
+      price_text: course.price_text,
+      price_number: course.price_number
+    });
+    setShowNewCourseForm(true);
+  };
+
+  const deleteCourse = async (courseId: string) => {
+    if (!confirm('האם אתה בטוח שברצונך למחוק את הקורס?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('courses')
+        .update({ active: false })
+        .eq('id', courseId);
+
+      if (error) throw error;
+      
+      toast({
+        title: "קורס נמחק בהצלחה",
+      });
+      fetchCourses();
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      toast({
+        title: "שגיאה במחיקת קורס",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const addFeature = () => {
+    setCourseForm(prev => ({
+      ...prev,
+      features: [...prev.features, '']
+    }));
+  };
+
+  const updateFeature = (index: number, value: string) => {
+    setCourseForm(prev => ({
+      ...prev,
+      features: prev.features.map((f, i) => i === index ? value : f)
+    }));
+  };
+
+  const removeFeature = (index: number) => {
+    setCourseForm(prev => ({
+      ...prev,
+      features: prev.features.filter((_, i) => i !== index)
+    }));
+  };
 
   const fetchRegistrations = async () => {
     setLoading(true);
@@ -476,45 +635,263 @@ const AdminDashboard = () => {
           <TabsContent value="courses">
             <Card>
               <CardHeader>
-                <CardTitle>ניהול קורסים</CardTitle>
-                <CardDescription>
-                  ערוך את פרטי הקורסים והמחירים
-                </CardDescription>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>ניהול קורסים</CardTitle>
+                    <CardDescription>
+                      ערוך קורסים קיימים או הוסף קורסים חדשים ({courses.length} קורסים)
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={fetchCourses} variant="outline">
+                      <RefreshCw className="h-4 w-4 ml-2" />
+                      רענן
+                    </Button>
+                    <Button onClick={() => {
+                      setShowNewCourseForm(true);
+                      setEditingCourse(null);
+                      setCourseForm({
+                        title: '',
+                        subtitle: '',
+                        description: '',
+                        icon: 'Code2',
+                        color: 'bg-gradient-to-br from-blue-500 to-blue-600',
+                        features: [''],
+                        duration: '',
+                        group_size: '',
+                        level: 'מתחילים',
+                        price_text: '',
+                        price_number: 0
+                      });
+                    }}>
+                      <Plus className="h-4 w-4 ml-2" />
+                      הוסף קורס חדש
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {courses.map((course) => (
-                    <div key={course.id} className="p-4 border rounded-lg">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <Label>שם הקורס</Label>
-                          <Input value={course.name} readOnly />
-                        </div>
-                        <div>
-                          <Label>גילאים</Label>
-                          <Input value={course.age} readOnly />
-                        </div>
-                        <div>
-                          <Label>מחיר (₪)</Label>
-                          <Input 
-                            type="number" 
-                            value={course.price}
-                            onChange={(e) => {
-                              const newPrice = parseInt(e.target.value);
-                              setCourses(prev => prev.map(c => 
-                                c.id === course.id ? { ...c, price: newPrice } : c
-                              ));
-                            }}
-                          />
-                        </div>
+                {showNewCourseForm ? (
+                  <div className="space-y-6 p-6 border rounded-lg bg-muted/30">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-semibold">
+                        {editingCourse ? 'עריכת קורס' : 'הוספת קורס חדש'}
+                      </h3>
+                      <Button variant="outline" onClick={() => {
+                        setShowNewCourseForm(false);
+                        setEditingCourse(null);
+                      }}>
+                        ביטול
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="courseTitle">שם הקורס</Label>
+                        <Input
+                          id="courseTitle"
+                          value={courseForm.title}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, title: e.target.value }))}
+                          placeholder="למשל: פיתוח משחקים בפייתון"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="courseSubtitle">גילאים/כיתות</Label>
+                        <Input
+                          id="courseSubtitle"
+                          value={courseForm.subtitle}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, subtitle: e.target.value }))}
+                          placeholder="למשל: כיתות ז'-ח'"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <Label htmlFor="courseDescription">תיאור הקורס</Label>
+                        <Textarea
+                          id="courseDescription"
+                          value={courseForm.description}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, description: e.target.value }))}
+                          placeholder="תיאור מפורט על הקורס..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="courseIcon">אייקון</Label>
+                        <Select value={courseForm.icon} onValueChange={(value) => setCourseForm(prev => ({ ...prev, icon: value }))}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Code2">Code2</SelectItem>
+                            <SelectItem value="Gamepad2">Gamepad2</SelectItem>
+                            <SelectItem value="Smartphone">Smartphone</SelectItem>
+                            <SelectItem value="Bot">Bot</SelectItem>
+                            <SelectItem value="Monitor">Monitor</SelectItem>
+                            <SelectItem value="Laptop">Laptop</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="courseLevel">רמה</Label>
+                        <Select value={courseForm.level} onValueChange={(value) => setCourseForm(prev => ({ ...prev, level: value }))}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="מתחילים">מתחילים</SelectItem>
+                            <SelectItem value="בסיסי">בסיסי</SelectItem>
+                            <SelectItem value="בינוני">בינוני</SelectItem>
+                            <SelectItem value="מתקדם">מתקדם</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="courseDuration">משך שיעור</Label>
+                        <Input
+                          id="courseDuration"
+                          value={courseForm.duration}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, duration: e.target.value }))}
+                          placeholder="למשל: שעה וחצי שבועית"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="courseGroupSize">גודל קבוצה</Label>
+                        <Input
+                          id="courseGroupSize"
+                          value={courseForm.group_size}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, group_size: e.target.value }))}
+                          placeholder="למשל: עד 8 ילדים"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="coursePriceText">טקסט מחיר</Label>
+                        <Input
+                          id="coursePriceText"
+                          value={courseForm.price_text}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, price_text: e.target.value }))}
+                          placeholder="למשל: ₪280 לחודש"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="coursePriceNumber">מחיר מספרי</Label>
+                        <Input
+                          id="coursePriceNumber"
+                          type="number"
+                          value={courseForm.price_number}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, price_number: parseInt(e.target.value) || 0 }))}
+                          placeholder="280"
+                        />
                       </div>
                     </div>
-                  ))}
-                </div>
-                <Button onClick={handleSaveContent} className="w-full mt-4">
-                  <Save className="h-4 w-4 ml-2" />
-                  שמור שינויים בקורסים
-                </Button>
+
+                    <div>
+                      <Label>תכונות הקורס</Label>
+                      <div className="space-y-2 mt-2">
+                        {courseForm.features.map((feature, index) => (
+                          <div key={index} className="flex gap-2">
+                            <Input
+                              value={feature}
+                              onChange={(e) => updateFeature(index, e.target.value)}
+                              placeholder="תכונה של הקורס..."
+                              className="flex-1"
+                            />
+                            {courseForm.features.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => removeFeature(index)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                        <Button type="button" variant="outline" onClick={addFeature}>
+                          <Plus className="h-4 w-4 ml-2" />
+                          הוסף תכונה
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <Button onClick={saveCourse} className="flex-1">
+                        <Save className="h-4 w-4 ml-2" />
+                        {editingCourse ? 'עדכן קורס' : 'שמור קורס חדש'}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {courses.length === 0 ? (
+                      <p className="text-center text-muted-foreground py-8">אין קורסים. הוסף קורס חדש לתחילת העבודה.</p>
+                    ) : (
+                      courses.map((course) => (
+                        <div key={course.id} className="p-4 border rounded-lg">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-lg">{course.title}</h4>
+                              <p className="text-muted-foreground">{course.subtitle}</p>
+                              <p className="text-sm mt-2">{course.description}</p>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+                                <div>
+                                  <span className="font-medium">משך: </span>
+                                  {course.duration}
+                                </div>
+                                <div>
+                                  <span className="font-medium">קבוצה: </span>
+                                  {course.group_size}
+                                </div>
+                                <div>
+                                  <span className="font-medium">רמה: </span>
+                                  {course.level}
+                                </div>
+                                <div>
+                                  <span className="font-medium">מחיר: </span>
+                                  {course.price_text}
+                                </div>
+                              </div>
+                              {course.features && course.features.length > 0 && (
+                                <div className="mt-3">
+                                  <span className="font-medium text-sm">תכונות: </span>
+                                  <div className="text-sm text-muted-foreground">
+                                    {course.features.join(' • ')}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex gap-2 ml-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => editCourse(course)}
+                              >
+                                <Edit className="h-4 w-4 ml-1" />
+                                ערוך
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => deleteCourse(course.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4 ml-1" />
+                                מחק
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

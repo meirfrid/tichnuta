@@ -9,6 +9,63 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      courses: {
+        Row: {
+          active: boolean
+          color: string
+          created_at: string
+          description: string
+          duration: string
+          features: string[]
+          group_size: string
+          icon: string
+          id: string
+          level: string
+          price_number: number
+          price_text: string
+          sort_order: number
+          subtitle: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          color?: string
+          created_at?: string
+          description: string
+          duration: string
+          features?: string[]
+          group_size: string
+          icon?: string
+          id?: string
+          level: string
+          price_number?: number
+          price_text: string
+          sort_order?: number
+          subtitle: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          color?: string
+          created_at?: string
+          description?: string
+          duration?: string
+          features?: string[]
+          group_size?: string
+          icon?: string
+          id?: string
+          level?: string
+          price_number?: number
+          price_text?: string
+          sort_order?: number
+          subtitle?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       registrations: {
         Row: {
           course: string
