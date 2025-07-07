@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useSiteContent } from '@/hooks/useSiteContent';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Settings, 
   BookOpen, 
@@ -30,7 +31,35 @@ import { Badge } from '@/components/ui/badge';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, isAdmin, loading: authLoading } = useAuth();
   const { siteContent, saveSiteContent, resetToDefault } = useSiteContent();
+
+  // Redirect if not admin
+  useEffect(() => {
+    if (!authLoading && (!user || !isAdmin)) {
+      navigate('/auth');
+      toast({
+        title: "גישה נדחתה",
+        description: "רק מנהלי האתר יכולים לגשת לאזור זה",
+        variant: "destructive"
+      });
+    }
+  }, [user, isAdmin, authLoading, navigate, toast]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">טוען...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !isAdmin) {
+    return null;
+  }
 
   const [courses, setCourses] = useState<any[]>([]);
   const [editingCourse, setEditingCourse] = useState<any>(null);

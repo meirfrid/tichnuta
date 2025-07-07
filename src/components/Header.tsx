@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Code2, Menu, X } from "lucide-react";
 import { useState } from "react";
+import AuthButton from "./AuthButton";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,14 +25,11 @@ const Header = () => {
             <a href="#courses" className="text-foreground hover:text-primary transition-colors">קורסים</a>
             <a href="#about" className="text-foreground hover:text-primary transition-colors">אודות</a>
             <a href="#contact" className="text-foreground hover:text-primary transition-colors">צור קשר</a>
-            <a href="/admin" className="text-muted-foreground hover:text-primary transition-colors text-sm">אזור ניהול</a>
           </nav>
 
-          {/* Desktop CTA Button */}
+          {/* Desktop Auth Button */}
           <div className="hidden md:block">
-            <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
-              הרשמה לקורס
-            </Button>
+            <AuthButton />
           </div>
 
           {/* Mobile Menu Button */}
@@ -51,10 +49,7 @@ const Header = () => {
               <a href="#courses" className="text-foreground hover:text-primary transition-colors">קורסים</a>
               <a href="#about" className="text-foreground hover:text-primary transition-colors">אודות</a>
               <a href="#contact" className="text-foreground hover:text-primary transition-colors">צור קשר</a>
-              <a href="/admin" className="text-muted-foreground hover:text-primary transition-colors text-sm">אזור ניהול</a>
-              <Button className="bg-gradient-primary hover:opacity-90 transition-opacity w-full">
-                הרשמה לקורס
-              </Button>
+              <AuthButton />
             </div>
           </nav>
         )}
