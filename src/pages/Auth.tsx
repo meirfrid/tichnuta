@@ -40,7 +40,8 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      console.log('Starting sign up for:', email);
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -48,13 +49,23 @@ const Auth = () => {
         }
       });
 
+      console.log('Sign up response:', { data, error });
+
       if (error) throw error;
 
-      toast({
-        title: "הצלחה!",
-        description: "נשלח לך מייל אישור. אנא בדוק את תיבת הדואר שלך",
-      });
+      if (data.user && !data.session) {
+        toast({
+          title: "הצלחה!",
+          description: "נשלח לך מייל אישור. אנא בדוק את תיבת הדואר שלך ולחץ על הקישור",
+        });
+      } else if (data.session) {
+        toast({
+          title: "נרשמת בהצלחה!",
+          description: "ברוך הבא!",
+        });
+      }
     } catch (error: any) {
+      console.error('Sign up error:', error);
       toast({
         title: "שגיאה",
         description: error.message,
@@ -70,10 +81,13 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log('Starting sign in for:', email);
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+
+      console.log('Sign in response:', { data, error });
 
       if (error) throw error;
 
@@ -82,6 +96,7 @@ const Auth = () => {
         description: "ברוך הבא חזרה",
       });
     } catch (error: any) {
+      console.error('Sign in error:', error);
       toast({
         title: "שגיאה בהתחברות",
         description: error.message,
