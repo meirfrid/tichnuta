@@ -207,18 +207,20 @@ const ContactSection = () => {
               </div>
             </Card>
 
-            <Card className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center">
-                  <MapPin className="h-6 w-6 text-primary-foreground" />
+            {siteContent.contactAddress && (
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center">
+                    <MapPin className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">מיקום</h3>
+                    <p className="text-muted-foreground mb-1">{siteContent.contactAddress}</p>
+                    <p className="text-sm text-muted-foreground">קומה שנייה, חדר 203</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">מיקום</h3>
-                  <p className="text-muted-foreground mb-1">{siteContent.contactAddress}</p>
-                  <p className="text-sm text-muted-foreground">קומה שנייה, חדר 203</p>
-                </div>
-              </div>
-            </Card>
+              </Card>
+            )}
 
             <Card className="p-6">
               <div className="flex items-start gap-4">

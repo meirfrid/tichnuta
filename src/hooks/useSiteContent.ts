@@ -78,9 +78,9 @@ const defaultContent: SiteContent = {
   coursesTitle: "הקורסים שלנו",
   coursesSubtitle: "קורסי תכנות מותאמים לכל גיל ורמה, עם דגש על למידה מהנה ויעילה",
   
-  contactPhone: "050-123-4567",
+  contactPhone: "053-271-2650",
   contactEmail: "info@programta.co.il",
-  contactAddress: "רחוב הרב קוק 15, בני ברק",
+  contactAddress: "",
   
   footerDescription: "תכנותא - חוגי תכנות מקצועיים לילדים חרדים"
 };
