@@ -6,6 +6,7 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -24,7 +25,7 @@ const ContactSection = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.firstName || !formData.phone || !formData.email) {
@@ -36,21 +37,43 @@ const ContactSection = () => {
       return;
     }
 
-    // Simulate form submission
-    toast({
-      title: "הודעה נשלחה בהצלחה!",
-      description: "נחזור אליך תוך 24 שעות",
-    });
+    try {
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      
+      const { error } = await supabase
+        .from('registrations')
+        .insert({
+          name: fullName,
+          phone: formData.phone,
+          email: formData.email,
+          course: formData.course || "יצירת קשר כללי",
+          message: formData.message,
+          status: "new"
+        });
 
-    // Reset form
-    setFormData({
-      firstName: "",
-      lastName: "",
-      phone: "",
-      email: "",
-      course: "",
-      message: ""
-    });
+      if (error) throw error;
+
+      toast({
+        title: "הודעה נשלחה בהצלחה!",
+        description: "נחזור אליך תוך 24 שעות",
+      });
+
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        course: "",
+        message: ""
+      });
+    } catch (error: any) {
+      toast({
+        title: "שגיאה",
+        description: "אירעה שגיאה בשליחת ההודעה. אנא נסה שוב.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleQuickContact = () => {

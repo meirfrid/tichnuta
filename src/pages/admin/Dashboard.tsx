@@ -27,6 +27,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCaption } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import ContactsList from '@/components/ContactsList';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -364,7 +365,7 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="content" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="content">
               <Settings className="h-4 w-4 ml-2" />
               תוכן האתר
@@ -372,6 +373,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="courses">
               <BookOpen className="h-4 w-4 ml-2" />
               קורסים
+            </TabsTrigger>
+            <TabsTrigger value="contacts">
+              <MessageSquare className="h-4 w-4 ml-2" />
+              יצירות קשר
             </TabsTrigger>
             <TabsTrigger value="students">
               <Users className="h-4 w-4 ml-2" />
@@ -923,6 +928,11 @@ const AdminDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Contacts Tab */}
+          <TabsContent value="contacts">
+            <ContactsList />
           </TabsContent>
 
           {/* Students Tab */}
