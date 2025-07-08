@@ -27,7 +27,14 @@ const Hero = () => {
           <p className="text-lg opacity-80 max-w-2xl mx-auto mb-8">
             {siteContent.heroDescription}
           </p>
-          <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-3">
+          <Button 
+            size="lg" 
+            className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-3"
+            onClick={() => {
+              const coursesSection = document.getElementById('courses');
+              coursesSection?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
             {siteContent.heroButtonText}
           </Button>
         </div>
