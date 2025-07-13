@@ -79,8 +79,8 @@ const defaultContent: SiteContent = {
   coursesSubtitle: "קורסי תכנות מותאמים לכל גיל ורמה, עם דגש על למידה מהנה ויעילה",
   
   contactPhone: "053-271-2650",
-  contactEmail: "info@programta.co.il",
-  contactAddress: "",
+  contactEmail: "meirfrid650@gmail.com",
+  contactAddress: "רחוב לוחמי הגטו 32 פתח תקווה",
   
   footerDescription: "תכנותא - חוגי תכנות מקצועיים לילדים חרדים"
 };
