@@ -8,9 +8,9 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img 
-                src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png" 
-                alt="תכנותא - חוגי תכנות לילדים" 
+              <img
+                src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png"
+                alt="תכנותא - חוגי תכנות לילדים"
                 className="h-10 w-auto filter brightness-0 invert"
               />
             </div>
@@ -55,15 +55,11 @@ const Footer = () => {
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                <span className="opacity-80">050-123-4567</span>
+                <span className="opacity-80">053-2712650</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                <span className="opacity-80">info@programta.co.il</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                <span className="opacity-80">רחוב הרב קוק 15, בני ברק</span>
+                <span className="opacity-80">meirfrid650@gmail.com</span>
               </div>
             </div>
           </div>
