@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Code2, Gamepad2, Smartphone, Monitor } from "lucide-react";
+import { Gamepad2, Smartphone, Monitor } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
-
+import GroupsIcon from '@mui/icons-material/Groups';
 const Hero = () => {
   const { siteContent } = useSiteContent();
-  
+
   return (
     <section id="home" className="min-h-screen bg-gradient-hero relative overflow-hidden">
       {/* Background Pattern */}
@@ -27,8 +27,8 @@ const Hero = () => {
           <p className="text-lg opacity-80 max-w-2xl mx-auto mb-8">
             {siteContent.heroDescription}
           </p>
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-3"
             onClick={() => {
               const coursesSection = document.getElementById('courses');
@@ -42,24 +42,24 @@ const Hero = () => {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground">
-            <Code2 className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">4</div>
-            <div className="text-sm opacity-80">קורסים</div>
+            <GroupsIcon fontSize="large" />
+            <div className="text-2xl font-bold">מיומנות עבודה בצוות</div>
+            <div className="text-sm opacity-80">בניית פרוייקטים בעבודה משותפת</div>
           </Card>
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground">
             <Gamepad2 className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">משחקים</div>
-            <div className="text-sm opacity-80">פיתוח</div>
+            <div className="text-2xl font-bold">פיתוח משחקים</div>
+            <div className="text-sm opacity-80">יצירה, תכנון ובנייה של משחקים</div>
           </Card>
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground">
             <Smartphone className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">אפליקציות</div>
-            <div className="text-sm opacity-80">יצירת</div>
+            <div className="text-2xl font-bold">בניית אפליקציות</div>
+            <div className="text-sm opacity-80"> לימוד פיתוח אפליקציות אמיתיות</div>
           </Card>
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground">
             <Monitor className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">פייתון</div>
-            <div className="text-sm opacity-80">לימוד</div>
+            <div className="text-2xl font-bold">תכנות מתקדם לילדים</div>
+            <div className="text-sm opacity-80">פיתוח חשיבה אלגוריתמית ופתרון בעיות</div>
           </Card>
         </div>
 
@@ -69,7 +69,7 @@ const Hero = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors">
               <h3 className="text-lg font-semibold mb-2">כיתות א'-ב'</h3>
-              <p className="text-sm opacity-80">פיתוח משחקים בקוד</p>
+              <p className="text-sm opacity-80">פיתוח משחקים בתוכנת קודו</p>
             </Card>
             <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors">
               <h3 className="text-lg font-semibold mb-2">כיתות ג'-ד'</h3>
