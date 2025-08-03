@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, Star, Eye } from "lucide-react";
+import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, Star } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +14,6 @@ import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 
 const courses = [];
 
@@ -226,7 +225,6 @@ const CoursesSection = () => {
   const { siteContent } = useSiteContent();
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCourses();
@@ -333,17 +331,7 @@ const CoursesSection = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button
-                        onClick={() => navigate(`/course/${course.id}`)}
-                        variant="outline"
-                        className="flex items-center gap-2"
-                      >
-                        <Eye className="h-4 w-4" />
-                        צפה בקורס
-                      </Button>
-                      <ContactForm selectedCourse={course.title} courses={courses} />
-                    </div>
+                    <ContactForm selectedCourse={course.title} courses={courses} />
                   </CardContent>
                 </Card>
               );
