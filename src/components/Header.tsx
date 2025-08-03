@@ -29,11 +29,11 @@ const Header = () => {
 
           {/* Logo - centered and larger */}
           <div className="flex items-center justify-center h-16">
-            <img
-              src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png"
-              alt="תכנותא - חוגי תכנות לילדים"
-              className="h-20 w-auto object-contain"
-            />
+         <img
+          src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png"
+          alt="תכנותא - חוגי תכנות לילדים"
+          className="h-32 w-auto object-contain"
+/>
           </div>
 
           {/* Desktop Auth Button - moved to right */}
