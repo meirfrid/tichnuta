@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Code2, Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -9,13 +10,13 @@ const Header = () => {
   return (
     <header className="bg-background border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center h-28">
+        <div className="flex justify-between items-center h-32">
           {/* Logo */}
           <div className="flex items-center h-full">
             <img
               src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png"
               alt="תכנותא - חוגי תכנות לילדים"
-              className="h-28 w-auto "
+              className="h-32 w-auto"
             />
           </div>
 
