@@ -32,7 +32,7 @@ const Header = () => {
          <img
           src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png"
           alt="תכנותא - חוגי תכנות לילדים"
-          className="h-40 w-auto object-contain"
+          className="h-32 w-auto object-contain"
           />
           </div>
 
