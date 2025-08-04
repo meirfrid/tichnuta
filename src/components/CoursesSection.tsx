@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +14,8 @@ import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+
+const courses = [];
 
 const getLevelColor = (level: string) => {
   switch (level) {
@@ -61,7 +62,7 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
     console.log("Contact form data:", data);
     
     try {
-      // Save to registrations table
+      // Save to database
       const { error } = await supabase
         .from('registrations')
         .insert({
@@ -86,9 +87,13 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
         title: "הודעה נשלחה בהצלחה!",
         description: "ניצור איתך קשר בהקדם האפשרי",
       });
+      console.log("Toast displayed successfully");
       
       form.reset();
+      console.log("Form reset completed");
+      
       setOpen(false);
+      console.log("Dialog closed");
     } catch (error) {
       console.error("Error in form submission:", error);
       toast({

@@ -1,15 +1,14 @@
 
+import { Button } from "@/components/ui/button";
+import { Code2, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
 import AuthButton from "./AuthButton";
-import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, isAdmin } = useAuth();
 
   return (
-    <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b border-border">
+    <header className="bg-background border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           {/* Desktop Navigation - moved to left */}
@@ -18,14 +17,6 @@ const Header = () => {
             <a href="#courses" className="text-foreground hover:text-primary transition-colors">קורסים</a>
             <a href="#about" className="text-foreground hover:text-primary transition-colors">אודות</a>
             <a href="#contact" className="text-foreground hover:text-primary transition-colors">צור קשר</a>
-            {user && (
-              <>
-                <a href="/my-area" className="text-foreground hover:text-primary transition-colors">האזור האישי</a>
-                {isAdmin && (
-                  <a href="/admin" className="text-foreground hover:text-primary transition-colors">ניהול</a>
-                )}
-              </>
-            )}
           </nav>
 
           {/* Mobile Menu Button - moved to left */}
@@ -56,61 +47,15 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 py-4 border-t border-border">
-            <nav className="flex flex-col space-y-4">
-              <a 
-                href="#home" 
-                className="text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                בית
-              </a>
-              <a 
-                href="#courses" 
-                className="text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                קורסים
-              </a>
-              <a 
-                href="#about" 
-                className="text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                אודות
-              </a>
-              <a 
-                href="#contact" 
-                className="text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                צור קשר
-              </a>
-              {user && (
-                <>
-                  <a 
-                    href="/my-area" 
-                    className="text-foreground hover:text-primary transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    האזור האישי
-                  </a>
-                  {isAdmin && (
-                    <a 
-                      href="/admin" 
-                      className="text-foreground hover:text-primary transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      ניהול
-                    </a>
-                  )}
-                </>
-              )}
-              <div className="pt-4 border-t border-border">
-                <AuthButton />
-              </div>
-            </nav>
-          </div>
+          <nav className="md:hidden mt-4 pb-4 border-t border-border pt-4">
+            <div className="flex flex-col gap-4">
+              <a href="#home" className="text-foreground hover:text-primary transition-colors">בית</a>
+              <a href="#courses" className="text-foreground hover:text-primary transition-colors">קורסים</a>
+              <a href="#about" className="text-foreground hover:text-primary transition-colors">אודות</a>
+              <a href="#contact" className="text-foreground hover:text-primary transition-colors">צור קשר</a>
+              <AuthButton />
+            </div>
+          </nav>
         )}
       </div>
     </header>
