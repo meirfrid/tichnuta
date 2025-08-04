@@ -12,7 +12,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           {/* Desktop Navigation - moved to left */}
-          <nav className="hidden md:flex items-center gap-6 h-20">
+          <nav className="hidden md:flex items-center gap-6 h-24">
             <a href="#home" className="text-foreground hover:text-primary transition-colors">בית</a>
             <a href="#courses" className="text-foreground hover:text-primary transition-colors">קורסים</a>
             <a href="#about" className="text-foreground hover:text-primary transition-colors">אודות</a>
@@ -21,28 +21,28 @@ const Header = () => {
 
           {/* Mobile Menu Button - moved to left */}
           <button
-            className="md:hidden p-2 h-20 flex items-center"
+            className="md:hidden p-2 h-24 flex items-center"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
 
-          {/* Logo - centered and larger */}
-          <div className="flex items-center justify-center h-20">
+          {/* Logo - centered and much larger */}
+          <div className="flex items-center justify-center h-24">
          <img
           src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png"
           alt="תכנותא - חוגי תכנות לילדים"
-          className="h-20 w-auto object-contain"
+          className="h-24 w-auto object-contain"
           />
           </div>
 
           {/* Desktop Auth Button - moved to right */}
-          <div className="hidden md:flex items-center h-20">
+          <div className="hidden md:flex items-center h-24">
             <AuthButton />
           </div>
 
           {/* Empty div for mobile to maintain spacing */}
-          <div className="md:hidden w-10 h-20"></div>
+          <div className="md:hidden w-10 h-24"></div>
         </div>
 
         {/* Mobile Navigation */}
