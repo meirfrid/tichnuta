@@ -19,7 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const courseSchema = z.object({
   title: z.string().min(2, "כותרת חייבת להכיל לפחות 2 תווים"),
-  subtitle: z.string().optional(),
+  subtitle: z.string().min(1, "תת כותרת נדרשת"),
   description: z.string().min(10, "תיאור חייב להכיל לפחות 10 תווים"),
   price_number: z.number().min(0, "מחיר לא יכול להיות שלילי"),
   price_text: z.string().min(1, "טקסט מחיר נדרש"),
@@ -246,12 +246,22 @@ const AdminCourseManagement = () => {
         throw new Error("Course not found");
       }
 
-      // Get user by email
-      const { data: { users }, error: userError } = await supabase.auth.admin.listUsers();
-      if (userError) throw userError;
-      
-      const user = users.find(u => u.email === userEmail);
-      if (!user) {
+      // Get user by email using RPC function - we'll need to create this
+      const { data: userData, error: userError } = await supabase.rpc('get_user_by_email', {
+        user_email: userEmail
+      });
+
+      if (userError) {
+        // If RPC doesn't exist, we'll handle it differently
+        toast({
+          title: "שגיאה",
+          description: "לא ניתן למצוא את המשתמש. יש צורך ביצירת פונקציה בבסיס הנתונים.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!userData) {
         throw new Error("User not found");
       }
 
@@ -259,7 +269,7 @@ const AdminCourseManagement = () => {
       const { error: purchaseError } = await supabase
         .from('user_purchases')
         .insert([{
-          user_id: user.id,
+          user_id: userData.id,
           course_id: matchingCourse.id,
           amount_paid: matchingCourse.price_number,
           status: 'approved'
@@ -284,9 +294,16 @@ const AdminCourseManagement = () => {
     } catch (error: any) {
       toast({
         title: "שגיאה",
-        description: "לא ניתן לאשר את ההרשמה",
+        description: "לא ניתן לאשר את ההרשמה: " + error.message,
         variant: "destructive"
       });
+    }
+  };
+
+  const switchToLessonsTab = () => {
+    const lessonsTab = document.querySelector('[data-value="lessons"]') as HTMLButtonElement;
+    if (lessonsTab) {
+      lessonsTab.click();
     }
   };
 
@@ -310,9 +327,9 @@ const AdminCourseManagement = () => {
 
       <Tabs defaultValue="courses" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="courses">קורסים</TabsTrigger>
-          <TabsTrigger value="lessons">תכני קורס</TabsTrigger>
-          <TabsTrigger value="registrations">הרשמות</TabsTrigger>
+          <TabsTrigger value="courses" data-value="courses">קורסים</TabsTrigger>
+          <TabsTrigger value="lessons" data-value="lessons">תכני קורס</TabsTrigger>
+          <TabsTrigger value="registrations" data-value="registrations">הרשמות</TabsTrigger>
         </TabsList>
 
         <TabsContent value="courses">
@@ -516,8 +533,7 @@ const AdminCourseManagement = () => {
                       onClick={() => {
                         setSelectedCourse(course);
                         fetchLessons(course.id);
-                        // Switch to lessons tab
-                        document.querySelector('[value="lessons"]')?.click();
+                        switchToLessonsTab();
                       }}
                     >
                       <BookOpen className="h-4 w-4 ml-1" />

@@ -165,6 +165,13 @@ const MyArea = () => {
     return Math.round((completedLessons / courseLessonsForCourse.length) * 100);
   };
 
+  const switchToLessonsTab = () => {
+    const lessonsTab = document.querySelector('[data-value="lessons"]') as HTMLButtonElement;
+    if (lessonsTab) {
+      lessonsTab.click();
+    }
+  };
+
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-20">
@@ -219,8 +226,8 @@ const MyArea = () => {
       ) : (
         <Tabs defaultValue="courses" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="courses">הקורסים שלי</TabsTrigger>
-            <TabsTrigger value="lessons">תכני הקורס</TabsTrigger>
+            <TabsTrigger value="courses" data-value="courses">הקורסים שלי</TabsTrigger>
+            <TabsTrigger value="lessons" data-value="lessons">תכני הקורס</TabsTrigger>
           </TabsList>
 
           <TabsContent value="courses" className="space-y-6">
@@ -267,8 +274,7 @@ const MyArea = () => {
                       onClick={() => {
                         setSelectedCourse(userCourse.course_id);
                         fetchCourseLessons(userCourse.course_id);
-                        // Switch to lessons tab
-                        document.querySelector('[value="lessons"]')?.click();
+                        switchToLessonsTab();
                       }}
                     >
                       <Play className="h-4 w-4 ml-2" />
