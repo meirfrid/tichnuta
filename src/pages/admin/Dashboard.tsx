@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,33 +36,7 @@ const AdminDashboard = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { siteContent, saveSiteContent, resetToDefault } = useSiteContent();
 
-  // Redirect if not admin
-  useEffect(() => {
-    if (!authLoading && (!user || !isAdmin)) {
-      navigate('/auth');
-      toast({
-        title: "גישה נדחתה",
-        description: "רק מנהלי האתר יכולים לגשת לאזור זה",
-        variant: "destructive"
-      });
-    }
-  }, [user, isAdmin, authLoading, navigate, toast]);
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">טוען...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user || !isAdmin) {
-    return null;
-  }
-
+  // Move ALL useState hooks to the top, before any conditional logic
   const [courses, setCourses] = useState<any[]>([]);
   const [editingCourse, setEditingCourse] = useState<any>(null);
   const [showNewCourseForm, setShowNewCourseForm] = useState(false);
@@ -78,14 +53,43 @@ const AdminDashboard = () => {
     price_text: '',
     price_number: 0
   });
-
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Redirect if not admin
   useEffect(() => {
-    fetchRegistrations();
-    fetchCourses();
-  }, []);
+    if (!authLoading && (!user || !isAdmin)) {
+      navigate('/auth');
+      toast({
+        title: "גישה נדחתה",
+        description: "רק מנהלי האתר יכולים לגשת לאזור זה",
+        variant: "destructive"
+      });
+    }
+  }, [user, isAdmin, authLoading, navigate, toast]);
+
+  useEffect(() => {
+    if (user && isAdmin) {
+      fetchRegistrations();
+      fetchCourses();
+    }
+  }, [user, isAdmin]);
+
+  // Now conditional returns can happen after all hooks are declared
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">טוען...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !isAdmin) {
+    return null;
+  }
 
   const fetchCourses = async () => {
     try {
