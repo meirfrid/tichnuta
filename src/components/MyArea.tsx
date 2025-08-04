@@ -33,6 +33,7 @@ interface CourseLesson {
   video_url: string;
   presentation_url: string;
   duration_minutes: number;
+  course_id: string;
   progress?: {
     completed: boolean;
     watch_time_seconds: number;
