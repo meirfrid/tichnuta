@@ -27,13 +27,31 @@ const Header = () => {
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
 
-          {/* Logo - centered and much larger */}
+          {/* Custom Logo - centered and larger */}
           <div className="flex items-center justify-center h-24">
-         <img
-          src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png"
-          alt="תכנותא - חוגי תכנות לילדים"
-          className="h-24 w-auto object-contain"
-          />
+            <div className="flex items-center gap-3">
+              {/* Code symbol decoration */}
+              <div className="hidden md:flex items-center text-primary text-2xl font-mono">
+                {"</>"}
+              </div>
+              
+              {/* Main logo text */}
+              <div className="text-center">
+                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary-dark to-secondary bg-clip-text text-transparent leading-tight">
+                  תכנותא
+                </h1>
+                <div className="text-xs md:text-sm text-muted-foreground font-medium tracking-wide">
+                  חוגי תכנות לילדים
+                </div>
+              </div>
+              
+              {/* Decorative dots */}
+              <div className="hidden md:flex flex-col gap-1">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+              </div>
+            </div>
           </div>
 
           {/* Desktop Auth Button - moved to right */}

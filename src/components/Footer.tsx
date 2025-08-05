@@ -1,3 +1,4 @@
+
 import { Code2, Mail, Phone, MapPin } from "lucide-react";
 
 const Footer = () => {
@@ -8,11 +9,20 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img
-                src="/lovable-uploads/8f339034-9056-476e-ba22-5f0e6a87831d.png"
-                alt="תכנותא - חוגי תכנות לילדים"
-                className="h-10 w-auto filter brightness-0 invert"
-              />
+              {/* Custom logo for footer */}
+              <div className="flex items-center gap-2">
+                <div className="text-background text-lg font-mono">
+                  {"</>"}
+                </div>
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold text-background leading-tight">
+                    תכנותא
+                  </h3>
+                  <div className="text-xs text-background/80 font-medium">
+                    חוגי תכנות לילדים
+                  </div>
+                </div>
+              </div>
             </div>
             <p className="text-sm opacity-80 leading-relaxed">
               מובילים בחינוך טכנולוגי לילדים מהמגזר החרדי, עם דגש על איכות ומקצועיות.
