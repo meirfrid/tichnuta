@@ -81,6 +81,8 @@ const AdminDashboard = () => {
 
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [courseFilter, setCourseFilter] = useState<string>('all');
 
   useEffect(() => {
     fetchRegistrations();
@@ -274,25 +276,51 @@ const AdminDashboard = () => {
 
   const updateRegistrationStatus = async (id: string, newStatus: string) => {
     try {
+      setLoading(true);
       const { error } = await supabase
         .from('registrations')
-        .update({ status: newStatus })
+        .update({ 
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', id);
 
       if (error) {
+        console.error('Supabase error:', error);
         toast({
           title: "שגיאה בעדכון סטטוס",
-          description: "לא ניתן לעדכן את הסטטוס",
+          description: error.message || "לא ניתן לעדכן את הסטטוס",
           variant: "destructive"
         });
       } else {
-        fetchRegistrations();
+        // Update local state immediately for better UX
+        setRegistrations(prev => 
+          prev.map(reg => 
+            reg.id === id 
+              ? { ...reg, status: newStatus, updated_at: new Date().toISOString() }
+              : reg
+          )
+        );
+        
         toast({
           title: "סטטוס עודכן בהצלחה",
+          description: `הסטטוס עודכן ל${newStatus === 'contacted' ? 'נוצר קשר' : 
+                                       newStatus === 'enrolled' ? 'נרשם' : 
+                                       newStatus === 'declined' ? 'דחה' : newStatus}`,
         });
+        
+        // Also refresh from server to ensure consistency
+        await fetchRegistrations();
       }
     } catch (error) {
       console.error('Error updating status:', error);
+      toast({
+        title: "שגיאה בעדכון סטטוס",
+        description: "אירעה שגיאה בלתי צפויה",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -943,92 +971,171 @@ const AdminDashboard = () => {
                   <div>
                     <CardTitle>ניהול תלמידים</CardTitle>
                     <CardDescription>
-                      רשימת התלמידים וההרשמות ({registrations.length} פניות)
+                      רשימת התלמידים וההרשמות ({registrations.filter(reg => {
+                        const matchesStatus = statusFilter === 'all' || reg.status === statusFilter;
+                        const matchesCourse = courseFilter === 'all' || reg.course === courseFilter;
+                        return matchesStatus && matchesCourse;
+                      }).length} מתוך {registrations.length} פניות)
                     </CardDescription>
                   </div>
-                  <Button onClick={fetchRegistrations} variant="outline">
-                    <RefreshCw className="h-4 w-4 ml-2" />
+                  <Button onClick={fetchRegistrations} variant="outline" disabled={loading}>
+                    <RefreshCw className={`h-4 w-4 ml-2 ${loading ? 'animate-spin' : ''}`} />
                     רענן
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
+                {/* Filters */}
+                <div className="flex gap-4 mb-6 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="status-filter">סינון לפי סטטוס:</Label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-[150px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">הכל</SelectItem>
+                        <SelectItem value="new">חדש</SelectItem>
+                        <SelectItem value="contacted">נוצר קשר</SelectItem>
+                        <SelectItem value="enrolled">נרשם</SelectItem>
+                        <SelectItem value="declined">דחה</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="course-filter">סינון לפי קורס:</Label>
+                    <Select value={courseFilter} onValueChange={setCourseFilter}>
+                      <SelectTrigger className="w-[200px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">כל הקורסים</SelectItem>
+                        {Array.from(new Set(registrations.map(reg => reg.course))).map(course => (
+                          <SelectItem key={course} value={course}>
+                            {course}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {(statusFilter !== 'all' || courseFilter !== 'all') && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => {
+                        setStatusFilter('all');
+                        setCourseFilter('all');
+                      }}
+                    >
+                      נקה סינון
+                    </Button>
+                  )}
+                </div>
+
                 {loading ? (
-                  <p className="text-center text-muted-foreground py-8">טוען נתונים...</p>
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">טוען נתונים...</p>
+                  </div>
                 ) : registrations.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">
                     אין פניות בינתיים. ברגע שמישהו ישלח טופס יצירת קשר, הפרטים יופיעו כאן.
                   </p>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableCaption>רשימת הפניות וההרשמות</TableCaption>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>שם</TableHead>
-                          <TableHead>טלפון</TableHead>
-                          <TableHead>אימייל</TableHead>
-                          <TableHead>קורס</TableHead>
-                          <TableHead>הודעה</TableHead>
-                          <TableHead>סטטוס</TableHead>
-                          <TableHead>תאריך</TableHead>
-                          <TableHead>פעולות</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {registrations.map((registration) => (
-                          <TableRow key={registration.id}>
-                            <TableCell className="font-medium">{registration.name}</TableCell>
-                            <TableCell>
-                              <a href={`tel:${registration.phone}`} className="text-primary hover:underline">
-                                {registration.phone}
-                              </a>
-                            </TableCell>
-                            <TableCell>
-                              <a href={`mailto:${registration.email}`} className="text-primary hover:underline">
-                                {registration.email}
-                              </a>
-                            </TableCell>
-                            <TableCell>{registration.course}</TableCell>
-                            <TableCell className="max-w-xs truncate" title={registration.message || ''}>
-                              {registration.message || '-'}
-                            </TableCell>
-                            <TableCell>
-                              <Badge className={getStatusColor(registration.status)}>
-                                {registration.status === 'new' && 'חדש'}
-                                {registration.status === 'contacted' && 'נוצר קשר'}
-                                {registration.status === 'enrolled' && 'נרשם'}
-                                {registration.status === 'declined' && 'דחה'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              {new Date(registration.created_at).toLocaleDateString('he-IL')}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateRegistrationStatus(registration.id, 'contacted')}
-                                  disabled={registration.status === 'contacted'}
-                                >
-                                  יצרתי קשר
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateRegistrationStatus(registration.id, 'enrolled')}
-                                  disabled={registration.status === 'enrolled'}
-                                >
-                                  נרשם
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+                  (() => {
+                    const filteredRegistrations = registrations.filter(reg => {
+                      const matchesStatus = statusFilter === 'all' || reg.status === statusFilter;
+                      const matchesCourse = courseFilter === 'all' || reg.course === courseFilter;
+                      return matchesStatus && matchesCourse;
+                    });
+
+                    return filteredRegistrations.length === 0 ? (
+                      <p className="text-center text-muted-foreground py-8">
+                        אין תוצאות התואמות לסינון שנבחר
+                      </p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableCaption>רשימת הפניות וההרשמות</TableCaption>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>שם</TableHead>
+                              <TableHead>טלפון</TableHead>
+                              <TableHead>אימייל</TableHead>
+                              <TableHead>קורס</TableHead>
+                              <TableHead>הודעה</TableHead>
+                              <TableHead>סטטוס</TableHead>
+                              <TableHead>תאריך</TableHead>
+                              <TableHead>פעולות</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {filteredRegistrations.map((registration) => (
+                              <TableRow key={registration.id}>
+                                <TableCell className="font-medium">{registration.name}</TableCell>
+                                <TableCell>
+                                  <a href={`tel:${registration.phone}`} className="text-primary hover:underline">
+                                    {registration.phone}
+                                  </a>
+                                </TableCell>
+                                <TableCell>
+                                  <a href={`mailto:${registration.email}`} className="text-primary hover:underline">
+                                    {registration.email}
+                                  </a>
+                                </TableCell>
+                                <TableCell>{registration.course}</TableCell>
+                                <TableCell className="max-w-xs truncate" title={registration.message || ''}>
+                                  {registration.message || '-'}
+                                </TableCell>
+                                <TableCell>
+                                  <Badge className={getStatusColor(registration.status)}>
+                                    {registration.status === 'new' && 'חדש'}
+                                    {registration.status === 'contacted' && 'נוצר קשר'}
+                                    {registration.status === 'enrolled' && 'נרשם'}
+                                    {registration.status === 'declined' && 'דחה'}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>
+                                  {new Date(registration.created_at).toLocaleDateString('he-IL')}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex gap-1 flex-wrap">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => updateRegistrationStatus(registration.id, 'contacted')}
+                                      disabled={loading || registration.status === 'contacted'}
+                                    >
+                                      יצרתי קשר
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => updateRegistrationStatus(registration.id, 'enrolled')}
+                                      disabled={loading || registration.status === 'enrolled'}
+                                    >
+                                      נרשם
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => updateRegistrationStatus(registration.id, 'declined')}
+                                      disabled={loading || registration.status === 'declined'}
+                                      className="text-destructive hover:text-destructive"
+                                    >
+                                      דחה
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    );
+                  })()
                 )}
               </CardContent>
             </Card>
