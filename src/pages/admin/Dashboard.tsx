@@ -277,13 +277,18 @@ const AdminDashboard = () => {
   const updateRegistrationStatus = async (id: string, newStatus: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase
+      console.log('Attempting to update registration:', id, 'to status:', newStatus);
+      
+      const { data, error } = await supabase
         .from('registrations')
         .update({ 
           status: newStatus,
           updated_at: new Date().toISOString()
         })
-        .eq('id', id);
+        .eq('id', id)
+        .select();
+
+      console.log('Update result:', { data, error });
 
       if (error) {
         console.error('Supabase error:', error);
@@ -293,6 +298,8 @@ const AdminDashboard = () => {
           variant: "destructive"
         });
       } else {
+        console.log('Update successful, updated record:', data);
+        
         // Update local state immediately for better UX
         setRegistrations(prev => 
           prev.map(reg => 
@@ -310,6 +317,7 @@ const AdminDashboard = () => {
         });
         
         // Also refresh from server to ensure consistency
+        console.log('Refreshing registrations from server...');
         await fetchRegistrations();
       }
     } catch (error) {
