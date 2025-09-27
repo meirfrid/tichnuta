@@ -19,7 +19,7 @@ const ContactSection = () => {
     course: "",
     message: ""
   });
-  const [quickPhone, setQuickPhone] = useState("");
+  
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -76,22 +76,6 @@ const ContactSection = () => {
     }
   };
 
-  const handleQuickContact = () => {
-    if (!quickPhone) {
-      toast({
-        title: "שגיאה",
-        description: "אנא הכנס מספר טלפון",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "בקשה נרשמה!",
-      description: "נחזור אליך תוך 30 דקות",
-    });
-    setQuickPhone("");
-  };
 
   return (
     <section id="contact" className="py-20 bg-muted/30">
@@ -238,27 +222,6 @@ const ContactSection = () => {
               </div>
             </Card>
 
-            {/* Quick Contact */}
-            <Card className="p-6 bg-gradient-card border-2 border-primary/20">
-              <h3 className="text-lg font-semibold mb-3">יעוץ מהיר</h3>
-              <p className="text-muted-foreground mb-4 text-sm">
-                רוצה לדבר איתנו עכשיו? השאר פרטים ונחזור אליך תוך 30 דקות
-              </p>
-              <div className="flex gap-2">
-                <Input 
-                  placeholder="מספר טלפון" 
-                  className="flex-1" 
-                  value={quickPhone}
-                  onChange={(e) => setQuickPhone(e.target.value)}
-                />
-                <Button 
-                  className="bg-gradient-primary hover:opacity-90"
-                  onClick={handleQuickContact}
-                >
-                  צור קשר
-                </Button>
-              </div>
-            </Card>
           </div>
         </div>
       </div>
