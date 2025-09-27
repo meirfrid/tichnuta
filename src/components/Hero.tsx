@@ -18,25 +18,33 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="text-center text-primary-foreground mb-16">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            {siteContent.heroTitle}
-          </h1>
-          <p className="text-xl md:text-2xl mb-4 opacity-90">
-            {siteContent.heroSubtitle}
-          </p>
-          <p className="text-lg opacity-80 max-w-2xl mx-auto mb-8">
-            {siteContent.heroDescription}
-          </p>
-          <Button
-            size="lg"
-            className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-3"
-            onClick={() => {
-              const coursesSection = document.getElementById('courses');
-              coursesSection?.scrollIntoView({ behavior: 'smooth' });
-            }}
-          >
-            {siteContent.heroButtonText}
-          </Button>
+          {siteContent.heroTitle && (
+            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+              {siteContent.heroTitle}
+            </h1>
+          )}
+          {siteContent.heroSubtitle && (
+            <p className="text-xl md:text-2xl mb-4 opacity-90">
+              {siteContent.heroSubtitle}
+            </p>
+          )}
+          {siteContent.heroDescription && (
+            <p className="text-lg opacity-80 max-w-2xl mx-auto mb-8">
+              {siteContent.heroDescription}
+            </p>
+          )}
+          {siteContent.heroButtonText && (
+            <Button
+              size="lg"
+              className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-3"
+              onClick={() => {
+                const coursesSection = document.getElementById('courses');
+                coursesSection?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              {siteContent.heroButtonText}
+            </Button>
+          )}
         </div>
 
         {/* Quick Stats */}

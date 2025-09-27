@@ -1,7 +1,10 @@
 
 import { Code2, Mail, Phone, MapPin } from "lucide-react";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const Footer = () => {
+  const { siteContent } = useSiteContent();
+
   return (
     <footer className="bg-foreground text-background py-12">
       <div className="container mx-auto px-4">
@@ -24,9 +27,11 @@ const Footer = () => {
                 </div>
               </div>
             </div>
-            <p className="text-sm opacity-80 leading-relaxed">
-              מובילים בחינוך טכנולוגי לילדים מהמגזר החרדי, עם דגש על איכות ומקצועיות.
-            </p>
+            {siteContent.footerDescription && (
+              <p className="text-sm opacity-80 leading-relaxed">
+                {siteContent.footerDescription}
+              </p>
+            )}
           </div>
 
           {/* Quick Links */}
@@ -38,9 +43,6 @@ const Footer = () => {
               </li>
               <li>
                 <a href="#courses" className="opacity-80 hover:opacity-100 transition-opacity">קורסים</a>
-              </li>
-              <li>
-                <a href="#about" className="opacity-80 hover:opacity-100 transition-opacity">אודות</a>
               </li>
               <li>
                 <a href="#contact" className="opacity-80 hover:opacity-100 transition-opacity">צור קשר</a>
@@ -63,14 +65,18 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">צור קשר</h4>
             <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <span className="opacity-80">053-2712650</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <span className="opacity-80">meirfrid650@gmail.com</span>
-              </div>
+              {siteContent.contactPhone && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  <span className="opacity-80">{siteContent.contactPhone}</span>
+                </div>
+              )}
+              {siteContent.contactEmail && (
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span className="opacity-80">{siteContent.contactEmail}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

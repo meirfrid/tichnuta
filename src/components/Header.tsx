@@ -15,7 +15,6 @@ const Header = () => {
           <nav className="hidden md:flex items-center gap-6 h-24">
             <a href="#home" className="text-foreground hover:text-primary transition-colors">בית</a>
             <a href="#courses" className="text-foreground hover:text-primary transition-colors">קורסים</a>
-            <a href="#about" className="text-foreground hover:text-primary transition-colors">אודות</a>
             <a href="#contact" className="text-foreground hover:text-primary transition-colors">צור קשר</a>
           </nav>
 
@@ -69,7 +68,6 @@ const Header = () => {
             <div className="flex flex-col gap-4">
               <a href="#home" className="text-foreground hover:text-primary transition-colors">בית</a>
               <a href="#courses" className="text-foreground hover:text-primary transition-colors">קורסים</a>
-              <a href="#about" className="text-foreground hover:text-primary transition-colors">אודות</a>
               <a href="#contact" className="text-foreground hover:text-primary transition-colors">צור קשר</a>
               <AuthButton />
             </div>

@@ -262,10 +262,14 @@ const CoursesSection = () => {
     <section id="courses" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-4">{siteContent.coursesTitle}</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            {siteContent.coursesSubtitle}
-          </p>
+          {siteContent.coursesTitle && (
+            <h2 className="text-4xl font-bold text-foreground mb-4">{siteContent.coursesTitle}</h2>
+          )}
+          {siteContent.coursesSubtitle && (
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              {siteContent.coursesSubtitle}
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
