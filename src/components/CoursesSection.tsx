@@ -343,15 +343,6 @@ const CoursesSection = () => {
           )}
         </div>
 
-        <div className="text-center mt-12">
-          <Card className="max-w-2xl mx-auto p-8 bg-gradient-card border-2 border-primary/20">
-            <h3 className="text-2xl font-bold mb-4 text-foreground">מעוניין בפרטים נוספים?</h3>
-            <p className="text-muted-foreground mb-6">
-              נשמח לספר לך עוד על הקורסים ולעזור לך לבחור את הקורס המתאים ביותר
-            </p>
-            <ContactForm buttonText="צור קשר לייעוץ חינם" courses={courses} />
-          </Card>
-        </div>
       </div>
     </section>
   );
