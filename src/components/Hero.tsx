@@ -1,10 +1,43 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Gamepad2, Smartphone, Monitor } from "lucide-react";
+import { Gamepad2, Smartphone, Monitor, Code2, Bot } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import GroupsIcon from '@mui/icons-material/Groups';
 const Hero = () => {
   const { siteContent } = useSiteContent();
+  const [courses, setCourses] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('active', true)
+        .order('sort_order');
+
+      if (error) {
+        console.error('Error fetching courses:', error);
+      } else {
+        setCourses(data || []);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  // Map icon names to components
+  const iconMap = {
+    Code2,
+    Gamepad2,
+    Smartphone,
+    Bot
+  } as any;
 
   return (
     <section id="home" className="min-h-screen bg-gradient-hero relative overflow-hidden">
@@ -72,27 +105,25 @@ const Hero = () => {
         </div>
 
         {/* Age Groups Preview */}
-        <div className="text-center text-primary-foreground">
-          <h2 className="text-3xl font-bold mb-8">קורסים לכל הגילאים</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors">
-              <h3 className="text-lg font-semibold mb-2">כיתות א'-ב'</h3>
-              <p className="text-sm opacity-80">פיתוח משחקים בתוכנת קודו</p>
-            </Card>
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors">
-              <h3 className="text-lg font-semibold mb-2">כיתות ג'-ד'</h3>
-              <p className="text-sm opacity-80">פיתוח משחקים בסקראץ</p>
-            </Card>
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors">
-              <h3 className="text-lg font-semibold mb-2">כיתות ה'-ו'</h3>
-              <p className="text-sm opacity-80">פיתוח אפליקציות App Inventor</p>
-            </Card>
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors">
-              <h3 className="text-lg font-semibold mb-2">כיתות ז'-ח'</h3>
-              <p className="text-sm opacity-80">פיתוח משחקים בפייתון</p>
-            </Card>
+        {courses.length > 0 && (
+          <div className="text-center text-primary-foreground">
+            <h2 className="text-3xl font-bold mb-8">קורסים לכל הגילאים</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {courses.map((course) => {
+                const IconComponent = iconMap[course.icon] || Code2;
+                return (
+                  <Card key={course.id} className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors">
+                    <div className="flex justify-center mb-3">
+                      <IconComponent className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">{course.subtitle}</h3>
+                    <p className="text-sm opacity-80">{course.title}</p>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
