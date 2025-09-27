@@ -54,7 +54,6 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">הקורסים שלנו</h4>
             <ul className="space-y-2 text-sm">
-              <li className="opacity-80">פיתוח משחקים בקוד (א'-ב')</li>
               <li className="opacity-80">פיתוח משחקים בסקראץ (ג'-ד')</li>
               <li className="opacity-80">פיתוח אפליקציות (ה'-ו')</li>
               <li className="opacity-80">פיתוח משחקים בפייתון (ז'-ח')</li>
@@ -85,10 +84,6 @@ const Footer = () => {
         <div className="border-t border-background/20 mt-8 pt-8 text-center">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm opacity-80">
             <p>&copy; 2024 תכנותא. כל הזכויות שמורות.</p>
-            <div className="flex gap-6">
-              <a href="#" className="hover:opacity-100 transition-opacity">תנאי שימוש</a>
-              <a href="#" className="hover:opacity-100 transition-opacity">מדיניות פרטיות</a>
-            </div>
           </div>
         </div>
       </div>
