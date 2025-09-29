@@ -33,7 +33,7 @@ const AdminChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   // Load all chat sessions
@@ -90,41 +90,9 @@ const AdminChat = () => {
     loadMessages();
   }, [selectedSession]);
 
-  // Subscribe to real-time updates
-  useEffect(() => {
-    const channel = supabase
-      .channel("admin_chat_channel")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "chat_messages",
-        },
-        (payload) => {
-          const newMsg = payload.new as Message;
-          
-          // Update sessions list
-          loadSessions();
-
-          // If the message is for the selected session, add it
-          if (selectedSession && newMsg.session_id === selectedSession) {
-            setMessages((prev) => [...prev, newMsg]);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [selectedSession]);
-
   // Auto-scroll to bottom
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -213,7 +181,7 @@ const AdminChat = () => {
               </div>
             ) : (
               <>
-                <ScrollArea className="flex-1 mb-4" ref={scrollRef}>
+                <ScrollArea className="flex-1 mb-4">
                   <div className="space-y-4">
                     {messages.map((msg) => (
                       <div
@@ -242,6 +210,7 @@ const AdminChat = () => {
                         </div>
                       </div>
                     ))}
+                    <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
 
