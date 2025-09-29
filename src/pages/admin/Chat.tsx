@@ -90,6 +90,35 @@ const AdminChat = () => {
     loadMessages();
   }, [selectedSession]);
 
+  // Subscribe to real-time updates
+  useEffect(() => {
+    if (!selectedSession) return;
+
+    const channel = supabase
+      .channel("admin_chat_channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "chat_messages",
+          filter: `session_id=eq.${selectedSession}`,
+        },
+        (payload) => {
+          const newMsg = payload.new as Message;
+          setMessages((prev) => [...prev, newMsg]);
+          
+          // Reload sessions to update last message
+          loadSessions();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedSession]);
+
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
