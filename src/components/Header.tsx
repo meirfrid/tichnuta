@@ -33,7 +33,7 @@ const Header = () => {
               <div className="hidden md:flex items-center text-primary text-2xl font-mono">
                 {"</>"}
               </div>
-              
+
               {/* Main logo text */}
               <div className="text-center">
                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary-dark to-secondary bg-clip-text text-transparent leading-tight">
@@ -43,7 +43,7 @@ const Header = () => {
                   חוגי תכנות לילדים
                 </div>
               </div>
-              
+
               {/* Decorative dots */}
               <div className="hidden md:flex flex-col gap-1">
                 <div className="w-2 h-2 bg-primary rounded-full"></div>
