@@ -184,7 +184,7 @@ const ChatWidget = () => {
                           : "text-muted-foreground"
                       }`}
                     >
-                      {format(new Date(msg.created_at + 'Z'), "HH:mm")}
+                      {format(new Date(msg.created_at), "HH:mm")}
                     </p>
                   </div>
                 </div>

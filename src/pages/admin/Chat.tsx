@@ -193,7 +193,7 @@ const AdminChat = () => {
                         {session.last_message}
                       </p>
                        <p className="text-xs opacity-60 mt-1">
-                        {format(new Date(session.last_message_time + 'Z'), "dd/MM/yyyy HH:mm")}
+                        {format(new Date(session.last_message_time), "dd/MM/yyyy HH:mm")}
                       </p>
                     </div>
                   ))
@@ -234,7 +234,7 @@ const AdminChat = () => {
                                 : "text-muted-foreground"
                             }`}
                           >
-                            {format(new Date(msg.created_at + 'Z'), "HH:mm")}
+                            {format(new Date(msg.created_at), "HH:mm")}
                           </p>
                         </div>
                       </div>
