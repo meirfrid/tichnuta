@@ -192,8 +192,8 @@ const AdminChat = () => {
                       <p className="text-xs opacity-70 truncate">
                         {session.last_message}
                       </p>
-                      <p className="text-xs opacity-60 mt-1">
-                        {format(new Date(session.last_message_time), "dd/MM/yyyy HH:mm")}
+                       <p className="text-xs opacity-60 mt-1">
+                        {format(new Date(session.last_message_time + 'Z'), "dd/MM/yyyy HH:mm")}
                       </p>
                     </div>
                   ))
@@ -227,14 +227,14 @@ const AdminChat = () => {
                           }`}
                         >
                           <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
-                          <p
+                           <p
                             className={`text-xs mt-1 ${
                               msg.sender_type === "admin"
                                 ? "text-primary-foreground/70"
                                 : "text-muted-foreground"
                             }`}
                           >
-                            {format(new Date(msg.created_at), "HH:mm")}
+                            {format(new Date(msg.created_at + 'Z'), "HH:mm")}
                           </p>
                         </div>
                       </div>

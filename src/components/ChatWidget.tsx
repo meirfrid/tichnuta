@@ -177,14 +177,14 @@ const ChatWidget = () => {
                     }`}
                   >
                     <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
-                    <p
+                     <p
                       className={`text-xs mt-1 ${
                         msg.sender_type === "user"
                           ? "text-primary-foreground/70"
                           : "text-muted-foreground"
                       }`}
                     >
-                      {format(new Date(msg.created_at), "HH:mm")}
+                      {format(new Date(msg.created_at + 'Z'), "HH:mm")}
                     </p>
                   </div>
                 </div>
