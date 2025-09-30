@@ -55,21 +55,6 @@ const ChatWidget = () => {
       }
 
       setMessages((data || []) as Message[]);
-
-      // If no messages, add welcome message
-      if (!data || data.length === 0) {
-        const { error: insertError } = await supabase
-          .from("chat_messages")
-          .insert({
-            session_id: sessionId,
-            message: "👋 שלום! איך אפשר לעזור לך היום?",
-            sender_type: "admin",
-          });
-
-        if (insertError) {
-          console.error("Error adding welcome message:", insertError);
-        }
-      }
     };
 
     loadMessages();
@@ -162,6 +147,14 @@ const ChatWidget = () => {
           {/* Messages Area */}
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
+              {/* Show welcome message only in UI if no messages */}
+              {messages.length === 0 && (
+                <div className="flex justify-start">
+                  <div className="max-w-[80%] rounded-lg p-3 bg-muted">
+                    <p className="text-sm whitespace-pre-wrap">👋 שלום! איך אפשר לעזור לך היום?</p>
+                  </div>
+                </div>
+              )}
               {messages.map((msg) => (
                 <div
                   key={msg.id}
