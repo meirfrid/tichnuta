@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Code2, Menu, X } from "lucide-react";
 import { useState } from "react";
 import AuthButton from "./AuthButton";
+import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,31 +27,13 @@ const Header = () => {
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
 
-          {/* Custom Logo - centered and larger */}
+          {/* Logo Image - centered */}
           <div className="flex items-center justify-center h-24">
-            <div className="flex items-center gap-3">
-              {/* Code symbol decoration */}
-              <div className="hidden md:flex items-center text-primary text-2xl font-mono">
-                {"</>"}
-              </div>
-
-              {/* Main logo text */}
-              <div className="text-center">
-                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary-dark to-secondary bg-clip-text text-transparent leading-tight">
-                  תכנותא
-                </h1>
-                <div className="text-xs md:text-sm text-muted-foreground font-medium tracking-wide">
-                  חוגי תכנות לילדים
-                </div>
-              </div>
-
-              {/* Decorative dots */}
-              <div className="hidden md:flex flex-col gap-1">
-                <div className="w-2 h-2 bg-primary rounded-full"></div>
-                <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                <div className="w-2 h-2 bg-primary rounded-full"></div>
-              </div>
-            </div>
+            <img 
+              src={logo} 
+              alt="תכנותא - חוגי תכנות מקצועיים לילדים" 
+              className="h-16 md:h-20 w-auto object-contain"
+            />
           </div>
 
           {/* Desktop Auth Button - moved to right */}
