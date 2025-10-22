@@ -1,6 +1,7 @@
 
-import { Code2, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import logo from "@/assets/smallWhiteLogo.png";
 
 const Footer = () => {
   const { siteContent } = useSiteContent();
@@ -14,26 +15,14 @@ const Footer = () => {
             <div className="flex items-center gap-3 mb-4">
               {/* Custom logo for footer */}
               <div className="flex items-center gap-2">
-                <div className="text-background text-lg font-mono">
-                  {"</>"}
-                </div>
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-background leading-tight">
-                    תכנותא
-                  </h3>
-                  <div className="text-xs text-background/80 font-medium">
-                    חוגי תכנות לילדים
-                  </div>
-                </div>
+                <img
+                  src={logo}
+                  alt="תכנותא - חוגי תכנות מקצועיים לילדים"
+                  className="h-16 md:h-20 w-auto object-contain"
+                />
               </div>
             </div>
-            {siteContent.footerDescription && (
-              <p className="text-sm opacity-80 leading-relaxed">
-                {siteContent.footerDescription}
-              </p>
-            )}
           </div>
-
           {/* Quick Links */}
           <div>
             <h4 className="text-lg font-semibold mb-4">קישורים מהירים</h4>
