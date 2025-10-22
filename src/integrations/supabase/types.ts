@@ -305,6 +305,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      user_chat_sessions: {
+        Args: { _user_id: string }
+        Returns: {
+          session_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
