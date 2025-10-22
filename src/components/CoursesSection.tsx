@@ -33,11 +33,26 @@ const getLevelColor = (level: string) => {
 };
 
 const contactFormSchema = z.object({
-  name: z.string().min(2, "שם חייב להכיל לפחות 2 תווים"),
-  phone: z.string().min(10, "מספר טלפון לא תקין"),
-  email: z.string().email("כתובת מייל לא תקינה"),
-  course: z.string().min(1, "יש לבחור קורס"),
-  message: z.string().optional(),
+  name: z.string()
+    .trim()
+    .min(2, "שם חייב להכיל לפחות 2 תווים")
+    .max(100, "שם ארוך מדי"),
+  phone: z.string()
+    .trim()
+    .min(10, "מספר טלפון לא תקין")
+    .max(20, "מספר טלפון ארוך מדי"),
+  email: z.string()
+    .trim()
+    .email("כתובת מייל לא תקינה")
+    .max(255, "כתובת מייל ארוכה מדי"),
+  course: z.string()
+    .trim()
+    .min(1, "יש לבחור קורס")
+    .max(200, "שם קורס ארוך מדי"),
+  message: z.string()
+    .trim()
+    .max(2000, "הודעה ארוכה מדי")
+    .optional(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
