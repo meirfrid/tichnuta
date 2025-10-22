@@ -7,32 +7,6 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { supabase } from "@/integrations/supabase/client";
-import { z } from "zod";
-
-const contactFormSchema = z.object({
-  firstName: z.string()
-    .trim()
-    .min(2, "שם חייב להכיל לפחות 2 תווים")
-    .max(50, "שם ארוך מדי"),
-  lastName: z.string()
-    .trim()
-    .max(50, "שם משפחה ארוך מדי")
-    .optional(),
-  phone: z.string()
-    .trim()
-    .min(9, "מספר טלפון לא תקין")
-    .max(20, "מספר טלפון ארוך מדי"),
-  email: z.string()
-    .trim()
-    .email("כתובת מייל לא תקינה")
-    .max(255, "כתובת מייל ארוכה מדי"),
-  course: z.string()
-    .max(200, "שם קורס ארוך מדי")
-    .optional(),
-  message: z.string()
-    .max(2000, "הודעה ארוכה מדי")
-    .optional()
-});
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -54,20 +28,26 @@ const ContactSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form data with zod schema
+    if (!formData.firstName || !formData.phone || !formData.email) {
+      toast({
+        title: "שגיאה",
+        description: "אנא מלא את כל השדות הנדרשים",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
-      const validatedData = contactFormSchema.parse(formData);
-      
-      const fullName = `${validatedData.firstName} ${validatedData.lastName || ""}`.trim();
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
 
       const { error } = await supabase
         .from('registrations')
         .insert({
           name: fullName,
-          phone: validatedData.phone,
-          email: validatedData.email,
-          course: validatedData.course || "יצירת קשר כללי",
-          message: validatedData.message || "",
+          phone: formData.phone,
+          email: formData.email,
+          course: formData.course || "יצירת קשר כללי",
+          message: formData.message,
           status: "new"
         });
 
@@ -88,21 +68,11 @@ const ContactSection = () => {
         message: ""
       });
     } catch (error: any) {
-      // Handle validation errors
-      if (error instanceof z.ZodError) {
-        const firstError = error.errors[0];
-        toast({
-          title: "שגיאת תיקוף",
-          description: firstError.message,
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "שגיאה",
-          description: "אירעה שגיאה בשליחת ההודעה. אנא נסה שוב.",
-          variant: "destructive"
-        });
-      }
+      toast({
+        title: "שגיאה",
+        description: "אירעה שגיאה בשליחת ההודעה. אנא נסה שוב.",
+        variant: "destructive"
+      });
     }
   };
 
