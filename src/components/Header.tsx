@@ -29,9 +29,9 @@ const Header = () => {
 
           {/* Logo Image - centered */}
           <div className="flex items-center justify-center h-24">
-            <img 
-              src={logo} 
-              alt="תכנותא - חוגי תכנות מקצועיים לילדים" 
+            <img
+              src={logo}
+              alt="תכנותא - חוגי תכנות מקצועיים לילדים"
               className="h-16 md:h-20 w-auto object-contain"
             />
           </div>
