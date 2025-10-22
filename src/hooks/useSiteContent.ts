@@ -42,7 +42,7 @@ export interface SiteContent {
 const defaultContent: SiteContent = {
   heroTitle: "העתיד מתחיל כאן",
   heroSubtitle: "חוגי תכנות חווייתיים לילדים חרדים",
-  heroDescription: "הילדים בונים משחקים, יוצרים אפליקציות ולומדים לחשוב כמו מהנדסים - בסביבה מקצועית, ערכית ומהנה.",
+  heroDescription: "הילדים בונים משחקים, יוצרים אפליקציות ולומדים לחשוב כמו מהנדסים בסביבה מקצועית, ערכית ומהנה.",
   heroButtonText: "גלה את הקורסים שלנו",
 
   aboutTitle: "אוות תכנותא",
