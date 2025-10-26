@@ -171,9 +171,23 @@ const RegistrationForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>כיתה</FormLabel>
-                  <FormControl>
-                    <Input placeholder="למשל: ג', ד', ה'" {...field} />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="בחר כיתה" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="א'">א'</SelectItem>
+                      <SelectItem value="ב'">ב'</SelectItem>
+                      <SelectItem value="ג'">ג'</SelectItem>
+                      <SelectItem value="ד'">ד'</SelectItem>
+                      <SelectItem value="ה'">ה'</SelectItem>
+                      <SelectItem value="ו'">ו'</SelectItem>
+                      <SelectItem value="ז'">ז'</SelectItem>
+                      <SelectItem value="ח'">ח'</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
