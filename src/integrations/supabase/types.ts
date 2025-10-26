@@ -108,7 +108,6 @@ export type Database = {
           level: string
           price_number: number
           price_text: string
-          school_id: string | null
           sort_order: number
           subtitle: string
           title: string
@@ -127,7 +126,6 @@ export type Database = {
           level: string
           price_number?: number
           price_text: string
-          school_id?: string | null
           sort_order?: number
           subtitle: string
           title: string
@@ -146,21 +144,12 @@ export type Database = {
           level?: string
           price_number?: number
           price_text?: string
-          school_id?: string | null
           sort_order?: number
           subtitle?: string
           title?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "courses_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       lesson_progress: {
         Row: {
@@ -208,12 +197,10 @@ export type Database = {
           course: string
           created_at: string
           email: string
-          grade: string | null
           id: string
           message: string | null
           name: string
           phone: string
-          school_name: string | null
           status: string
           updated_at: string
         }
@@ -221,12 +208,10 @@ export type Database = {
           course: string
           created_at?: string
           email: string
-          grade?: string | null
           id?: string
           message?: string | null
           name: string
           phone: string
-          school_name?: string | null
           status?: string
           updated_at?: string
         }
@@ -234,49 +219,11 @@ export type Database = {
           course?: string
           created_at?: string
           email?: string
-          grade?: string | null
           id?: string
           message?: string | null
           name?: string
           phone?: string
-          school_name?: string | null
           status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      schools: {
-        Row: {
-          active: boolean
-          color: string
-          created_at: string
-          description: string | null
-          icon: string
-          id: string
-          name: string
-          sort_order: number
-          updated_at: string
-        }
-        Insert: {
-          active?: boolean
-          color?: string
-          created_at?: string
-          description?: string | null
-          icon?: string
-          id?: string
-          name: string
-          sort_order?: number
-          updated_at?: string
-        }
-        Update: {
-          active?: boolean
-          color?: string
-          created_at?: string
-          description?: string | null
-          icon?: string
-          id?: string
-          name?: string
-          sort_order?: number
           updated_at?: string
         }
         Relationships: []
@@ -325,48 +272,15 @@ export type Database = {
           },
         ]
       }
-      user_roles: {
-        Row: {
-          created_at: string | null
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      user_chat_sessions: {
-        Args: { _user_id: string }
-        Returns: {
-          session_id: string
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
-      app_role: "admin" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -493,8 +407,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      app_role: ["admin", "user"],
-    },
+    Enums: {},
   },
 } as const

@@ -21,8 +21,7 @@ import {
   Trash2,
   Plus,
   Edit,
-  MessageCircle,
-  GraduationCap
+  MessageCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,7 +29,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCap
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import ContactsList from '@/components/ContactsList';
-import SchoolsManagement from './SchoolsManagement';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -65,16 +63,6 @@ const AdminDashboard = () => {
     return null;
   }
 
-  const [schools, setSchools] = useState<any[]>([]);
-  const [editingSchool, setEditingSchool] = useState<any>(null);
-  const [showNewSchoolForm, setShowNewSchoolForm] = useState(false);
-  const [schoolForm, setSchoolForm] = useState({
-    name: '',
-    description: '',
-    icon: 'GraduationCap',
-    color: 'bg-gradient-to-br from-blue-500 to-blue-600'
-  });
-
   const [courses, setCourses] = useState<any[]>([]);
   const [editingCourse, setEditingCourse] = useState<any>(null);
   const [showNewCourseForm, setShowNewCourseForm] = useState(false);
@@ -89,8 +77,7 @@ const AdminDashboard = () => {
     group_size: '',
     level: 'מתחילים',
     price_text: '',
-    price_number: 0,
-    school_id: ''
+    price_number: 0
   });
 
   const [registrations, setRegistrations] = useState<any[]>([]);
@@ -101,120 +88,13 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchRegistrations();
     fetchCourses();
-    fetchSchools();
   }, []);
-
-  const fetchSchools = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('schools')
-        .select('*')
-        .order('sort_order');
-
-      if (error) {
-        console.error('Error fetching schools:', error);
-        toast({
-          title: "שגיאה בטעינת תלמודי תורה",
-          description: "לא ניתן לטעון את רשימת תלמודי התורה",
-          variant: "destructive"
-        });
-      } else {
-        setSchools(data || []);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const saveSchool = async () => {
-    try {
-      if (editingSchool) {
-        // Update existing school
-        const { error } = await supabase
-          .from('schools')
-          .update(schoolForm)
-          .eq('id', editingSchool.id);
-
-        if (error) throw error;
-        
-        toast({
-          title: "תלמוד תורה עודכן בהצלחה",
-        });
-      } else {
-        // Create new school
-        const { error } = await supabase
-          .from('schools')
-          .insert({
-            ...schoolForm,
-            sort_order: schools.length + 1
-          });
-
-        if (error) throw error;
-        
-        toast({
-          title: "תלמוד תורה נוסף בהצלחה",
-        });
-      }
-
-      setEditingSchool(null);
-      setShowNewSchoolForm(false);
-      setSchoolForm({
-        name: '',
-        description: '',
-        icon: 'GraduationCap',
-        color: 'bg-gradient-to-br from-blue-500 to-blue-600'
-      });
-      fetchSchools();
-    } catch (error) {
-      console.error('Error saving school:', error);
-      toast({
-        title: "שגיאה בשמירת תלמוד תורה",
-        description: "אנא נסה שוב",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const editSchool = (school: any) => {
-    setEditingSchool(school);
-    setSchoolForm({
-      name: school.name,
-      description: school.description || '',
-      icon: school.icon,
-      color: school.color
-    });
-    setShowNewSchoolForm(true);
-  };
-
-  const deleteSchool = async (schoolId: string) => {
-    if (!confirm('האם אתה בטוח שברצונך למחוק את תלמוד התורה? זה יסתיר גם את הקורסים המקושרים אליו.')) return;
-
-    try {
-      const { error } = await supabase
-        .from('schools')
-        .update({ active: false })
-        .eq('id', schoolId);
-
-      if (error) throw error;
-      
-      toast({
-        title: "תלמוד תורה נמחק בהצלחה",
-      });
-      fetchSchools();
-    } catch (error) {
-      console.error('Error deleting school:', error);
-      toast({
-        title: "שגיאה במחיקת תלמוד תורה",
-        variant: "destructive"
-      });
-    }
-  };
 
   const fetchCourses = async () => {
     try {
       const { data, error } = await supabase
         .from('courses')
-        .select('*, schools(name)')
+        .select('*')
         .order('sort_order');
 
       if (error) {
@@ -268,20 +148,19 @@ const AdminDashboard = () => {
 
       setEditingCourse(null);
       setShowNewCourseForm(false);
-        setCourseForm({
-          title: '',
-          subtitle: '',
-          description: '',
-          icon: 'Code2',
-          color: 'bg-gradient-to-br from-blue-500 to-blue-600',
-          features: [''],
-          duration: '',
-          group_size: '',
-          level: 'מתחילים',
-          price_text: '',
-          price_number: 0,
-          school_id: ''
-        });
+      setCourseForm({
+        title: '',
+        subtitle: '',
+        description: '',
+        icon: 'Code2',
+        color: 'bg-gradient-to-br from-blue-500 to-blue-600',
+        features: [''],
+        duration: '',
+        group_size: '',
+        level: 'מתחילים',
+        price_text: '',
+        price_number: 0
+      });
       fetchCourses();
     } catch (error) {
       console.error('Error saving course:', error);
@@ -306,8 +185,7 @@ const AdminDashboard = () => {
       group_size: course.group_size,
       level: course.level,
       price_text: course.price_text,
-      price_number: course.price_number,
-      school_id: course.school_id || ''
+      price_number: course.price_number
     });
     setShowNewCourseForm(true);
   };
@@ -524,14 +402,10 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="content" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="content">
               <Settings className="h-4 w-4 ml-2" />
               תוכן האתר
-            </TabsTrigger>
-            <TabsTrigger value="schools">
-              <GraduationCap className="h-4 w-4 ml-2" />
-              תלמודי תורה
             </TabsTrigger>
             <TabsTrigger value="courses">
               <BookOpen className="h-4 w-4 ml-2" />
@@ -835,23 +709,6 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          {/* Schools Tab */}
-          <TabsContent value="schools">
-            <SchoolsManagement 
-              schools={schools}
-              showNewSchoolForm={showNewSchoolForm}
-              schoolForm={schoolForm}
-              editingSchool={editingSchool}
-              setShowNewSchoolForm={setShowNewSchoolForm}
-              setSchoolForm={setSchoolForm}
-              setEditingSchool={setEditingSchool}
-              fetchSchools={fetchSchools}
-              saveSchool={saveSchool}
-              editSchool={editSchool}
-              deleteSchool={deleteSchool}
-            />
-          </TabsContent>
-
           {/* Courses Tab */}
           <TabsContent value="courses">
             <Card>
@@ -882,8 +739,7 @@ const AdminDashboard = () => {
                         group_size: '',
                         level: 'מתחילים',
                         price_text: '',
-                        price_number: 0,
-                        school_id: ''
+                        price_number: 0
                       });
                     }}>
                       <Plus className="h-4 w-4 ml-2" />
@@ -926,25 +782,6 @@ const AdminDashboard = () => {
                           onChange={(e) => setCourseForm(prev => ({ ...prev, subtitle: e.target.value }))}
                           placeholder="למשל: כיתות ז'-ח'"
                         />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="courseSchool">תלמוד תורה</Label>
-                        <Select 
-                          value={courseForm.school_id} 
-                          onValueChange={(value) => setCourseForm(prev => ({ ...prev, school_id: value }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="בחר תלמוד תורה" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {schools.map((school) => (
-                              <SelectItem key={school.id} value={school.id}>
-                                {school.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
                       </div>
 
                       <div className="md:col-span-2">
@@ -1240,11 +1077,9 @@ const AdminDashboard = () => {
                           <TableCaption>רשימת הפניות וההרשמות</TableCaption>
                           <TableHeader>
                             <TableRow>
-                           <TableHead>שם</TableHead>
+                              <TableHead>שם</TableHead>
                               <TableHead>טלפון</TableHead>
                               <TableHead>אימייל</TableHead>
-                              <TableHead>תלמוד תורה</TableHead>
-                              <TableHead>כיתה</TableHead>
                               <TableHead>קורס</TableHead>
                               <TableHead>הודעה</TableHead>
                               <TableHead>סטטוס</TableHead>
@@ -1262,13 +1097,11 @@ const AdminDashboard = () => {
                                   </a>
                                 </TableCell>
                                 <TableCell>
-                                   <a href={`mailto:${registration.email}`} className="text-primary hover:underline">
-                                     {registration.email}
-                                   </a>
-                                 </TableCell>
-                                 <TableCell>{registration.school_name || '-'}</TableCell>
-                                 <TableCell>{registration.grade || '-'}</TableCell>
-                                 <TableCell>{registration.course}</TableCell>
+                                  <a href={`mailto:${registration.email}`} className="text-primary hover:underline">
+                                    {registration.email}
+                                  </a>
+                                </TableCell>
+                                <TableCell>{registration.course}</TableCell>
                                 <TableCell className="max-w-xs truncate" title={registration.message || ''}>
                                   {registration.message || '-'}
                                 </TableCell>
