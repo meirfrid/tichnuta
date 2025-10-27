@@ -77,9 +77,7 @@ const AdminDashboard = () => {
     group_size: '',
     level: 'מתחילים',
     price_text: '',
-    price_number: 0,
-    locations: [''],
-    times: ['']
+    price_number: 0
   });
 
   const [registrations, setRegistrations] = useState<any[]>([]);
@@ -122,9 +120,7 @@ const AdminDashboard = () => {
           .from('courses')
           .update({
             ...courseForm,
-            features: courseForm.features.filter(f => f.trim() !== ''),
-            locations: courseForm.locations.filter(l => l.trim() !== ''),
-            times: courseForm.times.filter(t => t.trim() !== '')
+            features: courseForm.features.filter(f => f.trim() !== '')
           })
           .eq('id', editingCourse.id);
 
@@ -140,8 +136,6 @@ const AdminDashboard = () => {
           .insert({
             ...courseForm,
             features: courseForm.features.filter(f => f.trim() !== ''),
-            locations: courseForm.locations.filter(l => l.trim() !== ''),
-            times: courseForm.times.filter(t => t.trim() !== ''),
             sort_order: courses.length + 1
           });
 
@@ -165,9 +159,7 @@ const AdminDashboard = () => {
         group_size: '',
         level: 'מתחילים',
         price_text: '',
-        price_number: 0,
-        locations: [''],
-        times: ['']
+        price_number: 0
       });
       fetchCourses();
     } catch (error) {
@@ -193,9 +185,7 @@ const AdminDashboard = () => {
       group_size: course.group_size,
       level: course.level,
       price_text: course.price_text,
-      price_number: course.price_number,
-      locations: course.locations && course.locations.length > 0 ? course.locations : [''],
-      times: course.times && course.times.length > 0 ? course.times : ['']
+      price_number: course.price_number
     });
     setShowNewCourseForm(true);
   };
@@ -242,48 +232,6 @@ const AdminDashboard = () => {
     setCourseForm(prev => ({
       ...prev,
       features: prev.features.filter((_, i) => i !== index)
-    }));
-  };
-
-  const addLocation = () => {
-    setCourseForm(prev => ({
-      ...prev,
-      locations: [...prev.locations, '']
-    }));
-  };
-
-  const updateLocation = (index: number, value: string) => {
-    setCourseForm(prev => ({
-      ...prev,
-      locations: prev.locations.map((l, i) => i === index ? value : l)
-    }));
-  };
-
-  const removeLocation = (index: number) => {
-    setCourseForm(prev => ({
-      ...prev,
-      locations: prev.locations.filter((_, i) => i !== index)
-    }));
-  };
-
-  const addTime = () => {
-    setCourseForm(prev => ({
-      ...prev,
-      times: [...prev.times, '']
-    }));
-  };
-
-  const updateTime = (index: number, value: string) => {
-    setCourseForm(prev => ({
-      ...prev,
-      times: prev.times.map((t, i) => i === index ? value : t)
-    }));
-  };
-
-  const removeTime = (index: number) => {
-    setCourseForm(prev => ({
-      ...prev,
-      times: prev.times.filter((_, i) => i !== index)
     }));
   };
 
@@ -791,9 +739,7 @@ const AdminDashboard = () => {
                         group_size: '',
                         level: 'מתחילים',
                         price_text: '',
-                        price_number: 0,
-                        locations: [''],
-                        times: ['']
+                        price_number: 0
                       });
                     }}>
                       <Plus className="h-4 w-4 ml-2" />
@@ -949,66 +895,6 @@ const AdminDashboard = () => {
                         <Button type="button" variant="outline" onClick={addFeature}>
                           <Plus className="h-4 w-4 ml-2" />
                           הוסף תכונה
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label>מקומות לימוד</Label>
-                      <div className="space-y-2 mt-2">
-                        {courseForm.locations.map((location, index) => (
-                          <div key={index} className="flex gap-2">
-                            <Input
-                              value={location}
-                              onChange={(e) => updateLocation(index, e.target.value)}
-                              placeholder="מקום לימוד (למשל: תלמוד תורה משה ברוך)"
-                              className="flex-1"
-                            />
-                            {courseForm.locations.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => removeLocation(index)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        ))}
-                        <Button type="button" variant="outline" onClick={addLocation}>
-                          <Plus className="h-4 w-4 ml-2" />
-                          הוסף מקום לימוד
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label>שעות חוג</Label>
-                      <div className="space-y-2 mt-2">
-                        {courseForm.times.map((time, index) => (
-                          <div key={index} className="flex gap-2">
-                            <Input
-                              value={time}
-                              onChange={(e) => updateTime(index, e.target.value)}
-                              placeholder="שעת חוג (למשל: ראשון 16:00-17:30)"
-                              className="flex-1"
-                            />
-                            {courseForm.times.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => removeTime(index)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        ))}
-                        <Button type="button" variant="outline" onClick={addTime}>
-                          <Plus className="h-4 w-4 ml-2" />
-                          הוסף שעת חוג
                         </Button>
                       </div>
                     </div>
@@ -1195,9 +1081,6 @@ const AdminDashboard = () => {
                               <TableHead>טלפון</TableHead>
                               <TableHead>אימייל</TableHead>
                               <TableHead>קורס</TableHead>
-                              <TableHead>מקום לימוד</TableHead>
-                              <TableHead>כיתה</TableHead>
-                              <TableHead>שעת חוג</TableHead>
                               <TableHead>הודעה</TableHead>
                               <TableHead>סטטוס</TableHead>
                               <TableHead>תאריך</TableHead>
@@ -1219,9 +1102,6 @@ const AdminDashboard = () => {
                                   </a>
                                 </TableCell>
                                 <TableCell>{registration.course}</TableCell>
-                                <TableCell>{registration.location || '-'}</TableCell>
-                                <TableCell>{registration.grade || '-'}</TableCell>
-                                <TableCell>{registration.time || '-'}</TableCell>
                                 <TableCell className="max-w-xs truncate" title={registration.message || ''}>
                                   {registration.message || '-'}
                                 </TableCell>
