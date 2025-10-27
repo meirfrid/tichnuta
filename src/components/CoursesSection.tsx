@@ -37,12 +37,15 @@ const contactFormSchema = z.object({
   phone: z.string().min(10, "מספר טלפון לא תקין"),
   email: z.string().email("כתובת מייל לא תקינה"),
   course: z.string().min(1, "יש לבחור קורס"),
+  location: z.string().min(1, "יש לבחור מקום לימוד"),
+  grade: z.string().min(1, "יש לבחור כיתה"),
+  time: z.string().min(1, "יש לבחור שעת חוג"),
   message: z.string().optional(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
 
-const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [] }: { selectedCourse?: string; buttonText?: string; courses?: any[] }) => {
+const ContactForm = ({ selectedCourse, selectedCourseData, buttonText = "לפרטים והרשמה", courses = [] }: { selectedCourse?: string; selectedCourseData?: any; buttonText?: string; courses?: any[] }) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   
@@ -53,6 +56,9 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
       phone: "",
       email: "",
       course: selectedCourse || "",
+      location: "",
+      grade: "",
+      time: "",
       message: "",
     },
   });
@@ -70,6 +76,9 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
           phone: data.phone,
           email: data.email,
           course: data.course,
+          location: data.location,
+          grade: data.grade,
+          time: data.time,
           message: data.message || null,
         });
 
@@ -185,6 +194,92 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
                           {course.title} - {course.subtitle}
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>מקום לימוד</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="בחר מקום לימוד" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {selectedCourseData && selectedCourseData.locations && selectedCourseData.locations.length > 0 ? (
+                        selectedCourseData.locations.map((location: string, index: number) => (
+                          <SelectItem key={index} value={location}>
+                            {location}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="לא הוגדר">לא הוגדרו מקומות</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="grade"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>כיתה</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="בחר כיתה" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="א">א</SelectItem>
+                      <SelectItem value="ב">ב</SelectItem>
+                      <SelectItem value="ג">ג</SelectItem>
+                      <SelectItem value="ד">ד</SelectItem>
+                      <SelectItem value="ה">ה</SelectItem>
+                      <SelectItem value="ו">ו</SelectItem>
+                      <SelectItem value="ז">ז</SelectItem>
+                      <SelectItem value="ח">ח</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="time"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>שעת חוג</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="בחר שעת חוג" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {selectedCourseData && selectedCourseData.times && selectedCourseData.times.length > 0 ? (
+                        selectedCourseData.times.map((time: string, index: number) => (
+                          <SelectItem key={index} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="לא הוגדר">לא הוגדרו שעות</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -335,7 +430,7 @@ const CoursesSection = () => {
                       </div>
                     </div>
 
-                    <ContactForm selectedCourse={course.title} courses={courses} />
+                    <ContactForm selectedCourse={course.title} selectedCourseData={course} courses={courses} />
                   </CardContent>
                 </Card>
               );
