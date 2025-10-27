@@ -126,189 +126,199 @@ const ContactForm = ({ selectedCourse, selectedCourseData, buttonText = "לפר�
           {buttonText}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
+      <DialogContent
+        dir="rtl"
+        className="w-full max-w-[95vw] sm:max-w-[540px] lg:max-w-3xl rounded-2xl px-6 py-8 sm:px-8"
+      >
+        <DialogHeader className="space-y-1 text-center sm:text-right">
+          <DialogTitle className="text-2xl font-bold">
             יצירת קשר להרשמה
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>שם מלא</FormLabel>
-                  <FormControl>
-                    <Input placeholder="הכנס את שמך המלא" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>מספר טלפון</FormLabel>
-                  <FormControl>
-                    <Input placeholder="050-1234567" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>כתובת מייל</FormLabel>
-                  <FormControl>
-                    <Input placeholder="example@email.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="course"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>קורס מעניין</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel>שם מלא</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="בחר קורס" />
-                      </SelectTrigger>
+                      <Input placeholder="הכנס את שמך המלא" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {courses.map((course) => (
-                        <SelectItem key={course.id} value={course.title}>
-                          {course.title} - {course.subtitle}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>מקום לימוד</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel>מספר טלפון</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="בחר מקום לימוד" />
-                      </SelectTrigger>
+                      <Input placeholder="050-1234567" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {selectedCourseData && selectedCourseData.locations && selectedCourseData.locations.length > 0 ? (
-                        selectedCourseData.locations.map((location: string, index: number) => (
-                          <SelectItem key={index} value={location}>
-                            {location}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="space-y-2 sm:col-span-2">
+                    <FormLabel>כתובת מייל</FormLabel>
+                    <FormControl>
+                      <Input placeholder="example@email.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="course"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel>קורס מעניין</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="בחר קורס" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {courses.map((course) => (
+                          <SelectItem key={course.id} value={course.title}>
+                            {course.title} - {course.subtitle}
                           </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="לא הוגדר">לא הוגדרו מקומות</SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="grade"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>כיתה</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="בחר כיתה" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="א">א</SelectItem>
-                      <SelectItem value="ב">ב</SelectItem>
-                      <SelectItem value="ג">ג</SelectItem>
-                      <SelectItem value="ד">ד</SelectItem>
-                      <SelectItem value="ה">ה</SelectItem>
-                      <SelectItem value="ו">ו</SelectItem>
-                      <SelectItem value="ז">ז</SelectItem>
-                      <SelectItem value="ח">ח</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel>מקום לימוד</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="בחר מקום לימוד" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {selectedCourseData && selectedCourseData.locations && selectedCourseData.locations.length > 0 ? (
+                          selectedCourseData.locations.map((location: string, index: number) => (
+                            <SelectItem key={index} value={location}>
+                              {location}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="לא הוגדר">לא הוגדרו מקומות</SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="time"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>שעת חוג</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormField
+                control={form.control}
+                name="grade"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel>כיתה</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="בחר כיתה" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="א">א</SelectItem>
+                        <SelectItem value="ב">ב</SelectItem>
+                        <SelectItem value="ג">ג</SelectItem>
+                        <SelectItem value="ד">ד</SelectItem>
+                        <SelectItem value="ה">ה</SelectItem>
+                        <SelectItem value="ו">ו</SelectItem>
+                        <SelectItem value="ז">ז</SelectItem>
+                        <SelectItem value="ח">ח</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="time"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel>שעת חוג</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="בחר שעת חוג" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {selectedCourseData && selectedCourseData.times && selectedCourseData.times.length > 0 ? (
+                          selectedCourseData.times.map((time: string, index: number) => (
+                            <SelectItem key={index} value={time}>
+                              {time}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="לא הוגדר">לא הוגדרו שעות</SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem className="space-y-2 sm:col-span-2">
+                    <FormLabel>הודעה נוספת (אופציונלי)</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="בחר שעת חוג" />
-                      </SelectTrigger>
+                      <Textarea
+                        placeholder="שאלות או הערות נוספות..."
+                        className="resize-none min-h-[120px]"
+                        rows={3}
+                        {...field}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      {selectedCourseData && selectedCourseData.times && selectedCourseData.times.length > 0 ? (
-                        selectedCourseData.times.map((time: string, index: number) => (
-                          <SelectItem key={index} value={time}>
-                            {time}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="לא הוגדר">לא הוגדרו שעות</SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>הודעה נוספת (אופציונלי)</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="שאלות או הערות נוספות..."
-                      className="resize-none"
-                      rows={3}
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <Button type="submit" className="w-full bg-gradient-primary hover:opacity-90">
-              שלח הודעה
-            </Button>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-muted-foreground text-center sm:text-right">
+                ניצור איתך קשר בהקדם לאחר קבלת הפרטים.
+              </p>
+              <Button type="submit" className="w-full sm:w-auto bg-gradient-primary hover:opacity-90">
+                שלח הודעה
+              </Button>
+            </div>
           </form>
         </Form>
       </DialogContent>
