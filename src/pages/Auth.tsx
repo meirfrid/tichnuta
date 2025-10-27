@@ -116,108 +116,117 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">התחברות לאתר</CardTitle>
-          <CardDescription>
-            הכנס את פרטיך כדי להתחבר או להירשם
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">התחברות</TabsTrigger>
-              <TabsTrigger value="signup">הרשמה</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email">כתובת מייל</Label>
-                  <Input
-                    id="signin-email"
-                    type="email"
-                    placeholder="example@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-password">סיסמה</Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    placeholder="הכנס סיסמה"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      מתחבר...
-                    </>
-                  ) : (
-                    "התחבר"
-                  )}
-                </Button>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">כתובת מייל</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="example@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">סיסמה</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="בחר סיסמה חזקה"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      נרשם...
-                    </>
-                  ) : (
-                    "הירשם"
-                  )}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-          
-          <div className="text-center mt-4">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("/")}
-              className="text-sm text-muted-foreground"
-            >
-              חזור לעמוד הראשי
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-muted/30">
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col-reverse items-center justify-center gap-10 px-4 py-8 lg:flex-row lg:items-stretch lg:px-12 lg:py-12" dir="rtl">
+        <Card className="w-full max-w-lg self-center shadow-lg">
+          <CardHeader className="text-center lg:text-right">
+            <CardTitle className="text-2xl font-bold">התחברות לאתר</CardTitle>
+            <CardDescription className="text-base text-muted-foreground">
+              הכנס את פרטיך כדי להתחבר או להירשם
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="signin" className="w-full">
+              <TabsList className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2">
+                <TabsTrigger value="signin" className="w-full">התחברות</TabsTrigger>
+                <TabsTrigger value="signup" className="w-full">הרשמה</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="signin">
+                <form onSubmit={handleSignIn} className="space-y-4">
+                  <div className="space-y-2 text-right">
+                    <Label htmlFor="signin-email" className="text-right">כתובת מייל</Label>
+                    <Input
+                      id="signin-email"
+                      type="email"
+                      placeholder="example@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2 text-right">
+                    <Label htmlFor="signin-password" className="text-right">סיסמה</Label>
+                    <Input
+                      id="signin-password"
+                      type="password"
+                      placeholder="הכנס סיסמה"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        מתחבר...
+                      </>
+                    ) : (
+                      "התחבר"
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="signup">
+                <form onSubmit={handleSignUp} className="space-y-4">
+                  <div className="space-y-2 text-right">
+                    <Label htmlFor="signup-email" className="text-right">כתובת מייל</Label>
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      placeholder="example@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2 text-right">
+                    <Label htmlFor="signup-password" className="text-right">סיסמה</Label>
+                    <Input
+                      id="signup-password"
+                      type="password"
+                      placeholder="בחר סיסמה חזקה"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        נרשם...
+                      </>
+                    ) : (
+                      "הירשם"
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+
+            <div className="mt-6 text-center">
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/")}
+                className="text-sm text-muted-foreground"
+              >
+                חזור לעמוד הראשי
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-2xl bg-primary/10 p-8 text-center shadow-inner lg:max-w-md lg:text-right">
+          <h2 className="mb-4 text-3xl font-bold text-primary">ברוכים הבאים!</h2>
+          <p className="text-lg text-muted-foreground">
+            הצטרפו אלינו ותיהנו מגישה נוחה לכל התכנים והשירותים של המערכת מכל מקום ובכל זמן.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
