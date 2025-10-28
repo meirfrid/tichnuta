@@ -37,6 +37,9 @@ const contactFormSchema = z.object({
   phone: z.string().min(10, "מספר טלפון לא תקין"),
   email: z.string().email("כתובת מייל לא תקינה"),
   course: z.string().min(1, "יש לבחור קורס"),
+  location: z.string().min(1, "יש לבחור מקום לימוד"),
+  grade: z.string().min(1, "יש לבחור כיתה"),
+  time: z.string().min(1, "יש לבחור יום ושעה"),
   message: z.string().optional(),
 });
 
@@ -44,6 +47,7 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 
 const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [] }: { selectedCourse?: string; buttonText?: string; courses?: any[] }) => {
   const [open, setOpen] = useState(false);
+  const [selectedCourseData, setSelectedCourseData] = useState<any>(null);
   const { toast } = useToast();
   
   const form = useForm<ContactFormData>({
@@ -53,9 +57,29 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
       phone: "",
       email: "",
       course: selectedCourse || "",
+      location: "",
+      grade: "",
+      time: "",
       message: "",
     },
   });
+
+  // Update selected course data when course changes
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'course') {
+        const course = courses.find(c => c.title === value.course);
+        setSelectedCourseData(course);
+        // Reset location and time when course changes
+        if (course) {
+          form.setValue("location", "");
+          form.setValue("time", "");
+        }
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, [courses, form]);
 
   const onSubmit = async (data: ContactFormData) => {
     console.log("Form submission started");
@@ -70,6 +94,9 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
           phone: data.phone,
           email: data.email,
           course: data.course,
+          location: data.location,
+          grade: data.grade,
+          time: data.time,
           message: data.message || null,
         });
 
@@ -183,6 +210,86 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
                       {courses.map((course) => (
                         <SelectItem key={course.id} value={course.title}>
                           {course.title} - {course.subtitle}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>מקום לימוד</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="בחר מקום" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {selectedCourseData?.locations?.map((location: string, index: number) => (
+                          <SelectItem key={index} value={location}>
+                            {location}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="grade"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>כיתה</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="בחר כיתה" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="א">כיתה א</SelectItem>
+                        <SelectItem value="ב">כיתה ב</SelectItem>
+                        <SelectItem value="ג">כיתה ג</SelectItem>
+                        <SelectItem value="ד">כיתה ד</SelectItem>
+                        <SelectItem value="ה">כיתה ה</SelectItem>
+                        <SelectItem value="ו">כיתה ו</SelectItem>
+                        <SelectItem value="ז">כיתה ז</SelectItem>
+                        <SelectItem value="ח">כיתה ח</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="time"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>יום ושעה</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="בחר יום ושעה" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {selectedCourseData?.times?.map((time: string, index: number) => (
+                        <SelectItem key={index} value={time}>
+                          {time}
                         </SelectItem>
                       ))}
                     </SelectContent>
