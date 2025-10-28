@@ -64,7 +64,16 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
     },
   });
 
-  // Update selected course data when course changes
+  // Update selected course data when dialog opens or course is selected
+  useEffect(() => {
+    if (selectedCourse || form.getValues("course")) {
+      const courseTitle = selectedCourse || form.getValues("course");
+      const course = courses.find(c => c.title === courseTitle);
+      setSelectedCourseData(course);
+    }
+  }, [selectedCourse, courses, open]);
+
+  // Watch for course changes in the form
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === 'course') {
@@ -206,7 +215,7 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
                         <SelectValue placeholder="בחר קורס" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="z-[9999]">
                       {courses.map((course) => (
                         <SelectItem key={course.id} value={course.title}>
                           {course.title} - {course.subtitle}
@@ -232,12 +241,18 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
                           <SelectValue placeholder="בחר מקום" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        {selectedCourseData?.locations?.map((location: string, index: number) => (
-                          <SelectItem key={index} value={location}>
-                            {location}
-                          </SelectItem>
-                        ))}
+                      <SelectContent className="z-[9999]">
+                        {selectedCourseData?.locations?.length > 0 ? (
+                          selectedCourseData.locations.map((location: string, index: number) => (
+                            <SelectItem key={index} value={location}>
+                              {location}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="p-2 text-sm text-muted-foreground text-center">
+                            לא הוגדרו מקומות לימוד לקורס זה
+                          </div>
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -257,7 +272,7 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
                           <SelectValue placeholder="בחר כיתה" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="z-[9999]">
                         <SelectItem value="א">כיתה א</SelectItem>
                         <SelectItem value="ב">כיתה ב</SelectItem>
                         <SelectItem value="ג">כיתה ג</SelectItem>
@@ -286,12 +301,18 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
                         <SelectValue placeholder="בחר יום ושעה" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      {selectedCourseData?.times?.map((time: string, index: number) => (
-                        <SelectItem key={index} value={time}>
-                          {time}
-                        </SelectItem>
-                      ))}
+                    <SelectContent className="z-[9999]">
+                      {selectedCourseData?.times?.length > 0 ? (
+                        selectedCourseData.times.map((time: string, index: number) => (
+                          <SelectItem key={index} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <div className="p-2 text-sm text-muted-foreground text-center">
+                          לא הוגדרו זמנים לקורס זה
+                        </div>
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />
