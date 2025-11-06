@@ -12,10 +12,22 @@ import { useToast } from "@/hooks/use-toast";
 const getEmbedUrl = (url: string): string => {
   if (!url) return url;
 
-  // Google Drive links
-  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-  if (driveMatch) {
-    return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+  // Google Drive links - support multiple formats
+  // Format 1: https://drive.google.com/file/d/FILE_ID/view
+  // Format 2: https://drive.google.com/open?id=FILE_ID
+  let driveFileId = null;
+  
+  const driveMatch1 = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
+  const driveMatch2 = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  
+  if (driveMatch1) {
+    driveFileId = driveMatch1[1];
+  } else if (driveMatch2) {
+    driveFileId = driveMatch2[1];
+  }
+  
+  if (driveFileId) {
+    return `https://drive.google.com/file/d/${driveFileId}/preview`;
   }
 
   // YouTube links
