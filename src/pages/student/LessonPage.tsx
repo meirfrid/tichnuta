@@ -46,6 +46,29 @@ const getEmbedUrl = (url: string): string => {
   return url;
 };
 
+const getDownloadUrl = (url: string): string => {
+  if (!url) return url;
+
+  // Google Drive links - convert to direct download
+  let driveFileId = null;
+  
+  const driveMatch1 = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
+  const driveMatch2 = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  
+  if (driveMatch1) {
+    driveFileId = driveMatch1[1];
+  } else if (driveMatch2) {
+    driveFileId = driveMatch2[1];
+  }
+  
+  if (driveFileId) {
+    return `https://drive.google.com/uc?export=download&id=${driveFileId}`;
+  }
+
+  // Return original URL if not Google Drive
+  return url;
+};
+
 interface Lesson {
   id: string;
   title: string;
@@ -219,15 +242,20 @@ const LessonPage = () => {
               )}
 
               {lesson.slides_url && (
-                <Button
-                  variant="outline"
+                <a 
+                  href={getDownloadUrl(lesson.slides_url)} 
+                  download
                   className="w-full"
-                  onClick={() => window.open(lesson.slides_url!, "_blank")}
                 >
-                  <FileText className="ml-2 h-4 w-4" />
-                  פתח מצגת
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                  >
+                    <FileText className="ml-2 h-4 w-4" />
+                    הורד מצגת
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                  </Button>
+                </a>
               )}
             </CardContent>
           </Card>
