@@ -44,6 +44,35 @@ export type Database = {
         }
         Relationships: []
       }
+      course_allowed_emails: {
+        Row: {
+          course_id: string
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_allowed_emails_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_lessons: {
         Row: {
           course_id: string
@@ -110,6 +139,7 @@ export type Database = {
           price_number: number
           price_text: string
           school_id: string | null
+          slug: string | null
           sort_order: number
           subtitle: string
           times: string[] | null
@@ -131,6 +161,7 @@ export type Database = {
           price_number?: number
           price_text: string
           school_id?: string | null
+          slug?: string | null
           sort_order?: number
           subtitle: string
           times?: string[] | null
@@ -152,6 +183,7 @@ export type Database = {
           price_number?: number
           price_text?: string
           school_id?: string | null
+          slug?: string | null
           sort_order?: number
           subtitle?: string
           times?: string[] | null
@@ -205,6 +237,53 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lessons: {
+        Row: {
+          course_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_preview: boolean
+          order_index: number
+          slides_url: string | null
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_preview?: boolean
+          order_index?: number
+          slides_url?: string | null
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_preview?: boolean
+          order_index?: number
+          slides_url?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
             referencedColumns: ["id"]
           },
         ]
@@ -375,6 +454,10 @@ export type Database = {
         Returns: {
           session_id: string
         }[]
+      }
+      user_has_course_access: {
+        Args: { _course_id: string; _user_id: string }
+        Returns: boolean
       }
     }
     Enums: {

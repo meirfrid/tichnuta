@@ -29,6 +29,15 @@ const AuthButton = () => {
   if (user) {
     return (
       <div className="flex items-center gap-2">
+        <Button
+          variant="default"
+          size="sm"
+          onClick={() => navigate("/dashboard")}
+          className="flex items-center gap-2"
+        >
+          <User className="h-4 w-4" />
+          התחברות תלמידים
+        </Button>
         {isAdmin && (
           <Button
             variant="outline"
@@ -61,7 +70,7 @@ const AuthButton = () => {
       className="flex items-center gap-2"
     >
       <User className="h-4 w-4" />
-      התחברות
+      התחברות / הרשמה
     </Button>
   );
 };
