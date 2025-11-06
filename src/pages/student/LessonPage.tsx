@@ -9,6 +9,31 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Lock, FileText, ExternalLink, ChevronRight, ChevronLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const getEmbedUrl = (url: string): string => {
+  if (!url) return url;
+
+  // Google Drive links
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (driveMatch) {
+    return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+  }
+
+  // YouTube links
+  const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/);
+  if (youtubeMatch) {
+    return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+  }
+
+  // Vimeo links
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) {
+    return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+  }
+
+  // Return original URL if no pattern matches
+  return url;
+};
+
 interface Lesson {
   id: string;
   title: string;
@@ -169,7 +194,7 @@ const LessonPage = () => {
               {lesson.video_url ? (
                 <div className="aspect-video bg-black rounded-lg overflow-hidden mb-6">
                   <iframe
-                    src={lesson.video_url}
+                    src={getEmbedUrl(lesson.video_url)}
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
