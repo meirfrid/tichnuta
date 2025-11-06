@@ -79,7 +79,8 @@ const AdminDashboard = () => {
     price_text: '',
     price_number: 0,
     locations: [''],
-    times: ['']
+    times: [''],
+    slug: ''
   });
 
   const [registrations, setRegistrations] = useState<any[]>([]);
@@ -116,12 +117,24 @@ const AdminDashboard = () => {
 
   const saveCourse = async () => {
     try {
+      // Generate slug from title if empty
+      let finalSlug = courseForm.slug.trim();
+      if (!finalSlug) {
+        finalSlug = courseForm.title
+          .toLowerCase()
+          .replace(/[^\u0590-\u05FFa-z0-9\s-]/g, '') // Keep Hebrew, English, numbers, spaces, hyphens
+          .replace(/\s+/g, '-') // Replace spaces with hyphens
+          .replace(/-+/g, '-') // Replace multiple hyphens with single
+          .trim();
+      }
+
       if (editingCourse) {
         // Update existing course
         const { error } = await supabase
           .from('courses')
           .update({
             ...courseForm,
+            slug: finalSlug,
             features: courseForm.features.filter(f => f.trim() !== ''),
             locations: courseForm.locations.filter(l => l.trim() !== ''),
             times: courseForm.times.filter(t => t.trim() !== '')
@@ -139,6 +152,7 @@ const AdminDashboard = () => {
           .from('courses')
           .insert({
             ...courseForm,
+            slug: finalSlug,
             features: courseForm.features.filter(f => f.trim() !== ''),
             locations: courseForm.locations.filter(l => l.trim() !== ''),
             times: courseForm.times.filter(t => t.trim() !== ''),
@@ -167,7 +181,8 @@ const AdminDashboard = () => {
         price_text: '',
         price_number: 0,
         locations: [''],
-        times: ['']
+        times: [''],
+        slug: ''
       });
       fetchCourses();
     } catch (error) {
@@ -195,7 +210,8 @@ const AdminDashboard = () => {
       price_text: course.price_text,
       price_number: course.price_number,
       locations: course.locations?.length > 0 ? course.locations : [''],
-      times: course.times?.length > 0 ? course.times : ['']
+      times: course.times?.length > 0 ? course.times : [''],
+      slug: course.slug || ''
     });
     setShowNewCourseForm(true);
   };
@@ -793,7 +809,8 @@ const AdminDashboard = () => {
                           price_text: '',
                           price_number: 0,
                           locations: [''],
-                          times: ['']
+                          times: [''],
+                          slug: ''
                         });
                     }}>
                       <Plus className="h-4 w-4 ml-2" />
@@ -837,6 +854,21 @@ const AdminDashboard = () => {
                           placeholder="למשל: כיתות ז'-ח'"
                         />
                       </div>
+
+                      <div>
+                        <Label htmlFor="courseSlug">Slug (כתובת URL)</Label>
+                        <Input
+                          id="courseSlug"
+                          value={courseForm.slug}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))}
+                          placeholder="python-game-dev"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          יתמלא אוטומטית מהכותרת, ניתן לערוך ידנית (רק אותיות אנגליות, מספרים ומקפים)
+                        </p>
+                      </div>
+
+                      <div className="md:col-span-2"></div>
 
                       <div className="md:col-span-2">
                         <Label htmlFor="courseDescription">תיאור הקורס</Label>
@@ -1061,24 +1093,44 @@ const AdminDashboard = () => {
                                 </div>
                               )}
                             </div>
-                            <div className="flex gap-2 ml-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => editCourse(course)}
-                              >
-                                <Edit className="h-4 w-4 ml-1" />
-                                ערוך
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => deleteCourse(course.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4 ml-1" />
-                                מחק
-                              </Button>
+                            <div className="flex flex-col gap-2 ml-4">
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => navigate(`/admin/courses/${course.id}/lessons`)}
+                                >
+                                  <BookOpen className="h-4 w-4 ml-1" />
+                                  שיעורים
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => navigate(`/admin/courses/${course.id}/permissions`)}
+                                >
+                                  <Users className="h-4 w-4 ml-1" />
+                                  הרשאות
+                                </Button>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => editCourse(course)}
+                                >
+                                  <Edit className="h-4 w-4 ml-1" />
+                                  ערוך
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => deleteCourse(course.id)}
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4 ml-1" />
+                                  מחק
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
