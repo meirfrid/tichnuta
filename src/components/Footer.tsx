@@ -1,5 +1,6 @@
 
 import { Mail, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import logo from "@/assets/smallWhiteLogo.png";
 
@@ -37,7 +38,7 @@ const Footer = () => {
                 <a href="#contact" className="opacity-80 hover:opacity-100 transition-opacity">צור קשר</a>
               </li>
               <li>
-                <a href="/privacy-policy" className="opacity-80 hover:opacity-100 transition-opacity">מדיניות פרטיות</a>
+                <Link to="/privacy-policy" className="opacity-80 hover:opacity-100 transition-opacity">מדיניות פרטיות</Link>
               </li>
             </ul>
           </div>
