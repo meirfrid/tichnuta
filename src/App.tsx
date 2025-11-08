@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminChat from "./pages/admin/Chat";
 import CourseLessons from "./pages/admin/CourseLessons";
@@ -27,6 +28,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/chat" element={<AdminChat />} />
             <Route path="/admin/courses/:courseId/lessons" element={<CourseLessons />} />

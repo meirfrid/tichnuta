@@ -36,6 +36,9 @@ const Footer = () => {
               <li>
                 <a href="#contact" className="opacity-80 hover:opacity-100 transition-opacity">צור קשר</a>
               </li>
+              <li>
+                <a href="/privacy-policy" className="opacity-80 hover:opacity-100 transition-opacity">מדיניות פרטיות</a>
+              </li>
             </ul>
           </div>
 
