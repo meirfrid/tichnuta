@@ -53,6 +53,16 @@ const Auth = () => {
 
       if (error) throw error;
 
+      // Check if user already exists (Supabase returns empty identities array for existing emails)
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        toast({
+          title: "המייל כבר רשום במערכת",
+          description: "אנא התחבר עם המייל והסיסמה שלך",
+          variant: "destructive",
+        });
+        return;
+      }
+
       if (data.user && !data.session) {
         toast({
           title: "הצלחה!",
