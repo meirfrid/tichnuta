@@ -22,14 +22,8 @@ const Header = () => {
         element.scrollIntoView({ behavior: "smooth" });
       }
     } else {
-      // Navigate to home page first, then scroll after a short delay
-      navigate("/");
-      setTimeout(() => {
-        const element = document.getElementById(section);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100);
+      // Navigate to home page with state indicating which section to scroll to
+      navigate("/", { state: { scrollTo: section } });
     }
   };
 
