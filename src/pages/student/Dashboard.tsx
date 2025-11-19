@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Loader2, BookOpen, GraduationCap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import scratchLogo from "@/assets/scratch-logo.png";
+import pythonLogo from "@/assets/python-logo.png";
+import appinventorLogo from "@/assets/appinventor-logo.png";
 
 interface Course {
   id: string;
@@ -18,6 +21,20 @@ interface Course {
   icon: string;
   slug: string;
 }
+
+const getCourseImage = (title: string): string | null => {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) {
+    return scratchLogo;
+  }
+  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) {
+    return pythonLogo;
+  }
+  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) {
+    return appinventorLogo;
+  }
+  return null;
+};
 
 const StudentDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -111,28 +128,40 @@ const StudentDashboard = () => {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course) => (
-                <Card
-                  key={course.id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => navigate(`/learn/${course.slug || course.id}`)}
-                >
-                  <CardHeader className={`${course.color} text-white rounded-t-lg`}>
-                    <CardTitle>{course.title}</CardTitle>
-                    <CardDescription className="text-white/90">
-                      {course.subtitle}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    <p className="text-sm text-muted-foreground line-clamp-3">
-                      {course.description}
-                    </p>
-                    <Button className="w-full mt-4" variant="outline">
-                      המשך ללמוד
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              {courses.map((course) => {
+                const courseImage = getCourseImage(course.title);
+                return (
+                  <Card
+                    key={course.id}
+                    className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
+                    onClick={() => navigate(`/learn/${course.slug || course.id}`)}
+                  >
+                    {courseImage && (
+                      <div className="h-48 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-6">
+                        <img 
+                          src={courseImage} 
+                          alt={course.title}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    )}
+                    <CardHeader className={courseImage ? '' : `${course.color} text-white rounded-t-lg`}>
+                      <CardTitle className={courseImage ? '' : 'text-white'}>{course.title}</CardTitle>
+                      <CardDescription className={courseImage ? '' : 'text-white/90'}>
+                        {course.subtitle}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                      <p className="text-sm text-muted-foreground line-clamp-3">
+                        {course.description}
+                      </p>
+                      <Button className="w-full mt-4" variant="outline">
+                        המשך ללמוד
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
