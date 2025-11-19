@@ -71,12 +71,14 @@ const CoursePage = () => {
         setCourse(courseData);
 
         // Check access
-        const { data: accessData } = await supabase
+        const { data: accessData, error: accessError } = await supabase
           .from("course_allowed_emails")
           .select("id")
           .eq("course_id", courseData.id)
           .eq("email", user.email)
-          .single();
+          .maybeSingle();
+
+        console.log("Access check:", { accessData, accessError, userEmail: user.email, courseId: courseData.id });
 
         setHasAccess(!!accessData);
 
