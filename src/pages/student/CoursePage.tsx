@@ -51,13 +51,21 @@ const CoursePage = () => {
       try {
         setLoading(true);
 
-        // Fetch course
-        const { data: courseData, error: courseError } = await supabase
+        // Fetch course - check if courseSlug is a UUID first
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseSlug);
+        
+        let courseQuery = supabase
           .from("courses")
           .select("*")
-          .or(`slug.eq.${courseSlug},id.eq.${courseSlug}`)
-          .eq("active", true)
-          .single();
+          .eq("active", true);
+        
+        if (isUUID) {
+          courseQuery = courseQuery.or(`slug.eq.${courseSlug},id.eq.${courseSlug}`);
+        } else {
+          courseQuery = courseQuery.eq("slug", courseSlug);
+        }
+        
+        const { data: courseData, error: courseError } = await courseQuery.single();
 
         if (courseError) throw courseError;
         setCourse(courseData);
