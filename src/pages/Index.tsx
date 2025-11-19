@@ -11,23 +11,16 @@ const Index = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("[Index] location changed", location);
-    // Handle scrolling when navigating from other pages
-    const scrollTo = (location.state as { scrollTo?: string } | null)?.scrollTo;
-    console.log("[Index] scrollTo target", scrollTo);
-
-    if (scrollTo) {
+    const hash = location.hash;
+    if (hash) {
+      const id = hash.replace("#", "");
       // Small delay to ensure content is rendered
       setTimeout(() => {
-        const element = document.getElementById(scrollTo);
-        console.log("[Index] trying to scroll", { scrollTo, found: !!element });
+        const element = document.getElementById(id);
         if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "start" });
         }
-      }, 150);
-
-      // Clear the state to prevent scrolling on refresh
-      window.history.replaceState({}, document.title);
+      }, 100);
     }
   }, [location]);
 
