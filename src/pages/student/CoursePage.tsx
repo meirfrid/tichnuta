@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Loader2, PlayCircle, Lock, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import scratchLogo from "@/assets/scratch-logo.png";
+import pythonLogo from "@/assets/python-logo.png";
+import appinventorLogo from "@/assets/appinventor-logo.png";
 
 interface Lesson {
   id: string;
@@ -27,6 +30,20 @@ interface Course {
   color: string;
   slug: string;
 }
+
+const getCourseImage = (title: string): string | null => {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) {
+    return scratchLogo;
+  }
+  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) {
+    return pythonLogo;
+  }
+  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) {
+    return appinventorLogo;
+  }
+  return null;
+};
 
 const CoursePage = () => {
   const { courseSlug } = useParams();
@@ -174,10 +191,19 @@ const CoursePage = () => {
             ← חזרה לדשבורד
           </Button>
 
-          <Card className="mb-8">
-            <CardHeader className={`${course.color} text-white rounded-t-lg`}>
-              <CardTitle className="text-2xl">{course.title}</CardTitle>
-              <CardDescription className="text-white/90 text-lg">
+          <Card className="mb-8 overflow-hidden">
+            {getCourseImage(course.title) && (
+              <div className="h-64 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-8">
+                <img 
+                  src={getCourseImage(course.title)!} 
+                  alt={course.title}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
+            <CardHeader className={getCourseImage(course.title) ? '' : `${course.color} text-white rounded-t-lg`}>
+              <CardTitle className={`text-2xl ${getCourseImage(course.title) ? '' : 'text-white'}`}>{course.title}</CardTitle>
+              <CardDescription className={`text-lg ${getCourseImage(course.title) ? '' : 'text-white/90'}`}>
                 {course.subtitle}
               </CardDescription>
             </CardHeader>
