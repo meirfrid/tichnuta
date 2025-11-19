@@ -12,22 +12,11 @@ const Header = () => {
   const location = useLocation();
 
   const handleNavigation = (section: string) => {
-    console.log("[Header] handleNavigation", { section, pathname: location.pathname });
     // Close mobile menu if open
     setIsMenuOpen(false);
 
-    // If we're already on the home page, just scroll
-    if (location.pathname === "/") {
-      const element = document.getElementById(section);
-      console.log("[Header] scrolling on same page", { section, found: !!element });
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    } else {
-      // Navigate to home page with state indicating which section to scroll to
-      console.log("[Header] navigating to home with state", { section });
-      navigate("/", { state: { scrollTo: section } });
-    }
+    // Always navigate with hash so browser handles scrolling reliably
+    navigate(`/#${section}`);
   };
 
   return (
