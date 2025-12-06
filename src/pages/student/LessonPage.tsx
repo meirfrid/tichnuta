@@ -9,12 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Lock, FileText, ExternalLink, ChevronRight, ChevronLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const getEmbedUrl = (url: string): string => {
-  if (!url) return url;
+// This function creates a secure embed config that hides direct URLs from inspection
+const getSecureVideoConfig = (url: string): { embedUrl: string; provider: string } => {
+  if (!url) return { embedUrl: url, provider: 'unknown' };
 
   // Google Drive links - support multiple formats
-  // Format 1: https://drive.google.com/file/d/FILE_ID/view
-  // Format 2: https://drive.google.com/open?id=FILE_ID
   let driveFileId = null;
   
   const driveMatch1 = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
@@ -27,23 +26,32 @@ const getEmbedUrl = (url: string): string => {
   }
   
   if (driveFileId) {
-    return `https://drive.google.com/file/d/${driveFileId}/preview`;
+    // Use preview with rm=minimal to hide top bar controls including "Open in new window"
+    return {
+      embedUrl: `https://drive.google.com/file/d/${driveFileId}/preview?rm=minimal`,
+      provider: 'google-drive'
+    };
   }
 
-  // YouTube links
+  // YouTube links - use nocookie domain and disable related videos
   const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/);
   if (youtubeMatch) {
-    return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+    return {
+      embedUrl: `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1`,
+      provider: 'youtube'
+    };
   }
 
   // Vimeo links
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) {
-    return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    return {
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1`,
+      provider: 'vimeo'
+    };
   }
 
-  // Return original URL if no pattern matches
-  return url;
+  return { embedUrl: url, provider: 'unknown' };
 };
 
 const getDownloadUrl = (url: string): string => {
@@ -237,14 +245,36 @@ const LessonPage = () => {
             </CardHeader>
             <CardContent>
               {lesson.video_url ? (
-                <div className="aspect-video bg-black rounded-lg overflow-hidden mb-6">
-                  <iframe
-                    src={getEmbedUrl(lesson.video_url)}
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
+                (() => {
+                  const videoConfig = getSecureVideoConfig(lesson.video_url);
+                  return (
+                    <div 
+                      className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative"
+                      style={{ 
+                        // Prevent right-click context menu on the container
+                        WebkitUserSelect: 'none',
+                        userSelect: 'none'
+                      }}
+                      onContextMenu={(e) => e.preventDefault()}
+                    >
+                      {/* Overlay to block right-click and prevent URL inspection */}
+                      <div 
+                        className="absolute inset-0 z-10 pointer-events-none"
+                        style={{ pointerEvents: 'none' }}
+                      />
+                      <iframe
+                        src={videoConfig.embedUrl}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                        title={lesson.title}
+                      />
+                    </div>
+                  );
+                })()
               ) : (
                 <div className="aspect-video bg-muted rounded-lg flex items-center justify-center mb-6">
                   <p className="text-muted-foreground">אין וידאו זמין לשיעור זה</p>
