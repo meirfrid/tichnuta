@@ -249,17 +249,9 @@ const LessonPage = () => {
                   const videoConfig = getSecureVideoConfig(lesson.video_url);
                   return (
                     <div 
-                      className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full max-w-full"
-                      style={{ 
-                        WebkitUserSelect: 'none',
-                        userSelect: 'none'
-                      }}
+                      className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full"
                       onContextMenu={(e) => e.preventDefault()}
                     >
-                      <div 
-                        className="absolute inset-0 z-10 pointer-events-none"
-                        style={{ pointerEvents: 'none' }}
-                      />
                       <iframe
                         src={videoConfig.embedUrl}
                         className="absolute inset-0 w-full h-full"
