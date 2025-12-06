@@ -249,28 +249,27 @@ const LessonPage = () => {
                   const videoConfig = getSecureVideoConfig(lesson.video_url);
                   return (
                     <div 
-                      className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative"
+                      className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full max-w-full"
                       style={{ 
-                        // Prevent right-click context menu on the container
                         WebkitUserSelect: 'none',
                         userSelect: 'none'
                       }}
                       onContextMenu={(e) => e.preventDefault()}
                     >
-                      {/* Overlay to block right-click and prevent URL inspection */}
                       <div 
                         className="absolute inset-0 z-10 pointer-events-none"
                         style={{ pointerEvents: 'none' }}
                       />
                       <iframe
                         src={videoConfig.embedUrl}
-                        className="w-full h-full"
-                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
+                        className="absolute inset-0 w-full h-full"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                        allowFullScreen={true}
+                        sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-popups"
                         referrerPolicy="no-referrer"
                         loading="lazy"
                         title={lesson.title}
+                        style={{ border: 'none' }}
                       />
                     </div>
                   );
