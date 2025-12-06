@@ -193,11 +193,11 @@ const CoursePage = () => {
 
           <Card className="mb-8 overflow-hidden">
             {getCourseImage(course.title) && (
-              <div className="h-64 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-8">
+              <div className="h-64 overflow-hidden">
                 <img 
                   src={getCourseImage(course.title)!} 
                   alt={course.title}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                 />
               </div>
             )}

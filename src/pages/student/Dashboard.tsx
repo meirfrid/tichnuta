@@ -137,11 +137,11 @@ const StudentDashboard = () => {
                     onClick={() => navigate(`/learn/${course.slug || course.id}`)}
                   >
                     {courseImage && (
-                      <div className="h-48 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-6">
+                      <div className="h-48 overflow-hidden">
                         <img 
                           src={courseImage} 
                           alt={course.title}
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     )}
