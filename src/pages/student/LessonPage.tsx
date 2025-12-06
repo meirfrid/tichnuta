@@ -144,7 +144,7 @@ const LessonPage = () => {
           .eq("email", user.email)
           .maybeSingle();
 
-        console.log("Lesson access check:", { accessData, accessError, userEmail: user.email, courseId: courseData.id });
+        
 
         setHasAccess(!!accessData);
 
