@@ -251,13 +251,18 @@ const LessonPage = () => {
                     <div 
                       className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full"
                       onContextMenu={(e) => e.preventDefault()}
+                      style={{ 
+                        WebkitTouchCallout: 'none',
+                        WebkitUserSelect: 'none',
+                        userSelect: 'none'
+                      }}
                     >
                       <iframe
                         src={videoConfig.embedUrl}
                         className="absolute inset-0 w-full h-full"
                         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                         allowFullScreen={true}
-                        sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-popups"
+                        sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-fullscreen"
                         referrerPolicy="no-referrer"
                         loading="lazy"
                         title={lesson.title}
