@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Lock, FileText, ExternalLink, ChevronRight, ChevronLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// This function creates a secure embed config that hides direct URLs from inspection
-const getSecureVideoConfig = (url: string): { embedUrl: string; provider: string } => {
-  if (!url) return { embedUrl: url, provider: 'unknown' };
+// This function creates video config for different providers
+const getVideoConfig = (url: string): { videoUrl: string; provider: string; isDirectVideo: boolean } => {
+  if (!url) return { videoUrl: url, provider: 'unknown', isDirectVideo: false };
 
-  // Google Drive links - support multiple formats
+  // Google Drive links - convert to direct download URL for HTML5 video
   let driveFileId = null;
   
   const driveMatch1 = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
@@ -26,32 +26,35 @@ const getSecureVideoConfig = (url: string): { embedUrl: string; provider: string
   }
   
   if (driveFileId) {
-    // Use preview with rm=minimal to hide top bar controls including "Open in new window"
+    // Use direct download URL for HTML5 video player
     return {
-      embedUrl: `https://drive.google.com/file/d/${driveFileId}/preview?rm=minimal`,
-      provider: 'google-drive'
+      videoUrl: `https://drive.google.com/uc?export=download&id=${driveFileId}`,
+      provider: 'google-drive',
+      isDirectVideo: true
     };
   }
 
-  // YouTube links - use nocookie domain and disable related videos
+  // YouTube links - use nocookie domain and disable related videos (still needs iframe)
   const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/);
   if (youtubeMatch) {
     return {
-      embedUrl: `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1`,
-      provider: 'youtube'
+      videoUrl: `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1`,
+      provider: 'youtube',
+      isDirectVideo: false
     };
   }
 
-  // Vimeo links
+  // Vimeo links (still needs iframe)
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) {
     return {
-      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1`,
-      provider: 'vimeo'
+      videoUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1`,
+      provider: 'vimeo',
+      isDirectVideo: false
     };
   }
 
-  return { embedUrl: url, provider: 'unknown' };
+  return { videoUrl: url, provider: 'unknown', isDirectVideo: false };
 };
 
 const getDownloadUrl = (url: string): string => {
@@ -246,14 +249,37 @@ const LessonPage = () => {
             <CardContent>
               {lesson.video_url ? (
                 (() => {
-                  const videoConfig = getSecureVideoConfig(lesson.video_url);
+                  const videoConfig = getVideoConfig(lesson.video_url);
+                  
+                  // Use HTML5 video player for Google Drive
+                  if (videoConfig.isDirectVideo) {
+                    return (
+                      <div 
+                        className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full"
+                        onContextMenu={(e) => e.preventDefault()}
+                      >
+                        <video
+                          src={videoConfig.videoUrl}
+                          controls
+                          controlsList="nodownload noplaybackrate noremoteplayback"
+                          disablePictureInPicture
+                          className="absolute inset-0 w-full h-full rounded-lg"
+                          style={{ backgroundColor: 'black' }}
+                        >
+                          הדפדפן שלך לא תומך בהפעלת וידאו
+                        </video>
+                      </div>
+                    );
+                  }
+                  
+                  // Use iframe for YouTube/Vimeo
                   return (
                     <div 
                       className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full"
                       onContextMenu={(e) => e.preventDefault()}
                     >
                       <iframe
-                        src={videoConfig.embedUrl}
+                        src={videoConfig.videoUrl}
                         className="absolute inset-0 w-full h-full"
                         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                         allowFullScreen={true}
