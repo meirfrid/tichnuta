@@ -9,52 +9,45 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Lock, FileText, ExternalLink, ChevronRight, ChevronLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// This function creates video config for different providers
-const getVideoConfig = (url: string): { videoUrl: string; provider: string; isDirectVideo: boolean } => {
-  if (!url) return { videoUrl: url, provider: 'unknown', isDirectVideo: false };
+// This function creates embed config for video providers
+const getVideoConfig = (url: string): { embedUrl: string; provider: string } => {
+  if (!url) return { embedUrl: url, provider: 'unknown' };
 
-  // Google Drive links - convert to direct download URL for HTML5 video
+  // Google Drive links - use preview with rm=minimal
   let driveFileId = null;
   
   const driveMatch1 = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
   const driveMatch2 = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
   
-  if (driveMatch1) {
-    driveFileId = driveMatch1[1];
-  } else if (driveMatch2) {
-    driveFileId = driveMatch2[1];
-  }
+  if (driveMatch1) driveFileId = driveMatch1[1];
+  else if (driveMatch2) driveFileId = driveMatch2[1];
   
   if (driveFileId) {
-    // Use direct download URL for HTML5 video player
     return {
-      videoUrl: `https://drive.google.com/uc?export=download&id=${driveFileId}`,
-      provider: 'google-drive',
-      isDirectVideo: true
+      embedUrl: `https://drive.google.com/file/d/${driveFileId}/preview?rm=minimal`,
+      provider: 'google-drive'
     };
   }
 
-  // YouTube links - use nocookie domain and disable related videos (still needs iframe)
+  // YouTube links
   const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/);
   if (youtubeMatch) {
     return {
-      videoUrl: `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1`,
-      provider: 'youtube',
-      isDirectVideo: false
+      embedUrl: `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1`,
+      provider: 'youtube'
     };
   }
 
-  // Vimeo links (still needs iframe)
+  // Vimeo links
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) {
     return {
-      videoUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1`,
-      provider: 'vimeo',
-      isDirectVideo: false
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?dnt=1`,
+      provider: 'vimeo'
     };
   }
 
-  return { videoUrl: url, provider: 'unknown', isDirectVideo: false };
+  return { embedUrl: url, provider: 'unknown' };
 };
 
 const getDownloadUrl = (url: string): string => {
@@ -248,48 +241,20 @@ const LessonPage = () => {
             </CardHeader>
             <CardContent>
               {lesson.video_url ? (
-                (() => {
-                  const videoConfig = getVideoConfig(lesson.video_url);
-                  
-                  // Use HTML5 video player for Google Drive
-                  if (videoConfig.isDirectVideo) {
-                    return (
-                      <div 
-                        className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full"
-                        onContextMenu={(e) => e.preventDefault()}
-                      >
-                        <video
-                          src={videoConfig.videoUrl}
-                          controls
-                          controlsList="nodownload noplaybackrate noremoteplayback"
-                          disablePictureInPicture
-                          className="absolute inset-0 w-full h-full rounded-lg"
-                          style={{ backgroundColor: 'black' }}
-                        >
-                          הדפדפן שלך לא תומך בהפעלת וידאו
-                        </video>
-                      </div>
-                    );
-                  }
-                  
-                  // Use iframe for YouTube/Vimeo
-                  return (
-                    <div 
-                      className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full"
-                      onContextMenu={(e) => e.preventDefault()}
-                    >
-                      <iframe
-                        src={videoConfig.videoUrl}
-                        className="absolute inset-0 w-full h-full"
-                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                        allowFullScreen={true}
-                        loading="lazy"
-                        title={lesson.title}
-                        style={{ border: 'none' }}
-                      />
-                    </div>
-                  );
-                })()
+                <div 
+                  className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full"
+                  onContextMenu={(e) => e.preventDefault()}
+                >
+                  <iframe
+                    src={getVideoConfig(lesson.video_url).embedUrl}
+                    className="absolute inset-0 w-full h-full"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                    allowFullScreen={true}
+                    loading="lazy"
+                    title={lesson.title}
+                    style={{ border: 'none' }}
+                  />
+                </div>
               ) : (
                 <div className="aspect-video bg-muted rounded-lg flex items-center justify-center mb-6">
                   <p className="text-muted-foreground">אין וידאו זמין לשיעור זה</p>
