@@ -19,7 +19,7 @@ print("שלום עולם!")
   const runCode = async () => {
     setIsRunning(true);
     setOutput("מריץ קוד...");
-    
+
     try {
       // Using Pyodide via CDN for client-side Python execution
       const response = await fetch("https://emkc.org/api/v2/piston/execute", {
@@ -39,7 +39,7 @@ print("שלום עולם!")
       });
 
       const data = await response.json();
-      
+
       if (data.run) {
         const result = data.run.output || data.run.stderr || "הקוד רץ בהצלחה (ללא פלט)";
         setOutput(result);
@@ -65,16 +65,6 @@ print("שלום עולם!")
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
         <span className="font-medium text-sm">עורך פייתון</span>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="h-8 w-8 p-0"
-          >
-            {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </Button>
-        </div>
       </div>
 
       {/* Editor */}

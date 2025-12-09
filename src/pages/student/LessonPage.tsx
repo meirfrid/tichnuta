@@ -15,13 +15,13 @@ const getVideoConfig = (url: string): { embedUrl: string; provider: string } => 
 
   // Google Drive links - use preview with rm=minimal
   let driveFileId = null;
-  
+
   const driveMatch1 = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
   const driveMatch2 = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
-  
+
   if (driveMatch1) driveFileId = driveMatch1[1];
   else if (driveMatch2) driveFileId = driveMatch2[1];
-  
+
   if (driveFileId) {
     return {
       embedUrl: `https://drive.google.com/file/d/${driveFileId}/preview?rm=minimal`,
@@ -55,16 +55,16 @@ const getDownloadUrl = (url: string): string => {
 
   // Google Drive links - convert to direct download
   let driveFileId = null;
-  
+
   const driveMatch1 = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
   const driveMatch2 = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
-  
+
   if (driveMatch1) {
     driveFileId = driveMatch1[1];
   } else if (driveMatch2) {
     driveFileId = driveMatch2[1];
   }
-  
+
   if (driveFileId) {
     return `https://drive.google.com/uc?export=download&id=${driveFileId}`;
   }
@@ -103,8 +103,8 @@ const LessonPage = () => {
   const [isEditorExpanded, setIsEditorExpanded] = useState(false);
 
   // Check if this is a Python course based on course title
-  const isPythonCourse = course?.title?.toLowerCase().includes("python") || 
-                         course?.title?.includes("פייתון");
+  const isPythonCourse = course?.title?.toLowerCase().includes("python") ||
+    course?.title?.includes("פייתון");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -146,7 +146,7 @@ const LessonPage = () => {
           .eq("email", user.email)
           .maybeSingle();
 
-        
+
 
         setHasAccess(!!accessData);
 
@@ -235,7 +235,7 @@ const LessonPage = () => {
             >
               ← חזרה לקורס
             </Button>
-            
+
             {isPythonCourse && (
               <div className="hidden lg:flex gap-2">
                 <Button
@@ -305,12 +305,12 @@ const LessonPage = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Video Player - Right side on desktop (60% or 100% when expanded) - Hidden when editor expanded */}
                   {!isEditorExpanded && (
                     <div className={`w-full ${isVideoExpanded ? 'lg:w-full' : 'lg:w-[60%]'} order-1 lg:order-2`}>
                       {lesson.video_url ? (
-                        <div 
+                        <div
                           className="aspect-video bg-black rounded-lg overflow-hidden relative w-full"
                           onContextMenu={(e) => e.preventDefault()}
                         >
@@ -336,7 +336,7 @@ const LessonPage = () => {
                 /* Original layout for non-Python courses */
                 <>
                   {lesson.video_url ? (
-                    <div 
+                    <div
                       className="aspect-video bg-black rounded-lg overflow-hidden mb-6 relative w-full"
                       onContextMenu={(e) => e.preventDefault()}
                     >
@@ -359,8 +359,8 @@ const LessonPage = () => {
               )}
 
               {lesson.slides_url && (
-                <a 
-                  href={getDownloadUrl(lesson.slides_url)} 
+                <a
+                  href={getDownloadUrl(lesson.slides_url)}
                   download
                   className="w-full block mt-6"
                 >
