@@ -100,6 +100,7 @@ const LessonPage = () => {
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isVideoExpanded, setIsVideoExpanded] = useState(false);
+  const [isEditorExpanded, setIsEditorExpanded] = useState(false);
 
   // Check if this is a Python course based on course title
   const isPythonCourse = course?.title?.toLowerCase().includes("python") || 
@@ -226,7 +227,7 @@ const LessonPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className={isPythonCourse && !isVideoExpanded ? "max-w-7xl mx-auto" : "max-w-5xl mx-auto"}>
+        <div className={isPythonCourse && !isVideoExpanded && !isEditorExpanded ? "max-w-7xl mx-auto" : "max-w-5xl mx-auto"}>
           <div className="flex items-center justify-between mb-6">
             <Button
               variant="ghost"
@@ -236,24 +237,50 @@ const LessonPage = () => {
             </Button>
             
             {isPythonCourse && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsVideoExpanded(!isVideoExpanded)}
-                className="hidden lg:flex gap-2"
-              >
-                {isVideoExpanded ? (
-                  <>
-                    <Minimize2 className="h-4 w-4" />
-                    הצג עורך קוד
-                  </>
-                ) : (
-                  <>
-                    <Maximize2 className="h-4 w-4" />
-                    הרחב סרטון
-                  </>
-                )}
-              </Button>
+              <div className="hidden lg:flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsVideoExpanded(!isVideoExpanded);
+                    if (!isVideoExpanded) setIsEditorExpanded(false);
+                  }}
+                  className="gap-2"
+                >
+                  {isVideoExpanded ? (
+                    <>
+                      <Minimize2 className="h-4 w-4" />
+                      הצג עורך קוד
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="h-4 w-4" />
+                      הרחב סרטון
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsEditorExpanded(!isEditorExpanded);
+                    if (!isEditorExpanded) setIsVideoExpanded(false);
+                  }}
+                  className="gap-2"
+                >
+                  {isEditorExpanded ? (
+                    <>
+                      <Minimize2 className="h-4 w-4" />
+                      הצג סרטון
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="h-4 w-4" />
+                      הרחב עורך קוד
+                    </>
+                  )}
+                </Button>
+              </div>
             )}
           </div>
 
@@ -269,39 +296,41 @@ const LessonPage = () => {
             <CardContent>
               {/* Two-column layout for Python course on desktop */}
               {isPythonCourse ? (
-                <div className={`flex flex-col lg:flex-row gap-6 ${isVideoExpanded ? '' : ''}`}>
-                  {/* Python Editor - Left side on desktop (40%) - Hidden when video expanded */}
+                <div className="flex flex-col lg:flex-row gap-6">
+                  {/* Python Editor - Left side on desktop (40% or 100% when expanded) - Hidden when video expanded */}
                   {!isVideoExpanded && (
-                    <div className="hidden lg:block lg:w-[40%] order-2 lg:order-1">
+                    <div className={`hidden lg:block ${isEditorExpanded ? 'lg:w-full' : 'lg:w-[40%]'} order-2 lg:order-1`}>
                       <div className="sticky top-4">
                         <PythonEditor />
                       </div>
                     </div>
                   )}
                   
-                  {/* Video Player - Right side on desktop (60% or 100% when expanded) */}
-                  <div className={`w-full ${isVideoExpanded ? 'lg:w-full' : 'lg:w-[60%]'} order-1 lg:order-2`}>
-                    {lesson.video_url ? (
-                      <div 
-                        className="aspect-video bg-black rounded-lg overflow-hidden relative w-full"
-                        onContextMenu={(e) => e.preventDefault()}
-                      >
-                        <iframe
-                          src={getVideoConfig(lesson.video_url).embedUrl}
-                          className="absolute inset-0 w-full h-full"
-                          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                          allowFullScreen={true}
-                          loading="lazy"
-                          title={lesson.title}
-                          style={{ border: 'none' }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                        <p className="text-muted-foreground">אין וידאו זמין לשיעור זה</p>
-                      </div>
-                    )}
-                  </div>
+                  {/* Video Player - Right side on desktop (60% or 100% when expanded) - Hidden when editor expanded */}
+                  {!isEditorExpanded && (
+                    <div className={`w-full ${isVideoExpanded ? 'lg:w-full' : 'lg:w-[60%]'} order-1 lg:order-2`}>
+                      {lesson.video_url ? (
+                        <div 
+                          className="aspect-video bg-black rounded-lg overflow-hidden relative w-full"
+                          onContextMenu={(e) => e.preventDefault()}
+                        >
+                          <iframe
+                            src={getVideoConfig(lesson.video_url).embedUrl}
+                            className="absolute inset-0 w-full h-full"
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                            allowFullScreen={true}
+                            loading="lazy"
+                            title={lesson.title}
+                            style={{ border: 'none' }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                          <p className="text-muted-foreground">אין וידאו זמין לשיעור זה</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* Original layout for non-Python courses */
