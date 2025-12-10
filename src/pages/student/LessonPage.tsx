@@ -377,30 +377,30 @@ const LessonPage = () => {
             </CardContent>
           </Card>
 
-          <div className="flex justify-between gap-4">
+          <div className="flex flex-col sm:flex-row justify-between gap-3">
             {prevLesson ? (
               <Button
                 variant="outline"
                 onClick={() => navigate(`/learn/${courseSlug}/${prevLesson.id}`)}
-                className="flex-1"
+                className="flex-1 min-w-0 max-w-full overflow-hidden"
               >
-                <ChevronRight className="ml-2 h-4 w-4" />
-                שיעור קודם: {prevLesson.title}
+                <ChevronRight className="ml-2 h-4 w-4 shrink-0" />
+                <span className="truncate">שיעור קודם: {prevLesson.title}</span>
               </Button>
             ) : (
-              <div className="flex-1" />
+              <div className="hidden sm:block flex-1" />
             )}
 
             {nextLesson ? (
               <Button
                 onClick={() => navigate(`/learn/${courseSlug}/${nextLesson.id}`)}
-                className="flex-1"
+                className="flex-1 min-w-0 max-w-full overflow-hidden"
               >
-                שיעור הבא: {nextLesson.title}
-                <ChevronLeft className="mr-2 h-4 w-4" />
+                <span className="truncate">שיעור הבא: {nextLesson.title}</span>
+                <ChevronLeft className="mr-2 h-4 w-4 shrink-0" />
               </Button>
             ) : (
-              <div className="flex-1" />
+              <div className="hidden sm:block flex-1" />
             )}
           </div>
         </div>
