@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -175,6 +175,9 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
           <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
             יצירת קשר להרשמה
           </DialogTitle>
+          <DialogDescription className="text-center text-muted-foreground">
+            מלאו את הפרטים ונחזור אליכם בהקדם
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 p-1">
