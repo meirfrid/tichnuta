@@ -14,6 +14,7 @@ import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const courses = [];
 
@@ -45,11 +46,25 @@ const contactFormSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
 
-const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [] }: { selectedCourse?: string; buttonText?: string; courses?: any[] }) => {
-  const [open, setOpen] = useState(false);
+const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [], forceOpen = false, onClose }: { selectedCourse?: string; buttonText?: string; courses?: any[]; forceOpen?: boolean; onClose?: () => void }) => {
+  const [open, setOpen] = useState(forceOpen);
   const [selectedCourseData, setSelectedCourseData] = useState<any>(null);
   const { toast } = useToast();
   
+  // Update open state when forceOpen changes
+  useEffect(() => {
+    if (forceOpen) {
+      setOpen(true);
+    }
+  }, [forceOpen]);
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (!newOpen && onClose) {
+      onClose();
+    }
+  };
+
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -147,12 +162,14 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="w-full bg-gradient-primary hover:opacity-90 transition-opacity">
-          {buttonText}
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      {!forceOpen && (
+        <DialogTrigger asChild>
+          <Button className="w-full bg-gradient-primary hover:opacity-90 transition-opacity">
+            {buttonText}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
@@ -353,10 +370,29 @@ const CoursesSection = () => {
   const { siteContent } = useSiteContent();
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [autoOpenCourseId, setAutoOpenCourseId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  // Check if we should auto-open the registration form for a specific course
+  useEffect(() => {
+    const courseId = searchParams.get('course');
+    if (courseId && courses.length > 0) {
+      setAutoOpenCourseId(courseId);
+    }
+  }, [searchParams, courses]);
+
+  const handleFormClose = () => {
+    setAutoOpenCourseId(null);
+    // Remove the course param from URL
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete('course');
+    setSearchParams(newParams, { replace: true });
+  };
 
   const fetchCourses = async () => {
     try {
@@ -463,7 +499,12 @@ const CoursesSection = () => {
                       </div>
                     </div>
 
-                    <ContactForm selectedCourse={course.title} courses={courses} />
+                    <Button 
+                      className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
+                      onClick={() => navigate(`/courses/${course.id}`)}
+                    >
+                      לפרטים והרשמה
+                    </Button>
                   </CardContent>
                 </Card>
               );
@@ -471,6 +512,15 @@ const CoursesSection = () => {
           )}
         </div>
 
+        {/* Hidden form that opens when coming from course details page */}
+        {autoOpenCourseId && courses.length > 0 && (
+          <ContactForm
+            selectedCourse={courses.find(c => c.id === autoOpenCourseId)?.title}
+            courses={courses}
+            forceOpen={true}
+            onClose={handleFormClose}
+          />
+        )}
       </div>
     </section>
   );

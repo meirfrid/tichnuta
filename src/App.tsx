@@ -15,6 +15,7 @@ import CoursePermissions from "./pages/admin/CoursePermissions";
 import StudentDashboard from "./pages/student/Dashboard";
 import CoursePage from "./pages/student/CoursePage";
 import LessonPage from "./pages/student/LessonPage";
+import CourseDetailsPage from "./pages/CourseDetailsPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/admin/courses/:courseId/lessons" element={<CourseLessons />} />
             <Route path="/admin/courses/:courseId/permissions" element={<CoursePermissions />} />
             <Route path="/dashboard" element={<StudentDashboard />} />
+            <Route path="/courses/:courseId" element={<CourseDetailsPage />} />
             <Route path="/learn/:courseSlug" element={<CoursePage />} />
             <Route path="/learn/:courseSlug/:lessonId" element={<LessonPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
