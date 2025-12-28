@@ -114,4 +114,14 @@
     @apply bg-background text-foreground;
     direction: rtl;
   }
+
+  /* Prevent layout shift when dialog opens */
+  html {
+    overflow-y: scroll;
+  }
+
+  body[data-scroll-locked] {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+  }
 }
