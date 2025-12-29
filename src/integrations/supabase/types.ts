@@ -123,6 +123,47 @@ export type Database = {
           },
         ]
       }
+      course_schedules: {
+        Row: {
+          course_id: string
+          created_at: string
+          day_of_week: string
+          end_time: string | null
+          id: string
+          location: string
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          day_of_week: string
+          end_time?: string | null
+          id?: string
+          location: string
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          day_of_week?: string
+          end_time?: string | null
+          id?: string
+          location?: string
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_schedules_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           active: boolean

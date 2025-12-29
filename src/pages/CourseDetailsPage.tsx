@@ -62,15 +62,26 @@ const defaultFAQs = [
   },
 ];
 
+interface CourseSchedule {
+  id: string;
+  course_id: string;
+  location: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string | null;
+}
+
 const CourseDetailsPage = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [course, setCourse] = useState<any>(null);
+  const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (courseId) {
       fetchCourse();
+      fetchSchedules();
     }
   }, [courseId]);
 
@@ -93,6 +104,35 @@ const CourseDetailsPage = () => {
       setLoading(false);
     }
   };
+
+  const fetchSchedules = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("course_schedules")
+        .select("*")
+        .eq("course_id", courseId);
+
+      if (error) {
+        console.error("Error fetching schedules:", error);
+      } else {
+        setSchedules(data || []);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  // Group schedules by location type (online vs frontal)
+  const groupedSchedules = schedules.reduce((acc, schedule) => {
+    const isOnline = schedule.location.toLowerCase().includes("אונליין") || 
+                     schedule.location.toLowerCase().includes("online") ||
+                     schedule.location.toLowerCase().includes("zoom");
+    const key = isOnline ? "online" : "frontal";
+    if (!acc[key]) acc[key] = {};
+    if (!acc[key][schedule.location]) acc[key][schedule.location] = [];
+    acc[key][schedule.location].push(schedule);
+    return acc;
+  }, {} as Record<string, Record<string, CourseSchedule[]>>);
 
   const iconMap: Record<string, any> = {
     Code2,
@@ -370,7 +410,55 @@ const CourseDetailsPage = () => {
                       </div>
                     </div>
 
-                    {course.times && course.times.length > 0 && (
+                    {/* Schedules from course_schedules table */}
+                    {Object.keys(groupedSchedules).length > 0 && (
+                      <div className="space-y-4">
+                        {groupedSchedules.online && Object.keys(groupedSchedules.online).length > 0 && (
+                          <div className="flex items-start gap-3">
+                            <Monitor className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-sm text-muted-foreground font-medium mb-2">חוגים אונליין</p>
+                              {Object.entries(groupedSchedules.online).map(([location, locationSchedules]) => (
+                                <div key={location} className="mb-2">
+                                  <p className="font-medium text-foreground text-sm">{location}</p>
+                                  <div className="space-y-1">
+                                    {locationSchedules.map((schedule) => (
+                                      <p key={schedule.id} className="text-sm text-muted-foreground">
+                                        {schedule.day_of_week} {schedule.start_time}{schedule.end_time ? ` - ${schedule.end_time}` : ''}
+                                      </p>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {groupedSchedules.frontal && Object.keys(groupedSchedules.frontal).length > 0 && (
+                          <div className="flex items-start gap-3">
+                            <Building className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-sm text-muted-foreground font-medium mb-2">חוגים פרונטליים</p>
+                              {Object.entries(groupedSchedules.frontal).map(([location, locationSchedules]) => (
+                                <div key={location} className="mb-2">
+                                  <p className="font-medium text-foreground text-sm">{location}</p>
+                                  <div className="space-y-1">
+                                    {locationSchedules.map((schedule) => (
+                                      <p key={schedule.id} className="text-sm text-muted-foreground">
+                                        {schedule.day_of_week} {schedule.start_time}{schedule.end_time ? ` - ${schedule.end_time}` : ''}
+                                      </p>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Fallback to old times/locations if no schedules */}
+                    {Object.keys(groupedSchedules).length === 0 && course.times && course.times.length > 0 && (
                       <div className="flex items-start gap-3">
                         <Calendar className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                         <div>
@@ -386,7 +474,7 @@ const CourseDetailsPage = () => {
                       </div>
                     )}
 
-                    {course.locations && course.locations.length > 0 && (
+                    {Object.keys(groupedSchedules).length === 0 && course.locations && course.locations.length > 0 && (
                       <div className="flex items-start gap-3">
                         <MapPin className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                         <div>

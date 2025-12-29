@@ -46,9 +46,20 @@ const contactFormSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
 
+interface CourseSchedule {
+  id: string;
+  course_id: string;
+  location: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string | null;
+}
+
 const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [], forceOpen = false, onClose }: { selectedCourse?: string; buttonText?: string; courses?: any[]; forceOpen?: boolean; onClose?: () => void }) => {
   const [open, setOpen] = useState(forceOpen);
   const [selectedCourseData, setSelectedCourseData] = useState<any>(null);
+  const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
+  const [selectedLocationSchedules, setSelectedLocationSchedules] = useState<CourseSchedule[]>([]);
   const { toast } = useToast();
   
   // Update open state when forceOpen changes
@@ -79,6 +90,32 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
     },
   });
 
+  // Fetch schedules when course changes
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      if (!selectedCourseData?.id) {
+        setSchedules([]);
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('course_schedules')
+        .select('*')
+        .eq('course_id', selectedCourseData.id);
+      
+      if (error) {
+        console.error('Error fetching schedules:', error);
+      } else {
+        setSchedules(data || []);
+      }
+    };
+    
+    fetchSchedules();
+  }, [selectedCourseData?.id]);
+
+  // Get unique locations from schedules
+  const uniqueLocations = [...new Set(schedules.map(s => s.location))];
+
   // Update selected course data when dialog opens or course is selected
   useEffect(() => {
     if (selectedCourse || form.getValues("course")) {
@@ -98,12 +135,19 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
         if (course) {
           form.setValue("location", "");
           form.setValue("time", "");
+          setSelectedLocationSchedules([]);
         }
+      }
+      if (name === 'location') {
+        // Filter schedules for selected location
+        const locationSchedules = schedules.filter(s => s.location === value.location);
+        setSelectedLocationSchedules(locationSchedules);
+        form.setValue("time", "");
       }
     });
     
     return () => subscription.unsubscribe();
-  }, [courses, form]);
+  }, [courses, form, schedules]);
 
   const onSubmit = async (data: ContactFormData) => {
     console.log("Form submission started");
@@ -262,8 +306,8 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="z-[9999]">
-                        {selectedCourseData?.locations?.length > 0 ? (
-                          selectedCourseData.locations.map((location: string, index: number) => (
+                        {uniqueLocations.length > 0 ? (
+                          uniqueLocations.map((location, index) => (
                             <SelectItem key={index} value={location}>
                               {location}
                             </SelectItem>
@@ -315,22 +359,25 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>יום ושעה</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value} disabled={!form.getValues("location")}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="בחר יום ושעה" />
+                        <SelectValue placeholder={form.getValues("location") ? "בחר יום ושעה" : "בחר קודם מקום לימוד"} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="z-[9999]">
-                      {selectedCourseData?.times?.length > 0 ? (
-                        selectedCourseData.times.map((time: string, index: number) => (
-                          <SelectItem key={index} value={time}>
-                            {time}
-                          </SelectItem>
-                        ))
+                      {selectedLocationSchedules.length > 0 ? (
+                        selectedLocationSchedules.map((schedule) => {
+                          const timeDisplay = `${schedule.day_of_week} ${schedule.start_time}${schedule.end_time ? ` - ${schedule.end_time}` : ''}`;
+                          return (
+                            <SelectItem key={schedule.id} value={timeDisplay}>
+                              {timeDisplay}
+                            </SelectItem>
+                          );
+                        })
                       ) : (
                         <div className="p-2 text-sm text-muted-foreground text-center">
-                          לא הוגדרו זמנים לקורס זה
+                          {form.getValues("location") ? "לא הוגדרו זמנים למקום זה" : "בחר קודם מקום לימוד"}
                         </div>
                       )}
                     </SelectContent>
