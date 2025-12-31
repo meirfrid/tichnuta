@@ -48,7 +48,6 @@ const AdminChat = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error loading sessions:", error);
       return;
     }
 
@@ -80,7 +79,6 @@ const AdminChat = () => {
         .order("created_at", { ascending: true });
 
       if (error) {
-        console.error("Error loading messages:", error);
         return;
       }
 
@@ -139,7 +137,6 @@ const AdminChat = () => {
     });
 
     if (error) {
-      console.error("Error sending message:", error);
       toast({
         title: "שגיאה",
         description: "לא הצלחנו לשלוח את ההודעה. נסה שוב.",

@@ -34,14 +34,14 @@ const getLevelColor = (level: string) => {
 };
 
 const contactFormSchema = z.object({
-  name: z.string().min(2, "שם חייב להכיל לפחות 2 תווים"),
-  phone: z.string().min(10, "מספר טלפון לא תקין"),
-  email: z.string().email("כתובת מייל לא תקינה"),
-  course: z.string().min(1, "יש לבחור קורס"),
-  location: z.string().min(1, "יש לבחור מקום לימוד"),
-  grade: z.string().min(1, "יש לבחור כיתה"),
-  time: z.string().min(1, "יש לבחור יום ושעה"),
-  message: z.string().optional(),
+  name: z.string().min(2, "שם חייב להכיל לפחות 2 תווים").max(100, "שם ארוך מדי"),
+  phone: z.string().min(9, "מספר טלפון לא תקין").max(20, "מספר טלפון לא תקין").regex(/^[0-9+\-\s()]+$/, "מספר טלפון לא תקין"),
+  email: z.string().email("כתובת מייל לא תקינה").max(255, "כתובת מייל ארוכה מדי"),
+  course: z.string().min(1, "יש לבחור קורס").max(200, "שם קורס ארוך מדי"),
+  location: z.string().min(1, "יש לבחור מקום לימוד").max(200, "שם מקום ארוך מדי"),
+  grade: z.string().min(1, "יש לבחור כיתה").max(50, "כיתה לא תקינה"),
+  time: z.string().min(1, "יש לבחור יום ושעה").max(100, "זמן לא תקין"),
+  message: z.string().max(2000, "הודעה ארוכה מדי").optional(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -104,7 +104,7 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
         .eq('course_id', selectedCourseData.id);
       
       if (error) {
-        console.error('Error fetching schedules:', error);
+        // Silently handle error, user sees fallback
       } else {
         setSchedules(data || []);
       }
@@ -165,9 +165,6 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
   }, [courses, form, schedules, selectedCourseData]);
 
   const onSubmit = async (data: ContactFormData) => {
-    console.log("Form submission started");
-    console.log("Contact form data:", data);
-    
     try {
       // Save to database
       const { error } = await supabase
@@ -184,7 +181,6 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
         });
 
       if (error) {
-        console.error("Database error:", error);
         toast({
           title: "שגיאה בשמירה",
           description: "אנא נסה שוב או צור קשר ישירות",
@@ -197,15 +193,10 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
         title: "הודעה נשלחה בהצלחה!",
         description: "ניצור איתך קשר בהקדם האפשרי",
       });
-      console.log("Toast displayed successfully");
       
       form.reset();
-      console.log("Form reset completed");
-      
       setOpen(false);
-      console.log("Dialog closed");
     } catch (error) {
-      console.error("Error in form submission:", error);
       toast({
         title: "שגיאה בשמירה",
         description: "אנא נסה שוב או צור קשר ישירות",
@@ -215,8 +206,6 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log("Form submit event triggered");
-    console.log("Form errors:", form.formState.errors);
     form.handleSubmit(onSubmit)(e);
   };
 

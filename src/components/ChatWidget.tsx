@@ -50,7 +50,6 @@ const ChatWidget = () => {
         .order("created_at", { ascending: true });
 
       if (error) {
-        console.error("Error loading messages:", error);
         return;
       }
 
@@ -100,7 +99,6 @@ const ChatWidget = () => {
     });
 
     if (error) {
-      console.error("Error sending message:", error);
       toast({
         title: "שגיאה",
         description: "לא הצלחנו לשלוח את ההודעה. נסה שוב.",
