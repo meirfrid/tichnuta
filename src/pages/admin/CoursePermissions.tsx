@@ -92,7 +92,6 @@ const CoursePermissions = () => {
       setNewEmail("");
       fetchAllowedEmails();
     } catch (error: any) {
-      console.error("Error adding email:", error);
       toast({ title: "שגיאה", description: error.message, variant: "destructive" });
     }
   };
@@ -124,7 +123,7 @@ const CoursePermissions = () => {
           if (error.code === "23505") {
             skipped++;
           } else {
-            console.error("Error adding email:", email, error);
+            // Skip silently if not duplicate
           }
         } else {
           added++;
@@ -139,7 +138,6 @@ const CoursePermissions = () => {
       setShowBulkAdd(false);
       fetchAllowedEmails();
     } catch (error: any) {
-      console.error("Error bulk adding emails:", error);
       toast({ title: "שגיאה", description: error.message, variant: "destructive" });
     }
   };

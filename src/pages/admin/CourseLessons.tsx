@@ -114,7 +114,6 @@ const CourseLessons = () => {
       setShowNewLessonForm(false);
       fetchLessons();
     } catch (error: any) {
-      console.error("Error saving lesson:", error);
       toast({ title: "שגיאה", description: error.message, variant: "destructive" });
     }
   };
