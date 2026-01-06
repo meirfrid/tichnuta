@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Gamepad2, Smartphone, Monitor, Code2, Bot } from "lucide-react";
+import { Gamepad2, Smartphone, Monitor, Code2, Bot, Users } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,6 +78,20 @@ const Hero = () => {
               {siteContent.heroButtonText}
             </Button>
           )}
+        </div>
+
+        {/* Course Types */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 max-w-2xl mx-auto">
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground hover:bg-white/20 transition-colors">
+            <Monitor className="h-8 w-8 mx-auto mb-3" />
+            <div className="text-2xl font-bold mb-2">קורסים אונליין</div>
+            <div className="text-sm opacity-80">למידה מהבית בזמנים נוחים</div>
+          </Card>
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground hover:bg-white/20 transition-colors">
+            <Users className="h-8 w-8 mx-auto mb-3" />
+            <div className="text-2xl font-bold mb-2">קורסים פרונטליים</div>
+            <div className="text-sm opacity-80">למידה בקבוצות קטנות עם מדריך</div>
+          </Card>
         </div>
 
         {/* Quick Stats */}
