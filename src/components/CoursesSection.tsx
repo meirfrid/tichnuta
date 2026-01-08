@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, Star } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
@@ -41,6 +42,7 @@ const contactFormSchema = z.object({
   location: z.string().min(1, "יש לבחור מקום לימוד").max(200, "שם מקום ארוך מדי"),
   grade: z.string().min(1, "יש לבחור כיתה").max(50, "כיתה לא תקינה"),
   time: z.string().min(1, "יש לבחור יום ושעה").max(100, "זמן לא תקין"),
+  gender: z.string().min(1, "יש לבחור מגדר"),
   message: z.string().max(2000, "הודעה ארוכה מדי").optional(),
 });
 
@@ -86,6 +88,7 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
       location: "",
       grade: "",
       time: "",
+      gender: "",
       message: "",
     },
   });
@@ -177,6 +180,7 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
           location: data.location,
           grade: data.grade,
           time: data.time,
+          gender: data.gender,
           message: data.message || null,
         });
 
@@ -356,6 +360,34 @@ const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה",
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>מגדר</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex gap-6"
+                      dir="rtl"
+                    >
+                      <div className="flex items-center space-x-2 space-x-reverse">
+                        <RadioGroupItem value="בן" id="male" />
+                        <label htmlFor="male" className="cursor-pointer">בן</label>
+                      </div>
+                      <div className="flex items-center space-x-2 space-x-reverse">
+                        <RadioGroupItem value="בת" id="female" />
+                        <label htmlFor="female" className="cursor-pointer">בת</label>
+                      </div>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
