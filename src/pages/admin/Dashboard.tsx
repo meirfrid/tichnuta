@@ -1246,6 +1246,7 @@ const AdminDashboard = () => {
                           <TableHeader>
                             <TableRow>
                               <TableHead>שם</TableHead>
+                              <TableHead>מגדר</TableHead>
                               <TableHead>טלפון</TableHead>
                               <TableHead>אימייל</TableHead>
                               <TableHead>קורס</TableHead>
@@ -1262,6 +1263,7 @@ const AdminDashboard = () => {
                             {filteredRegistrations.map((registration) => (
                               <TableRow key={registration.id}>
                                 <TableCell className="font-medium">{registration.name}</TableCell>
+                                <TableCell>{registration.gender || '-'}</TableCell>
                                 <TableCell>
                                   <a href={`tel:${registration.phone}`} className="text-primary hover:underline">
                                     {registration.phone}
