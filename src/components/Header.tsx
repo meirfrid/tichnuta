@@ -26,6 +26,7 @@ const Header = () => {
           {/* Desktop Navigation - moved to left */}
           <nav className="hidden md:flex items-center gap-6 h-24">
             <button onClick={() => handleNavigation("home")} className="text-foreground hover:text-primary transition-colors">בית</button>
+            <button onClick={() => handleNavigation("about")} className="text-foreground hover:text-primary transition-colors">אודות</button>
             <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors">קורסים</button>
             <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors">צור קשר</button>
           </nav>
@@ -64,6 +65,7 @@ const Header = () => {
           <nav className="md:hidden mt-4 pb-4 border-t border-border pt-4">
             <div className="flex flex-col gap-4">
               <button onClick={() => handleNavigation("home")} className="text-foreground hover:text-primary transition-colors text-right">בית</button>
+              <button onClick={() => handleNavigation("about")} className="text-foreground hover:text-primary transition-colors text-right">אודות</button>
               <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors text-right">קורסים</button>
               <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors text-right">צור קשר</button>
               <AuthButton />
