@@ -1504,7 +1504,7 @@ const AdminDashboard = () => {
                         </p>
                       ) : (
                         <div className="space-y-3">
-                          {Object.entries(registrationsByCourse).map(
+                          {(Object.entries(registrationsByCourse) as [string, { total: number; enrolled: number }][]).map(
                             ([courseName, stats]) => {
                               const enrollRate = stats.total
                                 ? Math.round((stats.enrolled / stats.total) * 100)

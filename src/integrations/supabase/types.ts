@@ -73,6 +73,27 @@ export type Database = {
           },
         ]
       }
+      course_enrollments: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       course_lessons: {
         Row: {
           course_id: string
@@ -241,6 +262,77 @@ export type Database = {
           },
         ]
       }
+      lesson_forum_replies: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          thread_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          thread_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          thread_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_forum_replies_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_forum_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_forum_threads: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          is_locked: boolean
+          is_pinned: boolean
+          lesson_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          is_pinned?: boolean
+          lesson_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          is_pinned?: boolean
+          lesson_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lesson_progress: {
         Row: {
           completed: boolean
@@ -328,6 +420,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       registrations: {
         Row: {
@@ -493,11 +609,19 @@ export type Database = {
         }
         Returns: boolean
       }
+      user_can_access_thread: {
+        Args: { _thread_id: string; _user_id: string }
+        Returns: boolean
+      }
       user_chat_sessions: {
         Args: { _user_id: string }
         Returns: {
           session_id: string
         }[]
+      }
+      user_enrolled_in_lesson_course: {
+        Args: { _lesson_id: string; _user_id: string }
+        Returns: boolean
       }
       user_has_course_access: {
         Args: { _course_id: string; _user_id: string }
