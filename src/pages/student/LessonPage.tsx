@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Lock, FileText, ExternalLink, ChevronRight, ChevronLeft, Maximize2, Minimize2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PythonEditor from "@/components/PythonEditor";
+import { LessonForum } from "@/components/forum";
 // This function creates embed config for video providers
 const getVideoConfig = (url: string): { embedUrl: string; provider: string } => {
   if (!url) return { embedUrl: url, provider: 'unknown' };
@@ -403,6 +404,11 @@ const LessonPage = () => {
               <div className="hidden sm:block flex-1" />
             )}
           </div>
+
+          {/* Discussion Forum */}
+          {lesson && (
+            <LessonForum lessonId={lesson.id} />
+          )}
         </div>
       </main>
       <Footer />
