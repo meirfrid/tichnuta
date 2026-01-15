@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { ContactForm } from "@/components/CoursesSection";
 
 // Technology descriptions for each course type
 const technologyDescriptions: Record<string, { name: string; description: string }> = {
@@ -77,9 +78,13 @@ const CourseDetailsPage = () => {
   const [course, setCourse] = useState<any>(null);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
 
   useEffect(() => {
     if (courseId) {
+      // גלילה לראש הדף בכל כניסה לעמוד פרטי קורס
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+
       fetchCourse();
       fetchSchedules();
     }
@@ -174,8 +179,8 @@ const CourseDetailsPage = () => {
   };
 
   const handleRegister = () => {
-    // Navigate to home page with course pre-selected, scroll to courses section
-    navigate(`/?course=${courseId}#courses`);
+    // Open registration form dialog on this page (stay on course details)
+    setIsRegistrationOpen(true);
   };
 
   if (loading) {
@@ -493,8 +498,7 @@ const CourseDetailsPage = () => {
 
                   {/* CTA Button */}
                   <Button
-                    size="lg"
-                    className="w-full bg-gradient-primary hover:opacity-90 transition-opacity text-lg py-6"
+                    className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
                     onClick={handleRegister}
                   >
                     להרשמה לקורס
@@ -509,6 +513,16 @@ const CourseDetailsPage = () => {
           </div>
         </div>
       </main>
+
+      {/* Registration dialog for this specific course - rendered only when opened, without extra trigger button */}
+      {course && isRegistrationOpen && (
+        <ContactForm
+          selectedCourse={course.title}
+          courses={[course]}
+          forceOpen={true}
+          onClose={() => setIsRegistrationOpen(false)}
+        />
+      )}
 
       <Footer />
     </div>

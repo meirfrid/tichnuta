@@ -57,7 +57,7 @@ interface CourseSchedule {
   end_time: string | null;
 }
 
-const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [], forceOpen = false, onClose }: { selectedCourse?: string; buttonText?: string; courses?: any[]; forceOpen?: boolean; onClose?: () => void }) => {
+export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [], forceOpen = false, onClose }: { selectedCourse?: string; buttonText?: string; courses?: any[]; forceOpen?: boolean; onClose?: () => void }) => {
   const [open, setOpen] = useState(forceOpen);
   const [selectedCourseData, setSelectedCourseData] = useState<any>(null);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);

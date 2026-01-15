@@ -8,12 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useSiteContent } from '@/hooks/useSiteContent';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  Settings, 
-  BookOpen, 
-  Users, 
-  MessageSquare, 
-  BarChart3, 
+import {
+  Settings,
+  BookOpen,
+  Users,
+  MessageSquare,
+  BarChart3,
   LogOut,
   Save,
   Eye,
@@ -21,7 +21,8 @@ import {
   Trash2,
   Plus,
   Edit,
-  MessageCircle
+  MessageCircle,
+  TrendingUp
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,6 +30,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCap
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import ContactsList from '@/components/ContactsList';
+import { Progress } from '@/components/ui/progress';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -342,6 +344,49 @@ const AdminDashboard = () => {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  // --- Aggregated analytics for reports tab ---
+  const totalRegistrations = registrations.length;
+  const newRegistrations = registrations.filter(reg => reg.status === 'new' || !reg.status).length;
+  const contactedRegistrations = registrations.filter(reg => reg.status === 'contacted').length;
+  const enrolledRegistrations = registrations.filter(reg => reg.status === 'enrolled').length;
+  const declinedRegistrations = registrations.filter(reg => reg.status === 'declined').length;
+
+  const totalHandled = contactedRegistrations + enrolledRegistrations + declinedRegistrations;
+  const handledPercentage = totalRegistrations
+    ? Math.round((totalHandled / totalRegistrations) * 100)
+    : 0;
+
+  const enrolledPercentage = totalRegistrations
+    ? Math.round((enrolledRegistrations / totalRegistrations) * 100)
+    : 0;
+
+  const registrationsByCourse = registrations.reduce((acc: Record<string, { total: number; enrolled: number }>, reg) => {
+    const courseName = reg.course || 'ללא שם קורס';
+    if (!acc[courseName]) {
+      acc[courseName] = { total: 0, enrolled: 0 };
+    }
+    acc[courseName].total += 1;
+    if (reg.status === 'enrolled') {
+      acc[courseName].enrolled += 1;
+    }
+    return acc;
+  }, {});
+
+  const genderStats = registrations.reduce(
+    (acc: { male: number; female: number; unknown: number }, reg) => {
+      const gender = (reg.gender || '').trim();
+      if (gender === 'בן') acc.male += 1;
+      else if (gender === 'בת') acc.female += 1;
+      else acc.unknown += 1;
+      return acc;
+    },
+    { male: 0, female: 0, unknown: 0 }
+  );
+
+  const recentRegistrations = [...registrations]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 5);
 
   const updateRegistrationStatus = async (id: string, newStatus: string) => {
     try {
@@ -1337,14 +1382,195 @@ const AdminDashboard = () => {
           <TabsContent value="analytics">
             <Card>
               <CardHeader>
-                <CardTitle>דוחות וניתוחים</CardTitle>
-                <CardDescription>
-                  סטטיסטיקות על השימוש באתר
-                </CardDescription>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>דוחות וניתוחים</CardTitle>
+                    <CardDescription>
+                      תמונת מצב על הרשמות, טיפול בפניות ותפוסה לפי קורסים
+                    </CardDescription>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={fetchRegistrations} disabled={loading}>
+                    <RefreshCw className={`h-4 w-4 ml-2 ${loading ? 'animate-spin' : ''}`} />
+                    רענן נתונים
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
-                  כאן יוצגו דוחות על ביקורים באתר, הרשמות לקורסים ועוד
+                {/* Summary cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                  <Card className="border-primary/20">
+                    <CardHeader className="pb-2">
+                      <CardDescription>סה״כ פניות/הרשמות</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between">
+                        <span className="text-3xl font-bold">{totalRegistrations}</span>
+                        <BarChart3 className="h-6 w-6 text-primary" />
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        כל הטפסים שנשלחו מהאתר
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardDescription>פניות בטיפול</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between">
+                        <span className="text-3xl font-bold">{totalHandled}</span>
+                        <TrendingUp className="h-6 w-6 text-accent" />
+                      </div>
+                      <div className="mt-2 space-y-1">
+                        <Progress value={handledPercentage} className="h-2" />
+                        <p className="text-xs text-muted-foreground">
+                          {handledPercentage}% מהפניות סומנו כ&quot;נוצר קשר&quot;, &quot;נרשם&quot; או &quot;דחה&quot;
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardDescription>נרשמים לקורסים</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between">
+                        <span className="text-3xl font-bold">{enrolledRegistrations}</span>
+                      </div>
+                      <div className="mt-2 space-y-1">
+                        <Progress value={enrolledPercentage} className="h-2" />
+                        <p className="text-xs text-muted-foreground">
+                          {enrolledPercentage}% מכלל הפניות סומנו כ&quot;נרשם&quot;
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardDescription>התפלגות לפי מגדר</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span>בנים</span>
+                          <span className="font-medium">{genderStats.male}</span>
+                        </div>
+                        <Progress
+                          value={
+                            totalRegistrations
+                              ? (genderStats.male / totalRegistrations) * 100
+                              : 0
+                          }
+                          className="h-1.5"
+                        />
+                        <div className="flex justify-between mt-1">
+                          <span>בנות</span>
+                          <span className="font-medium">{genderStats.female}</span>
+                        </div>
+                        <Progress
+                          value={
+                            totalRegistrations
+                              ? (genderStats.female / totalRegistrations) * 100
+                              : 0
+                          }
+                          className="h-1.5"
+                        />
+                        {genderStats.unknown > 0 && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {genderStats.unknown} ללא מגדר מוגדר
+                          </p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Per-course stats */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base">הרשמות לפי קורס</CardTitle>
+                      <CardDescription>
+                        כמה פניות ונרשמים יש לכל קורס
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {Object.keys(registrationsByCourse).length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                          עדיין אין מספיק נתונים להצגת דוח זה.
+                        </p>
+                      ) : (
+                        <div className="space-y-3">
+                          {Object.entries(registrationsByCourse).map(
+                            ([courseName, stats]) => {
+                              const enrollRate = stats.total
+                                ? Math.round((stats.enrolled / stats.total) * 100)
+                                : 0;
+                              return (
+                                <div key={courseName} className="space-y-1">
+                                  <div className="flex justify-between text-sm">
+                                    <span className="font-medium">{courseName}</span>
+                                    <span className="text-muted-foreground">
+                                      {stats.enrolled} נרשמים מתוך {stats.total} פניות
+                                    </span>
+                                  </div>
+                                  <Progress value={enrollRate} className="h-1.5" />
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base">הרשמות אחרונות</CardTitle>
+                      <CardDescription>
+                        חמש הפניות האחרונות שנקלטו במערכת
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {recentRegistrations.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                          עדיין אין פניות להצגה.
+                        </p>
+                      ) : (
+                        <div className="space-y-2 text-sm">
+                          {recentRegistrations.map((reg) => (
+                            <div
+                              key={reg.id}
+                              className="flex items-center justify-between border rounded-md px-3 py-2"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium truncate">
+                                  {reg.name} · {reg.course}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(reg.created_at).toLocaleString('he-IL')}
+                                </p>
+                              </div>
+                              <Badge className={`ml-2 ${getStatusColor(reg.status)}`}>
+                                {reg.status === 'new' && 'חדש'}
+                                {reg.status === 'contacted' && 'נוצר קשר'}
+                                {reg.status === 'enrolled' && 'נרשם'}
+                                {reg.status === 'declined' && 'דחה'}
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  הנתונים מבוססים על טופסי ההרשמה שנשלחו דרך האתר. לעיבוד נוסף ניתן לייצא נתונים מטבלת
+                  <code className="mx-1">registrations</code> ישירות מ־Supabase.
                 </p>
               </CardContent>
             </Card>
