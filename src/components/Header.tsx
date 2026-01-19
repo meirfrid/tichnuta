@@ -53,50 +53,66 @@ const Header = () => {
             <AuthButton />
           </div>
         </div>
-      </div>
 
-      {/* Navigation Sheet - shown on all devices */}
-      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-          <nav className="mt-8">
+        {/* Mobile Navigation - original style */}
+        {isMenuOpen && (
+          <nav className="md:hidden mt-4 pb-4 border-t border-border pt-4">
             <div className="flex flex-col gap-4">
-              <button 
-                onClick={() => handleNavigation("home")} 
-                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
-              >
-                בית
-              </button>
-              <button 
-                onClick={() => handleNavigation("about")} 
-                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
-              >
-                אודות
-              </button>
-              <button 
-                onClick={() => handleNavigation("courses")} 
-                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
-              >
-                קורסים
-              </button>
-              <button 
-                onClick={() => handleNavigation("recommendations")} 
-                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
-              >
-                המלצות
-              </button>
-              <button 
-                onClick={() => handleNavigation("contact")} 
-                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
-              >
-                צור קשר
-              </button>
-              <div className="mt-4 pt-4 border-t border-border">
-                <AuthButton />
-              </div>
+              <button onClick={() => handleNavigation("home")} className="text-foreground hover:text-primary transition-colors text-right">בית</button>
+              <button onClick={() => handleNavigation("about")} className="text-foreground hover:text-primary transition-colors text-right">אודות</button>
+              <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors text-right">קורסים</button>
+              <button onClick={() => handleNavigation("recommendations")} className="text-foreground hover:text-primary transition-colors text-right">המלצות</button>
+              <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors text-right">צור קשר</button>
+              <AuthButton />
             </div>
           </nav>
-        </SheetContent>
-      </Sheet>
+        )}
+      </div>
+
+      {/* Desktop Navigation Sheet */}
+      <div className="hidden md:block">
+        <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <nav className="mt-8">
+              <div className="flex flex-col gap-4">
+                <button 
+                  onClick={() => handleNavigation("home")} 
+                  className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+                >
+                  בית
+                </button>
+                <button 
+                  onClick={() => handleNavigation("about")} 
+                  className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+                >
+                  אודות
+                </button>
+                <button 
+                  onClick={() => handleNavigation("courses")} 
+                  className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+                >
+                  קורסים
+                </button>
+                <button 
+                  onClick={() => handleNavigation("recommendations")} 
+                  className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+                >
+                  המלצות
+                </button>
+                <button 
+                  onClick={() => handleNavigation("contact")} 
+                  className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+                >
+                  צור קשר
+                </button>
+                <div className="mt-4 pt-4 border-t border-border">
+                  <AuthButton />
+                </div>
+              </div>
+            </nav>
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   );
 };
