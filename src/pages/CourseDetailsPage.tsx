@@ -285,47 +285,61 @@ const CourseDetailsPage = () => {
         </Button>
 
         {/* Hero Section */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          {/* Main Content - 2 columns */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Title Section */}
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <div className={`p-3 rounded-xl ${course.color}`}>
-                  <IconComponent className="h-8 w-8 text-white" />
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Badge className={getLevelColor(course.level)}>{course.level}</Badge>
-                  <Badge
-                    variant="outline"
-                    className={
-                      isOnline
-                        ? "border-blue-500 text-blue-600 bg-blue-50"
-                        : "border-green-500 text-green-600 bg-green-50"
-                    }
-                  >
-                    {isOnline ? (
-                      <>
-                        <Monitor className="h-3 w-3 ml-1" />
-                        חוג אונליין
-                      </>
-                    ) : (
-                      <>
-                        <Building className="h-3 w-3 ml-1" />
-                        חוג פרונטלי
-                      </>
-                    )}
-                  </Badge>
-                </div>
+        <div className="space-y-8 mb-12">
+          {/* Title Section */}
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className={`p-3 rounded-xl ${course.color}`}>
+                <IconComponent className="h-8 w-8 text-white" />
               </div>
-
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
-                {course.title}
-              </h1>
-              <p className="text-xl sm:text-2xl text-muted-foreground font-medium">
-                {course.subtitle}
-              </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge className={getLevelColor(course.level)}>{course.level}</Badge>
+                <Badge
+                  variant="outline"
+                  className={
+                    isOnline
+                      ? "border-blue-500 text-blue-600 bg-blue-50"
+                      : "border-green-500 text-green-600 bg-green-50"
+                  }
+                >
+                  {isOnline ? (
+                    <>
+                      <Monitor className="h-3 w-3 ml-1" />
+                      חוג אונליין
+                    </>
+                  ) : (
+                    <>
+                      <Building className="h-3 w-3 ml-1" />
+                      חוג פרונטלי
+                    </>
+                  )}
+                </Badge>
+              </div>
             </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
+              {course.title}
+            </h1>
+            <p className="text-xl sm:text-2xl text-muted-foreground font-medium">
+              {course.subtitle}
+            </p>
+
+            {/* Course Quick Info */}
+            <div className="flex flex-wrap gap-4 pt-2">
+              <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-lg">
+                <span className="font-bold text-lg">{course.price_text}</span>
+                <span className="text-sm opacity-80">לחודש</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Clock className="h-5 w-5" />
+                <span>{course.duration}</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Users className="h-5 w-5" />
+                <span>{course.group_size}</span>
+              </div>
+            </div>
+          </div>
 
             {/* Description */}
             <div className="prose prose-lg max-w-none">
@@ -493,136 +507,6 @@ const CourseDetailsPage = () => {
                 ))}
               </Accordion>
             </div>
-          </div>
-
-          {/* Sidebar - 1 column */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
-              {/* Price Card */}
-              <Card className="shadow-lg border-2 border-primary/20">
-                <CardContent className="p-6 space-y-6">
-                  {/* Price */}
-                  <div className="text-center pb-4 border-b border-border">
-                    <p className="text-sm text-muted-foreground mb-1">מחיר חודשי</p>
-                    <p className="text-4xl font-bold text-primary">
-                      {course.price_text}
-                    </p>
-                  </div>
-
-                  {/* Details Grid */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <Clock className="h-5 w-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">משך שיעור</p>
-                        <p className="font-medium text-foreground">{course.duration}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <Users className="h-5 w-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">גודל קבוצה</p>
-                        <p className="font-medium text-foreground">{course.group_size}</p>
-                      </div>
-                    </div>
-
-                    {/* Schedules from course_schedules table */}
-                    {Object.keys(groupedSchedules).length > 0 && (
-                      <div className="space-y-4">
-                        {groupedSchedules.online && Object.keys(groupedSchedules.online).length > 0 && (
-                          <div className="flex items-start gap-3">
-                            <Monitor className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <p className="text-sm text-muted-foreground font-medium mb-2">חוגים אונליין</p>
-                              {Object.entries(groupedSchedules.online).map(([location, locationSchedules]) => (
-                                <div key={location} className="mb-2">
-                                  <p className="font-medium text-foreground text-sm">{location}</p>
-                                  <div className="space-y-1">
-                                    {locationSchedules.map((schedule) => (
-                                      <p key={schedule.id} className="text-sm text-muted-foreground">
-                                        {schedule.day_of_week} {schedule.start_time}{schedule.end_time ? ` - ${schedule.end_time}` : ''}
-                                      </p>
-                                    ))}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {groupedSchedules.frontal && Object.keys(groupedSchedules.frontal).length > 0 && (
-                          <div className="flex items-start gap-3">
-                            <Building className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <p className="text-sm text-muted-foreground font-medium mb-2">חוגים פרונטליים</p>
-                              {Object.entries(groupedSchedules.frontal).map(([location, locationSchedules]) => (
-                                <div key={location} className="mb-2">
-                                  <p className="font-medium text-foreground text-sm">{location}</p>
-                                  <div className="space-y-1">
-                                    {locationSchedules.map((schedule) => (
-                                      <p key={schedule.id} className="text-sm text-muted-foreground">
-                                        {schedule.day_of_week} {schedule.start_time}{schedule.end_time ? ` - ${schedule.end_time}` : ''}
-                                      </p>
-                                    ))}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Fallback to old times/locations if no schedules */}
-                    {Object.keys(groupedSchedules).length === 0 && course.times && course.times.length > 0 && (
-                      <div className="flex items-start gap-3">
-                        <Calendar className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">זמני שיעורים</p>
-                          <div className="space-y-1">
-                            {course.times.map((time: string, index: number) => (
-                              <p key={index} className="font-medium text-foreground text-sm">
-                                {time}
-                              </p>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {Object.keys(groupedSchedules).length === 0 && course.locations && course.locations.length > 0 && (
-                      <div className="flex items-start gap-3">
-                        <MapPin className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">מיקומים</p>
-                          <div className="space-y-1">
-                            {course.locations.map((location: string, index: number) => (
-                              <p key={index} className="font-medium text-foreground text-sm">
-                                {location}
-                              </p>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* CTA Button */}
-                  <Button
-                    className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
-                    onClick={() => handleRegister()}
-                  >
-                    להרשמה לקורס
-                  </Button>
-
-                  <p className="text-xs text-center text-muted-foreground">
-                    מילוי הטופס אינו מחייב. נציג ייצור איתכם קשר לפרטים נוספים.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
         </div>
       </main>
 
