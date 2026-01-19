@@ -1304,6 +1304,7 @@ const AdminDashboard = () => {
                               <TableHead>טלפון</TableHead>
                               <TableHead>אימייל</TableHead>
                               <TableHead>קורס</TableHead>
+                              <TableHead>תקופת לימוד</TableHead>
                               <TableHead>מקום</TableHead>
                               <TableHead>כיתה</TableHead>
                               <TableHead>יום ושעה</TableHead>
@@ -1329,6 +1330,7 @@ const AdminDashboard = () => {
                                   </a>
                                 </TableCell>
                                 <TableCell>{registration.course}</TableCell>
+                                <TableCell>{registration.learning_period || '-'}</TableCell>
                                 <TableCell>{registration.location || '-'}</TableCell>
                                 <TableCell>{registration.grade || '-'}</TableCell>
                                 <TableCell>{registration.time || '-'}</TableCell>
