@@ -40,20 +40,20 @@ const RecommendationCard = ({ rec, isFeatured = false }: RecommendationCardProps
   }, [rec.recommendation_text]);
 
   return (
-    <Card className={`${isFeatured ? "border-primary/20 shadow-lg hover:shadow-xl transition-shadow" : "border-none shadow-md hover:shadow-lg transition-shadow"} flex flex-col`}>
-      <CardContent className="pt-6 pb-6 flex flex-col" style={{ maxHeight: '350px' }}>
-        <div className="flex items-start gap-3 mb-4 flex-shrink-0">
-          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-            <Quote className="h-5 w-5 text-primary" />
+    <Card className={`${isFeatured ? "border-primary/20 shadow-lg hover:shadow-xl transition-shadow" : "border-none shadow-md hover:shadow-lg transition-shadow"} flex flex-col h-full`}>
+      <CardContent className="p-4 sm:pt-6 sm:pb-6 sm:px-6 flex flex-col flex-1">
+        <div className="flex items-start gap-2 sm:gap-3 mb-3 sm:mb-4 flex-shrink-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <Quote className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               {rec.rating && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-0.5 sm:gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-4 w-4 ${
+                      className={`h-3 w-3 sm:h-4 sm:w-4 ${
                         i < rec.rating!
                           ? 'fill-yellow-400 text-yellow-400'
                           : 'text-gray-300'
@@ -63,17 +63,17 @@ const RecommendationCard = ({ rec, isFeatured = false }: RecommendationCardProps
                 </div>
               )}
             </div>
-            <p className="font-semibold text-sm">{rec.parent_name}</p>
+            <p className="font-semibold text-xs sm:text-sm">{rec.parent_name}</p>
             {rec.child_name && (
               <p className="text-xs text-muted-foreground">הורה של {rec.child_name}</p>
             )}
           </div>
         </div>
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="flex-1 flex flex-col min-h-0">
           <div className={`relative flex-1 ${isExpanded ? 'overflow-y-auto' : ''}`}>
             <p
               ref={textRef}
-              className={`text-muted-foreground leading-relaxed text-sm transition-all duration-300 ${
+              className={`text-muted-foreground leading-relaxed text-xs sm:text-sm transition-all duration-300 ${
                 isExpanded ? '' : 'line-clamp-4'
               }`}
             >
@@ -85,16 +85,16 @@ const RecommendationCard = ({ rec, isFeatured = false }: RecommendationCardProps
               variant="ghost"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-2 self-start text-primary hover:text-primary/80 p-0 h-auto font-normal flex-shrink-0"
+              className="mt-2 self-start text-primary hover:text-primary/80 p-0 h-auto font-normal flex-shrink-0 text-xs sm:text-sm"
             >
               {isExpanded ? (
                 <>
-                  <ChevronUp className="h-4 w-4 ml-1" />
+                  <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
                   קרא פחות
                 </>
               ) : (
                 <>
-                  <ChevronDown className="h-4 w-4 ml-1" />
+                  <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
                   קרא עוד
                 </>
               )}
@@ -157,20 +157,20 @@ const ParentRecommendationsSection = () => {
   const regularRecommendations = recommendations.filter(r => !r.is_featured);
 
   return (
-    <section id="recommendations" className="py-20 bg-muted/30">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">המלצות הורים</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+    <section id="recommendations" className="py-12 sm:py-20 bg-muted/30">
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">המלצות הורים</h2>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             הורים ותלמידים מספרים על החוויה שלהם בתכנותא
           </p>
         </div>
 
         {/* Featured Recommendations */}
         {featuredRecommendations.length > 0 && (
-          <div className="mb-12">
-            <h3 className="text-2xl font-semibold mb-6 text-center">המלצות מובילות</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="mb-8 sm:mb-12">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center">המלצות מובילות</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {featuredRecommendations.map((rec) => (
                 <RecommendationCard key={rec.id} rec={rec} isFeatured={true} />
               ))}
@@ -182,9 +182,9 @@ const ParentRecommendationsSection = () => {
         {regularRecommendations.length > 0 && (
           <div>
             {featuredRecommendations.length > 0 && (
-              <h3 className="text-2xl font-semibold mb-6 text-center">עוד המלצות</h3>
+              <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center">עוד המלצות</h3>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {regularRecommendations.map((rec) => (
                 <RecommendationCard key={rec.id} rec={rec} isFeatured={false} />
               ))}
