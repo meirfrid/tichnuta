@@ -18,14 +18,16 @@ const Header = () => {
     <header className="bg-background border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          {/* Menu Button - right side (RTL) */}
-          <button
-            className="p-2 h-16 md:h-20 flex items-center hover:bg-muted rounded-lg transition-colors"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? "סגור תפריט" : "פתח תפריט"}
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          {/* Menu Button - right side (RTL) - fixed width for centering */}
+          <div className="w-24 flex justify-start">
+            <button
+              className="p-2 h-16 md:h-20 flex items-center hover:bg-muted rounded-lg transition-colors"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "סגור תפריט" : "פתח תפריט"}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
 
           {/* Logo Image - centered */}
           <button 
@@ -39,8 +41,8 @@ const Header = () => {
             />
           </button>
 
-          {/* Auth Button - left side (RTL) */}
-          <div className="flex items-center h-16 md:h-20">
+          {/* Auth Button - left side (RTL) - fixed width for centering */}
+          <div className="w-24 flex justify-end items-center h-16 md:h-20">
             <AuthButton />
           </div>
         </div>
