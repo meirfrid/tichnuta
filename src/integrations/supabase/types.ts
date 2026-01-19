@@ -602,6 +602,7 @@ export type Database = {
           location: string | null
           message: string | null
           name: string
+          parent_name: string | null
           phone: string
           school_name: string | null
           status: string
@@ -620,6 +621,7 @@ export type Database = {
           location?: string | null
           message?: string | null
           name: string
+          parent_name?: string | null
           phone: string
           school_name?: string | null
           status?: string
@@ -638,6 +640,7 @@ export type Database = {
           location?: string | null
           message?: string | null
           name?: string
+          parent_name?: string | null
           phone?: string
           school_name?: string | null
           status?: string
