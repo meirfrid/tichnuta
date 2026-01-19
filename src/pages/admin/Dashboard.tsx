@@ -1354,7 +1354,7 @@ const AdminDashboard = () => {
                                   onClick={() => navigate(`/admin/courses/${course.id}/variants`)}
                                 >
                                   <Settings className="h-4 w-4 ml-1" />
-                                  מקבצים
+                                  מחזורי לימוד
                                 </Button>
                               </div>
                               <div className="flex gap-2">

@@ -91,7 +91,7 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
   
   // Filtered options based on selections
   const [filteredLocations, setFilteredLocations] = useState<string[]>([]);
-  const [filteredTimes, setFilteredTimes] = useState<{ display: string; value: string }[]>([]);
+  const [filteredTimes, setFilteredTimes] = useState<{ display: string; value: string; learning_period?: string | null }[]>([]);
   const [filteredPeriods, setFilteredPeriods] = useState<string[]>([]);
   
   const { toast } = useToast();
@@ -230,8 +230,9 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
           v.location === selectedLocation
         );
         const times = matchingVariants.map(v => ({
-          display: `יום ${v.day_of_week} ${v.start_time}${v.end_time ? ` - ${v.end_time}` : ''}`,
-          value: `יום ${v.day_of_week} ${v.start_time}${v.end_time ? ` - ${v.end_time}` : ''}`
+          display: `יום ${v.day_of_week} ${v.start_time}${v.end_time ? ` - ${v.end_time}` : ''}${v.learning_period ? ` (${v.learning_period})` : ''}`,
+          value: `יום ${v.day_of_week} ${v.start_time}${v.end_time ? ` - ${v.end_time}` : ''}`,
+          learning_period: v.learning_period
         }));
         setFilteredTimes(times);
         
@@ -249,11 +250,12 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
         const locationSchedules = schedules.filter(s => s.location === selectedLocation);
         const times = locationSchedules.map(s => ({
           display: `${s.day_of_week} ${s.start_time}${s.end_time ? ` - ${s.end_time}` : ''}`,
-          value: `${s.day_of_week} ${s.start_time}${s.end_time ? ` - ${s.end_time}` : ''}`
+          value: `${s.day_of_week} ${s.start_time}${s.end_time ? ` - ${s.end_time}` : ''}`,
+          learning_period: null
         }));
         setFilteredTimes(times);
       } else if (selectedLocation && selectedCourseData?.times?.length > 0) {
-        const times = selectedCourseData.times.map((t: string) => ({ display: t, value: t }));
+        const times = selectedCourseData.times.map((t: string) => ({ display: t, value: t, learning_period: null }));
         setFilteredTimes(times);
       } else {
         setFilteredTimes([]);
@@ -284,8 +286,17 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
         form.setValue("learning_period", "");
       }
       if (name === 'location') {
-        // Reset time when location changes
+        // Reset time and learning_period when location changes
         form.setValue("time", "");
+        form.setValue("learning_period", "");
+      }
+      if (name === 'time' && hasVariants) {
+        // Auto-select learning period from the selected time variant
+        const selectedTime = value.time;
+        const matchingTime = filteredTimes.find(t => t.value === selectedTime);
+        if (matchingTime?.learning_period) {
+          form.setValue("learning_period", matchingTime.learning_period);
+        }
       }
     });
     
