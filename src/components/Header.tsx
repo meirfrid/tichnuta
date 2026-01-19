@@ -23,7 +23,49 @@ const Header = () => {
   return (
     <header className="bg-background border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-3">
-        <div className="grid grid-cols-3 items-center h-24">
+        {/* Mobile Layout - original */}
+        <div className="md:hidden">
+          {/* Logo on top */}
+          <div className="flex justify-center mb-4">
+            <button 
+              onClick={() => navigate("/")}
+              className="flex items-center justify-center"
+            >
+              <img
+                src={logo}
+                alt="תכנותא - חוגי תכנות מקצועיים לילדים"
+                className="h-16 w-auto object-contain"
+              />
+            </button>
+          </div>
+          
+          {/* Navigation bar */}
+          <div className="flex justify-between items-center">
+            <button
+              className="p-2 flex items-center"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+            <AuthButton />
+          </div>
+
+          {/* Mobile Navigation - original style */}
+          {isMenuOpen && (
+            <nav className="mt-4 pb-4 border-t border-border pt-4">
+              <div className="flex flex-col gap-4">
+                <button onClick={() => handleNavigation("home")} className="text-foreground hover:text-primary transition-colors text-right">בית</button>
+                <button onClick={() => handleNavigation("about")} className="text-foreground hover:text-primary transition-colors text-right">אודות</button>
+                <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors text-right">קורסים</button>
+                <button onClick={() => handleNavigation("recommendations")} className="text-foreground hover:text-primary transition-colors text-right">המלצות</button>
+                <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors text-right">צור קשר</button>
+              </div>
+            </nav>
+          )}
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden md:grid md:grid-cols-3 md:items-center md:h-24">
           {/* Menu Button - left */}
           <div className="flex justify-start">
             <button
@@ -43,7 +85,7 @@ const Header = () => {
               <img
                 src={logo}
                 alt="תכנותא - חוגי תכנות מקצועיים לילדים"
-                className="h-16 md:h-20 w-auto object-contain"
+                className="h-20 w-auto object-contain"
               />
             </button>
           </div>
@@ -53,20 +95,6 @@ const Header = () => {
             <AuthButton />
           </div>
         </div>
-
-        {/* Mobile Navigation - original style */}
-        {isMenuOpen && (
-          <nav className="md:hidden mt-4 pb-4 border-t border-border pt-4">
-            <div className="flex flex-col gap-4">
-              <button onClick={() => handleNavigation("home")} className="text-foreground hover:text-primary transition-colors text-right">בית</button>
-              <button onClick={() => handleNavigation("about")} className="text-foreground hover:text-primary transition-colors text-right">אודות</button>
-              <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors text-right">קורסים</button>
-              <button onClick={() => handleNavigation("recommendations")} className="text-foreground hover:text-primary transition-colors text-right">המלצות</button>
-              <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors text-right">צור קשר</button>
-              <AuthButton />
-            </div>
-          </nav>
-        )}
       </div>
 
       {/* Desktop Navigation Sheet */}
