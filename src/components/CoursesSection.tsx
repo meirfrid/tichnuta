@@ -67,12 +67,33 @@ interface CourseSchedule {
   end_time: string | null;
 }
 
+interface CourseVariant {
+  id: string;
+  course_id: string;
+  name: string;
+  gender: string;
+  location: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string | null;
+  min_grade: string | null;
+  max_grade: string | null;
+  learning_period: string | null;
+  is_active: boolean;
+}
+
 export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [], forceOpen = false, onClose }: { selectedCourse?: string; buttonText?: string; courses?: any[]; forceOpen?: boolean; onClose?: () => void }) => {
   const [open, setOpen] = useState(forceOpen);
   const [selectedCourseData, setSelectedCourseData] = useState<any>(null);
+  const [variants, setVariants] = useState<CourseVariant[]>([]);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const [periods, setPeriods] = useState<CoursePeriod[]>([]);
-  const [selectedLocationSchedules, setSelectedLocationSchedules] = useState<CourseSchedule[]>([]);
+  
+  // Filtered options based on selections
+  const [filteredLocations, setFilteredLocations] = useState<string[]>([]);
+  const [filteredTimes, setFilteredTimes] = useState<{ display: string; value: string }[]>([]);
+  const [filteredPeriods, setFilteredPeriods] = useState<string[]>([]);
+  
   const { toast } = useToast();
   
   // Update open state when forceOpen changes
@@ -105,12 +126,29 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
     },
   });
 
-  // Fetch schedules and periods when course changes
+  // Fetch variants, schedules and periods when course changes
   useEffect(() => {
+    const fetchVariants = async () => {
+      if (!selectedCourseData?.id) {
+        setVariants([]);
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('course_variants')
+        .select('*')
+        .eq('course_id', selectedCourseData.id)
+        .eq('is_active', true)
+        .order('sort_order');
+      
+      if (!error && data) {
+        setVariants(data);
+      }
+    };
+
     const fetchSchedules = async () => {
       if (!selectedCourseData?.id) {
         setSchedules([]);
-        setPeriods([]);
         return;
       }
       
@@ -119,10 +157,8 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
         .select('*')
         .eq('course_id', selectedCourseData.id);
       
-      if (error) {
-        // Silently handle error, user sees fallback
-      } else {
-        setSchedules(data || []);
+      if (!error && data) {
+        setSchedules(data);
       }
     };
 
@@ -144,14 +180,13 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
       }
     };
     
+    fetchVariants();
     fetchSchedules();
     fetchPeriods();
   }, [selectedCourseData?.id]);
 
-  // Get unique locations - from schedules if available, otherwise from course locations
-  const uniqueLocations = schedules.length > 0 
-    ? [...new Set(schedules.map(s => s.location))]
-    : (selectedCourseData?.locations || []);
+  // Check if course has variants configured
+  const hasVariants = variants.length > 0;
 
   // Update selected course data when dialog opens or course is selected
   useEffect(() => {
@@ -162,42 +197,100 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
     }
   }, [selectedCourse, courses, open]);
 
-  // Watch for course changes in the form
+  // Filter locations based on selected gender (only when using variants)
+  useEffect(() => {
+    if (hasVariants) {
+      const selectedGender = form.getValues("gender");
+      if (selectedGender) {
+        const matchingVariants = variants.filter(v => 
+          v.gender === selectedGender || v.gender === 'מעורב'
+        );
+        const locations = [...new Set(matchingVariants.map(v => v.location))];
+        setFilteredLocations(locations);
+      } else {
+        setFilteredLocations([]);
+      }
+    } else {
+      // Fallback to old behavior - all locations from schedules or course
+      const locations = schedules.length > 0 
+        ? [...new Set(schedules.map(s => s.location))]
+        : (selectedCourseData?.locations || []);
+      setFilteredLocations(locations);
+    }
+  }, [hasVariants, variants, schedules, selectedCourseData, form.watch("gender")]);
+
+  // Filter times based on selected gender and location (only when using variants)
+  useEffect(() => {
+    if (hasVariants) {
+      const selectedGender = form.getValues("gender");
+      const selectedLocation = form.getValues("location");
+      if (selectedGender && selectedLocation) {
+        const matchingVariants = variants.filter(v => 
+          (v.gender === selectedGender || v.gender === 'מעורב') && 
+          v.location === selectedLocation
+        );
+        const times = matchingVariants.map(v => ({
+          display: `יום ${v.day_of_week} ${v.start_time}${v.end_time ? ` - ${v.end_time}` : ''}`,
+          value: `יום ${v.day_of_week} ${v.start_time}${v.end_time ? ` - ${v.end_time}` : ''}`
+        }));
+        setFilteredTimes(times);
+        
+        // Also set available periods from matching variants
+        const variantPeriods = [...new Set(matchingVariants.filter(v => v.learning_period).map(v => v.learning_period!))];
+        setFilteredPeriods(variantPeriods.length > 0 ? variantPeriods : periods.map(p => p.name));
+      } else {
+        setFilteredTimes([]);
+        setFilteredPeriods([]);
+      }
+    } else {
+      // Fallback to old behavior
+      const selectedLocation = form.getValues("location");
+      if (selectedLocation && schedules.length > 0) {
+        const locationSchedules = schedules.filter(s => s.location === selectedLocation);
+        const times = locationSchedules.map(s => ({
+          display: `${s.day_of_week} ${s.start_time}${s.end_time ? ` - ${s.end_time}` : ''}`,
+          value: `${s.day_of_week} ${s.start_time}${s.end_time ? ` - ${s.end_time}` : ''}`
+        }));
+        setFilteredTimes(times);
+      } else if (selectedLocation && selectedCourseData?.times?.length > 0) {
+        const times = selectedCourseData.times.map((t: string) => ({ display: t, value: t }));
+        setFilteredTimes(times);
+      } else {
+        setFilteredTimes([]);
+      }
+      setFilteredPeriods(periods.map(p => p.name));
+    }
+  }, [hasVariants, variants, schedules, selectedCourseData, periods, form.watch("gender"), form.watch("location")]);
+
+  // Watch for form changes and reset dependent fields
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === 'course') {
         const course = courses.find(c => c.title === value.course);
         setSelectedCourseData(course);
-        // Reset location and time when course changes
-        if (course) {
-          form.setValue("location", "");
-          form.setValue("time", "");
-          setSelectedLocationSchedules([]);
-        }
+        // Reset all dependent fields when course changes
+        form.setValue("gender", "");
+        form.setValue("location", "");
+        form.setValue("time", "");
+        form.setValue("learning_period", "");
+        setFilteredLocations([]);
+        setFilteredTimes([]);
+        setFilteredPeriods([]);
+      }
+      if (name === 'gender' && hasVariants) {
+        // Reset location and time when gender changes (only in variants mode)
+        form.setValue("location", "");
+        form.setValue("time", "");
+        form.setValue("learning_period", "");
       }
       if (name === 'location') {
-        // Filter schedules for selected location
-        if (schedules.length > 0) {
-          const locationSchedules = schedules.filter(s => s.location === value.location);
-          setSelectedLocationSchedules(locationSchedules);
-        } else {
-          // Use times from course if no schedules
-          const courseTimes = selectedCourseData?.times || [];
-          setSelectedLocationSchedules(courseTimes.map((time: string, index: number) => ({
-            id: `fallback-${index}`,
-            course_id: selectedCourseData?.id,
-            location: value.location || '',
-            day_of_week: time,
-            start_time: '',
-            end_time: null
-          })));
-        }
+        // Reset time when location changes
         form.setValue("time", "");
       }
     });
     
     return () => subscription.unsubscribe();
-  }, [courses, form, schedules, selectedCourseData]);
+  }, [courses, form, hasVariants]);
 
   const onSubmit = async (data: ContactFormData) => {
     try {
@@ -347,15 +440,15 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="z-[9999]">
-                        {uniqueLocations.length > 0 ? (
-                          uniqueLocations.map((location, index) => (
+                        {filteredLocations.length > 0 ? (
+                          filteredLocations.map((location, index) => (
                             <SelectItem key={index} value={location}>
                               {location}
                             </SelectItem>
                           ))
                         ) : (
                           <div className="p-2 text-sm text-muted-foreground text-center">
-                            לא הוגדרו מקומות לימוד לקורס זה
+                            {hasVariants && !form.getValues("gender") ? "בחר קודם מגדר" : "לא הוגדרו מקומות לימוד"}
                           </div>
                         )}
                       </SelectContent>
@@ -435,23 +528,10 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="z-[9999]">
-                      {selectedLocationSchedules.length > 0 ? (
-                        selectedLocationSchedules.map((schedule) => {
-                          // Handle both new schedule format and fallback format
-                          const timeDisplay = schedule.start_time 
-                            ? `${schedule.day_of_week} ${schedule.start_time}${schedule.end_time ? ` - ${schedule.end_time}` : ''}`
-                            : schedule.day_of_week;
-                          return (
-                            <SelectItem key={schedule.id} value={timeDisplay}>
-                              {timeDisplay}
-                            </SelectItem>
-                          );
-                        })
-                      ) : selectedCourseData?.times?.length > 0 && form.getValues("location") ? (
-                        // Fallback: show all times from course
-                        selectedCourseData.times.map((time: string, index: number) => (
-                          <SelectItem key={index} value={time}>
-                            {time}
+                      {filteredTimes.length > 0 ? (
+                        filteredTimes.map((time, index) => (
+                          <SelectItem key={index} value={time.value}>
+                            {time.display}
                           </SelectItem>
                         ))
                       ) : (

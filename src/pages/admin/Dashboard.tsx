@@ -1348,6 +1348,14 @@ const AdminDashboard = () => {
                                   <Calendar className="h-4 w-4 ml-1" />
                                   תקופות
                                 </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => navigate(`/admin/courses/${course.id}/variants`)}
+                                >
+                                  <Settings className="h-4 w-4 ml-1" />
+                                  מקבצים
+                                </Button>
                               </div>
                               <div className="flex gap-2">
                                 <Button
