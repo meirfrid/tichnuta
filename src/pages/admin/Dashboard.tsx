@@ -85,7 +85,8 @@ const AdminDashboard = () => {
     price_number: 0,
     locations: [''],
     times: [''],
-    slug: ''
+    slug: '',
+    course_type: 'frontal'
   });
 
   const [registrations, setRegistrations] = useState<any[]>([]);
@@ -364,7 +365,8 @@ const AdminDashboard = () => {
         price_number: 0,
         locations: [''],
         times: [''],
-        slug: ''
+        slug: '',
+        course_type: 'frontal'
       });
       fetchCourses();
     } catch (error) {
@@ -393,7 +395,8 @@ const AdminDashboard = () => {
       price_number: course.price_number,
       locations: course.locations?.length > 0 ? course.locations : [''],
       times: course.times?.length > 0 ? course.times : [''],
-      slug: course.slug || ''
+      slug: course.slug || '',
+      course_type: course.course_type || 'frontal'
     });
     setShowNewCourseForm(true);
   };
@@ -1039,7 +1042,8 @@ const AdminDashboard = () => {
                           price_number: 0,
                           locations: [''],
                           times: [''],
-                          slug: ''
+                          slug: '',
+                          course_type: 'frontal'
                         });
                     }}>
                       <Plus className="h-4 w-4 ml-2" />
@@ -1138,6 +1142,20 @@ const AdminDashboard = () => {
                             <SelectItem value="בסיסי">בסיסי</SelectItem>
                             <SelectItem value="בינוני">בינוני</SelectItem>
                             <SelectItem value="מתקדם">מתקדם</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="courseType">סוג קורס</Label>
+                        <Select value={courseForm.course_type} onValueChange={(value) => setCourseForm(prev => ({ ...prev, course_type: value }))}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="online">אונליין</SelectItem>
+                            <SelectItem value="frontal">פרונטלי</SelectItem>
+                            <SelectItem value="both">אונליין + פרונטלי</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
