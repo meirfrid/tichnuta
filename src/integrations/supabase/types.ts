@@ -144,6 +144,47 @@ export type Database = {
           },
         ]
       }
+      course_periods: {
+        Row: {
+          course_id: string
+          created_at: string
+          end_date: string
+          id: string
+          is_active: boolean
+          name: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          end_date: string
+          id?: string
+          is_active?: boolean
+          name: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_periods_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_schedules: {
         Row: {
           course_id: string
@@ -453,6 +494,7 @@ export type Database = {
           gender: string | null
           grade: string | null
           id: string
+          learning_period: string | null
           location: string | null
           message: string | null
           name: string
@@ -469,6 +511,7 @@ export type Database = {
           gender?: string | null
           grade?: string | null
           id?: string
+          learning_period?: string | null
           location?: string | null
           message?: string | null
           name: string
@@ -485,6 +528,7 @@ export type Database = {
           gender?: string | null
           grade?: string | null
           id?: string
+          learning_period?: string | null
           location?: string | null
           message?: string | null
           name?: string

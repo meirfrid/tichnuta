@@ -22,7 +22,8 @@ import {
   Plus,
   Edit,
   MessageCircle,
-  TrendingUp
+  TrendingUp,
+  Calendar
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -1155,6 +1156,14 @@ const AdminDashboard = () => {
                                 >
                                   <Users className="h-4 w-4 ml-1" />
                                   הרשאות
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => navigate(`/admin/courses/${course.id}/periods`)}
+                                >
+                                  <Calendar className="h-4 w-4 ml-1" />
+                                  תקופות
                                 </Button>
                               </div>
                               <div className="flex gap-2">
