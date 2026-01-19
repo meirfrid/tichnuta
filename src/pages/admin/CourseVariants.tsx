@@ -190,9 +190,9 @@ const CourseVariants = () => {
       day_of_week: formData.day_of_week,
       start_time: formData.start_time,
       end_time: formData.end_time || null,
-      min_grade: formData.min_grade || null,
-      max_grade: formData.max_grade || null,
-      learning_period: formData.learning_period || null,
+      min_grade: formData.min_grade === 'none' ? null : (formData.min_grade || null),
+      max_grade: formData.max_grade === 'none' ? null : (formData.max_grade || null),
+      learning_period: formData.learning_period === 'none' ? null : (formData.learning_period || null),
       is_active: formData.is_active,
       sort_order: formData.sort_order
     };
@@ -430,7 +430,7 @@ const CourseVariants = () => {
                         <SelectValue placeholder="בחר כיתה" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">ללא הגבלה</SelectItem>
+                        <SelectItem value="none">ללא הגבלה</SelectItem>
                         {GRADES.map(grade => (
                           <SelectItem key={grade} value={grade}>כיתה {grade}</SelectItem>
                         ))}
@@ -448,7 +448,7 @@ const CourseVariants = () => {
                         <SelectValue placeholder="בחר כיתה" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">ללא הגבלה</SelectItem>
+                        <SelectItem value="none">ללא הגבלה</SelectItem>
                         {GRADES.map(grade => (
                           <SelectItem key={grade} value={grade}>כיתה {grade}</SelectItem>
                         ))}
@@ -466,7 +466,7 @@ const CourseVariants = () => {
                         <SelectValue placeholder="בחר תקופה" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">ללא תקופה</SelectItem>
+                        <SelectItem value="none">ללא תקופה</SelectItem>
                         {periods.map(period => (
                           <SelectItem key={period.id} value={period.name}>{period.name}</SelectItem>
                         ))}
