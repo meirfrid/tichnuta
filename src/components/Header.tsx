@@ -40,14 +40,13 @@ const Header = () => {
           </div>
           
           {/* Navigation bar */}
-          <div className="flex justify-between items-center">
+          <div className="flex justify-start items-center">
             <button
               className="p-2 flex items-center"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
-            <AuthButton />
           </div>
 
           {/* Mobile Navigation - original style */}
@@ -59,6 +58,9 @@ const Header = () => {
                 <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors text-right">קורסים</button>
                 <button onClick={() => handleNavigation("recommendations")} className="text-foreground hover:text-primary transition-colors text-right">המלצות</button>
                 <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors text-right">צור קשר</button>
+                <div className="mt-4 pt-4 border-t border-border">
+                  <AuthButton />
+                </div>
               </div>
             </nav>
           )}
