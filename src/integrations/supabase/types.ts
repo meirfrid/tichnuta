@@ -226,6 +226,68 @@ export type Database = {
           },
         ]
       }
+      course_variants: {
+        Row: {
+          course_id: string
+          created_at: string
+          day_of_week: string
+          end_time: string | null
+          gender: string
+          id: string
+          is_active: boolean
+          learning_period: string | null
+          location: string
+          max_grade: string | null
+          min_grade: string | null
+          name: string
+          sort_order: number
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          day_of_week: string
+          end_time?: string | null
+          gender: string
+          id?: string
+          is_active?: boolean
+          learning_period?: string | null
+          location: string
+          max_grade?: string | null
+          min_grade?: string | null
+          name: string
+          sort_order?: number
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          day_of_week?: string
+          end_time?: string | null
+          gender?: string
+          id?: string
+          is_active?: boolean
+          learning_period?: string | null
+          location?: string
+          max_grade?: string | null
+          min_grade?: string | null
+          name?: string
+          sort_order?: number
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_variants_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           active: boolean
@@ -542,6 +604,7 @@ export type Database = {
           status: string
           time: string | null
           updated_at: string
+          variant_id: string | null
         }
         Insert: {
           course: string
@@ -559,6 +622,7 @@ export type Database = {
           status?: string
           time?: string | null
           updated_at?: string
+          variant_id?: string | null
         }
         Update: {
           course?: string
@@ -576,8 +640,17 @@ export type Database = {
           status?: string
           time?: string | null
           updated_at?: string
+          variant_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "registrations_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "course_variants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       schools: {
         Row: {
