@@ -462,6 +462,45 @@ export type Database = {
           },
         ]
       }
+      parent_recommendations: {
+        Row: {
+          child_name: string | null
+          created_at: string
+          id: string
+          is_approved: boolean | null
+          is_featured: boolean | null
+          parent_name: string
+          rating: number | null
+          recommendation_text: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          child_name?: string | null
+          created_at?: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          parent_name: string
+          rating?: number | null
+          recommendation_text: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          child_name?: string | null
+          created_at?: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          parent_name?: string
+          rating?: number | null
+          recommendation_text?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -619,45 +658,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      parent_recommendations: {
-        Row: {
-          id: string
-          parent_name: string
-          child_name: string | null
-          recommendation_text: string
-          rating: number | null
-          is_approved: boolean
-          is_featured: boolean
-          sort_order: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          parent_name: string
-          child_name?: string | null
-          recommendation_text: string
-          rating?: number | null
-          is_approved?: boolean
-          is_featured?: boolean
-          sort_order?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          parent_name?: string
-          child_name?: string | null
-          recommendation_text?: string
-          rating?: number | null
-          is_approved?: boolean
-          is_featured?: boolean
-          sort_order?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
       }
       user_roles: {
         Row: {
