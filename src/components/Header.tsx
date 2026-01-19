@@ -1,21 +1,16 @@
 
-import { Button } from "@/components/ui/button";
-import { Code2, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AuthButton from "./AuthButton";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleNavigation = (section: string) => {
-    // Close mobile menu if open
     setIsMenuOpen(false);
-
-    // Always navigate with hash so browser handles scrolling reliably
     navigate(`/#${section}`);
   };
 
@@ -23,18 +18,11 @@ const Header = () => {
     <header className="bg-background border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          {/* Desktop Navigation - moved to left */}
-          <nav className="hidden md:flex items-center gap-6 h-24">
-            <button onClick={() => handleNavigation("home")} className="text-foreground hover:text-primary transition-colors">בית</button>
-            <button onClick={() => handleNavigation("about")} className="text-foreground hover:text-primary transition-colors">אודות</button>
-            <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors">קורסים</button>
-            <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors">צור קשר</button>
-          </nav>
-
-          {/* Mobile Menu Button - moved to left */}
+          {/* Menu Button - right side (RTL) */}
           <button
-            className="md:hidden p-2 h-24 flex items-center"
+            className="p-2 h-16 md:h-20 flex items-center hover:bg-muted rounded-lg transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "סגור תפריט" : "פתח תפריט"}
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -42,36 +30,56 @@ const Header = () => {
           {/* Logo Image - centered */}
           <button 
             onClick={() => navigate("/")}
-            className="flex items-center justify-center h-24"
+            className="flex items-center justify-center h-16 md:h-20"
           >
             <img
               src={logo}
               alt="תכנותא - חוגי תכנות מקצועיים לילדים"
-              className="h-16 md:h-20 w-auto object-contain"
+              className="h-12 md:h-16 w-auto object-contain"
             />
           </button>
 
-          {/* Desktop Auth Button - moved to right */}
-          <div className="hidden md:flex items-center h-24">
+          {/* Auth Button - left side (RTL) */}
+          <div className="flex items-center h-16 md:h-20">
             <AuthButton />
           </div>
-
-          {/* Empty div for mobile to maintain spacing */}
-          <div className="md:hidden w-10 h-24"></div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden mt-4 pb-4 border-t border-border pt-4">
-            <div className="flex flex-col gap-4">
-              <button onClick={() => handleNavigation("home")} className="text-foreground hover:text-primary transition-colors text-right">בית</button>
-              <button onClick={() => handleNavigation("about")} className="text-foreground hover:text-primary transition-colors text-right">אודות</button>
-              <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors text-right">קורסים</button>
-              <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors text-right">צור קשר</button>
-              <AuthButton />
+        {/* Slide-down Navigation Menu */}
+        <div 
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            isMenuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <nav className="py-4 border-t border-border mt-2">
+            <div className="flex flex-col gap-2">
+              <button 
+                onClick={() => handleNavigation("home")} 
+                className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
+              >
+                בית
+              </button>
+              <button 
+                onClick={() => handleNavigation("about")} 
+                className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
+              >
+                אודות
+              </button>
+              <button 
+                onClick={() => handleNavigation("courses")} 
+                className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
+              >
+                קורסים
+              </button>
+              <button 
+                onClick={() => handleNavigation("contact")} 
+                className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
+              >
+                צור קשר
+              </button>
             </div>
           </nav>
-        )}
+        </div>
       </div>
     </header>
   );
