@@ -216,13 +216,17 @@ const CourseDetailsPage = () => {
     }
   };
 
-  const isOnlineCourse = (course: any) => {
-    return course?.locations?.some(
-      (loc: string) =>
-        loc.toLowerCase().includes("אונליין") ||
-        loc.toLowerCase().includes("online") ||
-        loc.toLowerCase().includes("zoom")
-    );
+  const getCourseTypeInfo = (course: any) => {
+    const type = course?.course_type || 'frontal';
+    switch (type) {
+      case 'online':
+        return { isOnline: true, isFrontal: false, isBoth: false };
+      case 'both':
+        return { isOnline: true, isFrontal: true, isBoth: true };
+      case 'frontal':
+      default:
+        return { isOnline: false, isFrontal: true, isBoth: false };
+    }
   };
 
   const getTechnologyKey = (title: string): string => {
@@ -265,7 +269,7 @@ const CourseDetailsPage = () => {
   }
 
   const IconComponent = iconMap[course.icon] || Code2;
-  const isOnline = isOnlineCourse(course);
+  const courseTypeInfo = getCourseTypeInfo(course);
   const techKey = getTechnologyKey(course.title);
   const techInfo = technologyDescriptions[techKey];
 
@@ -294,26 +298,40 @@ const CourseDetailsPage = () => {
               </div>
               <div className="flex flex-wrap gap-2">
                 <Badge className={getLevelColor(course.level)}>{course.level}</Badge>
-                <Badge
-                  variant="outline"
-                  className={
-                    isOnline
-                      ? "border-blue-500 text-blue-600 bg-blue-50"
-                      : "border-green-500 text-green-600 bg-green-50"
-                  }
-                >
-                  {isOnline ? (
-                    <>
+                {courseTypeInfo.isBoth ? (
+                  <>
+                    <Badge
+                      variant="outline"
+                      className="border-blue-500 text-blue-600 bg-blue-50"
+                    >
                       <Monitor className="h-3 w-3 ml-1" />
-                      חוג אונליין
-                    </>
-                  ) : (
-                    <>
+                      אונליין
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="border-green-500 text-green-600 bg-green-50"
+                    >
                       <Building className="h-3 w-3 ml-1" />
-                      חוג פרונטלי
-                    </>
-                  )}
-                </Badge>
+                      פרונטלי
+                    </Badge>
+                  </>
+                ) : courseTypeInfo.isOnline ? (
+                  <Badge
+                    variant="outline"
+                    className="border-blue-500 text-blue-600 bg-blue-50"
+                  >
+                    <Monitor className="h-3 w-3 ml-1" />
+                    חוג אונליין
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="outline"
+                    className="border-green-500 text-green-600 bg-green-50"
+                  >
+                    <Building className="h-3 w-3 ml-1" />
+                    חוג פרונטלי
+                  </Badge>
+                )}
               </div>
             </div>
 
@@ -413,7 +431,7 @@ const CourseDetailsPage = () => {
             </Card>
 
             {/* Online Course Info */}
-            {isOnline && (
+            {courseTypeInfo.isOnline && (
               <Card className="border-blue-200 bg-blue-50/50">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">

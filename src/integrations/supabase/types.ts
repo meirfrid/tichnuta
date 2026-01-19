@@ -292,6 +292,7 @@ export type Database = {
         Row: {
           active: boolean
           color: string
+          course_type: string
           created_at: string
           description: string
           duration: string
@@ -314,6 +315,7 @@ export type Database = {
         Insert: {
           active?: boolean
           color?: string
+          course_type?: string
           created_at?: string
           description: string
           duration: string
@@ -336,6 +338,7 @@ export type Database = {
         Update: {
           active?: boolean
           color?: string
+          course_type?: string
           created_at?: string
           description?: string
           duration?: string
