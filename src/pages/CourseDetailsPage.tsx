@@ -346,7 +346,6 @@ const CourseDetailsPage = () => {
             <div className="flex flex-wrap gap-4 pt-2">
               <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-lg">
                 <span className="font-bold text-lg">{course.price_text}</span>
-                <span className="text-sm opacity-80">לחודש</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Clock className="h-5 w-5" />
