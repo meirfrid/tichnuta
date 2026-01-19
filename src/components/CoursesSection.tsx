@@ -36,6 +36,7 @@ const getLevelColor = (level: string) => {
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "שם חייב להכיל לפחות 2 תווים").max(100, "שם ארוך מדי"),
+  parent_name: z.string().min(2, "שם הורה חייב להכיל לפחות 2 תווים").max(100, "שם ארוך מדי"),
   phone: z.string().min(9, "מספר טלפון לא תקין").max(20, "מספר טלפון לא תקין").regex(/^[0-9+\-\s()]+$/, "מספר טלפון לא תקין"),
   email: z.string().email("כתובת מייל לא תקינה").max(255, "כתובת מייל ארוכה מדי"),
   course: z.string().min(1, "יש לבחור קורס").max(200, "שם קורס ארוך מדי"),
@@ -137,6 +138,7 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
       name: "",
+      parent_name: "",
       phone: "",
       email: "",
       course: selectedCourse || "",
@@ -359,6 +361,7 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
         .from('registrations')
         .insert({
           name: data.name,
+          parent_name: data.parent_name,
           phone: data.phone,
           email: data.email,
           course: data.course,
@@ -424,9 +427,23 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>שם מלא</FormLabel>
+                  <FormLabel>שם מלא של התלמיד</FormLabel>
                   <FormControl>
-                    <Input placeholder="הכנס את שמך המלא" {...field} />
+                    <Input placeholder="הכנס את שם התלמיד המלא" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="parent_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>שם הורה</FormLabel>
+                  <FormControl>
+                    <Input placeholder="הכנס את שם ההורה" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -656,9 +673,14 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
               )}
             />
             
-            <Button type="submit" className="w-full bg-gradient-primary hover:opacity-90">
-              שלח הודעה
-            </Button>
+            <div className="space-y-3">
+              <Button type="submit" className="w-full bg-gradient-primary hover:opacity-90">
+                שלח הודעה
+              </Button>
+              <p className="text-xs text-center text-muted-foreground">
+                הרישום אינו מחייב. נציג יצור עימך קשר לאישור ההרשמה.
+              </p>
+            </div>
           </form>
         </Form>
       </DialogContent>
