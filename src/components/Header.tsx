@@ -41,16 +41,19 @@ const Header = () => {
             />
           </button>
 
-          {/* Auth Button - left side (RTL) - fixed width for centering */}
-          <div className="w-24 flex justify-end items-center h-16 md:h-20">
+          {/* Auth Button - left side (RTL) - hidden on mobile, visible on desktop */}
+          <div className="w-24 hidden md:flex justify-end items-center h-16 md:h-20">
             <AuthButton />
           </div>
+          
+          {/* Empty placeholder for mobile to maintain centering */}
+          <div className="w-24 md:hidden"></div>
         </div>
 
         {/* Slide-down Navigation Menu */}
         <div 
           className={`overflow-hidden transition-all duration-300 ease-in-out ${
-            isMenuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+            isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
           <nav className="py-4 border-t border-border mt-2">
@@ -85,6 +88,11 @@ const Header = () => {
               >
                 צור קשר
               </button>
+              
+              {/* Auth Button - only visible in menu on mobile */}
+              <div className="md:hidden pt-2 border-t border-border mt-2">
+                <AuthButton />
+              </div>
             </div>
           </nav>
         </div>
