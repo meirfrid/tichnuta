@@ -620,6 +620,45 @@ export type Database = {
           },
         ]
       }
+      parent_recommendations: {
+        Row: {
+          id: string
+          parent_name: string
+          child_name: string | null
+          recommendation_text: string
+          rating: number | null
+          is_approved: boolean
+          is_featured: boolean
+          sort_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          parent_name: string
+          child_name?: string | null
+          recommendation_text: string
+          rating?: number | null
+          is_approved?: boolean
+          is_featured?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          parent_name?: string
+          child_name?: string | null
+          recommendation_text?: string
+          rating?: number | null
+          is_approved?: boolean
+          is_featured?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null

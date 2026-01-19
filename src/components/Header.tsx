@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Code2, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import AuthButton from "./AuthButton";
 import logo from "@/assets/logo.png";
 
@@ -22,57 +23,80 @@ const Header = () => {
   return (
     <header className="bg-background border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-3">
-        <div className="flex justify-between items-center">
-          {/* Desktop Navigation - moved to left */}
-          <nav className="hidden md:flex items-center gap-6 h-24">
-            <button onClick={() => handleNavigation("home")} className="text-foreground hover:text-primary transition-colors">בית</button>
-            <button onClick={() => handleNavigation("about")} className="text-foreground hover:text-primary transition-colors">אודות</button>
-            <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors">קורסים</button>
-            <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors">צור קשר</button>
-          </nav>
-
-          {/* Mobile Menu Button - moved to left */}
-          <button
-            className="md:hidden p-2 h-24 flex items-center"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-
-          {/* Logo Image - centered */}
-          <button 
-            onClick={() => navigate("/")}
-            className="flex items-center justify-center h-24"
-          >
-            <img
-              src={logo}
-              alt="תכנותא - חוגי תכנות מקצועיים לילדים"
-              className="h-16 md:h-20 w-auto object-contain"
-            />
-          </button>
-
-          {/* Desktop Auth Button - moved to right */}
-          <div className="hidden md:flex items-center h-24">
-            <AuthButton />
+        <div className="grid grid-cols-3 items-center h-24">
+          {/* Menu Button - left */}
+          <div className="flex justify-start">
+            <button
+              className="p-2 flex items-center"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
 
-          {/* Empty div for mobile to maintain spacing */}
-          <div className="md:hidden w-10 h-24"></div>
-        </div>
+          {/* Logo Image - centered */}
+          <div className="flex justify-center">
+            <button 
+              onClick={() => navigate("/")}
+              className="flex items-center justify-center"
+            >
+              <img
+                src={logo}
+                alt="תכנותא - חוגי תכנות מקצועיים לילדים"
+                className="h-16 md:h-20 w-auto object-contain"
+              />
+            </button>
+          </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden mt-4 pb-4 border-t border-border pt-4">
+          {/* Auth Button - right */}
+          <div className="flex justify-end items-center">
+            <AuthButton />
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Sheet - shown on all devices */}
+      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+        <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+          <nav className="mt-8">
             <div className="flex flex-col gap-4">
-              <button onClick={() => handleNavigation("home")} className="text-foreground hover:text-primary transition-colors text-right">בית</button>
-              <button onClick={() => handleNavigation("about")} className="text-foreground hover:text-primary transition-colors text-right">אודות</button>
-              <button onClick={() => handleNavigation("courses")} className="text-foreground hover:text-primary transition-colors text-right">קורסים</button>
-              <button onClick={() => handleNavigation("contact")} className="text-foreground hover:text-primary transition-colors text-right">צור קשר</button>
-              <AuthButton />
+              <button 
+                onClick={() => handleNavigation("home")} 
+                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+              >
+                בית
+              </button>
+              <button 
+                onClick={() => handleNavigation("about")} 
+                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+              >
+                אודות
+              </button>
+              <button 
+                onClick={() => handleNavigation("courses")} 
+                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+              >
+                קורסים
+              </button>
+              <button 
+                onClick={() => handleNavigation("recommendations")} 
+                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+              >
+                המלצות
+              </button>
+              <button 
+                onClick={() => handleNavigation("contact")} 
+                className="text-foreground hover:text-primary transition-colors text-right text-lg py-2 px-4 rounded-md hover:bg-muted"
+              >
+                צור קשר
+              </button>
+              <div className="mt-4 pt-4 border-t border-border">
+                <AuthButton />
+              </div>
             </div>
           </nav>
-        )}
-      </div>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 };

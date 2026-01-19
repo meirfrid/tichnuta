@@ -23,13 +23,15 @@ import {
   Edit,
   MessageCircle,
   TrendingUp,
-  Calendar
+  Calendar,
+  Star
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCaption } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import ContactsList from '@/components/ContactsList';
 import { Progress } from '@/components/ui/progress';
 
@@ -91,9 +93,23 @@ const AdminDashboard = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [courseFilter, setCourseFilter] = useState<string>('all');
 
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [editingRecommendation, setEditingRecommendation] = useState<any>(null);
+  const [showNewRecommendationForm, setShowNewRecommendationForm] = useState(false);
+  const [recommendationForm, setRecommendationForm] = useState({
+    parent_name: '',
+    child_name: '',
+    recommendation_text: '',
+    rating: 5,
+    is_approved: true,
+    is_featured: false,
+    sort_order: 0
+  });
+
   useEffect(() => {
     fetchRegistrations();
     fetchCourses();
+    fetchRecommendations();
   }, []);
 
   const fetchCourses = async () => {
@@ -115,6 +131,169 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error('Error:', error);
+    }
+  };
+
+  const fetchRecommendations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('parent_recommendations')
+        .select('*')
+        .order('is_featured', { ascending: false })
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching recommendations:', error);
+        const errorMessage = error?.message || error?.details || "לא ניתן לטעון את רשימת ההמלצות";
+        console.error('Full error details:', JSON.stringify(error, null, 2));
+        
+        // Check if table doesn't exist
+        if (error.message?.includes('does not exist') || error.code === '42P01') {
+          toast({
+            title: "שגיאה בטעינת המלצות",
+            description: "הטבלה לא קיימת. יש להריץ את המיגרציה במסד הנתונים.",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "שגיאה בטעינת המלצות",
+            description: errorMessage,
+            variant: "destructive"
+          });
+        }
+      } else {
+        setRecommendations(data || []);
+      }
+    } catch (error: any) {
+      console.error('Error:', error);
+      toast({
+        title: "שגיאה בטעינת המלצות",
+        description: error?.message || "אירעה שגיאה",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const saveRecommendation = async () => {
+    // Validate required fields
+    if (!recommendationForm.parent_name.trim()) {
+      toast({
+        title: "שגיאה",
+        description: "יש למלא את שם ההורה",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!recommendationForm.recommendation_text.trim()) {
+      toast({
+        title: "שגיאה",
+        description: "יש למלא את תוכן ההמלצה",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const dataToSave = {
+        parent_name: recommendationForm.parent_name.trim(),
+        child_name: recommendationForm.child_name.trim() || null,
+        recommendation_text: recommendationForm.recommendation_text.trim(),
+        rating: recommendationForm.rating || null,
+        is_approved: recommendationForm.is_approved,
+        is_featured: recommendationForm.is_featured,
+        sort_order: recommendationForm.sort_order || 0
+      };
+
+      if (editingRecommendation) {
+        const { error } = await supabase
+          .from('parent_recommendations')
+          .update(dataToSave)
+          .eq('id', editingRecommendation.id);
+
+        if (error) {
+          console.error('Error updating recommendation:', error);
+          throw error;
+        }
+        
+        toast({
+          title: "המלצה עודכנה בהצלחה",
+        });
+      } else {
+        const { error } = await supabase
+          .from('parent_recommendations')
+          .insert(dataToSave);
+
+        if (error) {
+          console.error('Error inserting recommendation:', error);
+          throw error;
+        }
+        
+        toast({
+          title: "המלצה נוספה בהצלחה",
+        });
+      }
+
+      setEditingRecommendation(null);
+      setShowNewRecommendationForm(false);
+      setRecommendationForm({
+        parent_name: '',
+        child_name: '',
+        recommendation_text: '',
+        rating: 5,
+        is_approved: true,
+        is_featured: false,
+        sort_order: 0
+      });
+      fetchRecommendations();
+    } catch (error: any) {
+      console.error('Error saving recommendation:', error);
+      const errorMessage = error?.message || error?.details || error?.hint || "אנא נסה שוב";
+      console.error('Full error details:', JSON.stringify(error, null, 2));
+      toast({
+        title: "שגיאה בשמירת המלצה",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const editRecommendation = (recommendation: any) => {
+    setEditingRecommendation(recommendation);
+    setRecommendationForm({
+      parent_name: recommendation.parent_name,
+      child_name: recommendation.child_name || '',
+      recommendation_text: recommendation.recommendation_text,
+      rating: recommendation.rating || 5,
+      is_approved: recommendation.is_approved,
+      is_featured: recommendation.is_featured,
+      sort_order: recommendation.sort_order || 0
+    });
+    setShowNewRecommendationForm(true);
+  };
+
+  const deleteRecommendation = async (recommendationId: string) => {
+    if (!confirm('האם אתה בטוח שברצונך למחוק את ההמלצה?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('parent_recommendations')
+        .delete()
+        .eq('id', recommendationId);
+
+      if (error) throw error;
+      
+      toast({
+        title: "המלצה נמחקה בהצלחה",
+      });
+      fetchRecommendations();
+    } catch (error) {
+      console.error('Error deleting recommendation:', error);
+      toast({
+        title: "שגיאה במחיקת המלצה",
+        variant: "destructive"
+      });
     }
   };
 
@@ -516,7 +695,7 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="content" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="content">
               <Settings className="h-4 w-4 ml-2" />
               תוכן האתר
@@ -524,6 +703,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="courses">
               <BookOpen className="h-4 w-4 ml-2" />
               קורסים
+            </TabsTrigger>
+            <TabsTrigger value="recommendations">
+              <Star className="h-4 w-4 ml-2" />
+              המלצות
             </TabsTrigger>
             <TabsTrigger value="contacts">
               <MessageSquare className="h-4 w-4 ml-2" />
@@ -1192,6 +1375,231 @@ const AdminDashboard = () => {
                     )}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Recommendations Tab */}
+          <TabsContent value="recommendations">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>ניהול המלצות הורים</CardTitle>
+                    <CardDescription>
+                      ערוך המלצות קיימות או הוסף המלצות חדשות ({recommendations.length} המלצות)
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={fetchRecommendations} variant="outline">
+                      <RefreshCw className="h-4 w-4 ml-2" />
+                      רענן
+                    </Button>
+                    <Button onClick={() => {
+                      setShowNewRecommendationForm(true);
+                      setEditingRecommendation(null);
+                      setRecommendationForm({
+                        parent_name: '',
+                        child_name: '',
+                        recommendation_text: '',
+                        rating: 5,
+                        is_approved: true,
+                        is_featured: false,
+                        sort_order: 0
+                      });
+                    }}>
+                      <Plus className="h-4 w-4 ml-2" />
+                      הוסף המלצה חדשה
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {showNewRecommendationForm ? (
+                  <div className="space-y-6 p-6 border rounded-lg bg-muted/30 mb-6">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-semibold">
+                        {editingRecommendation ? 'עריכת המלצה' : 'הוספת המלצה חדשה'}
+                      </h3>
+                      <Button variant="outline" onClick={() => {
+                        setShowNewRecommendationForm(false);
+                        setEditingRecommendation(null);
+                      }}>
+                        ביטול
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="parentName">שם ההורה *</Label>
+                        <Input
+                          id="parentName"
+                          value={recommendationForm.parent_name}
+                          onChange={(e) => setRecommendationForm(prev => ({ ...prev, parent_name: e.target.value }))}
+                          placeholder="למשל: דוד כהן"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="childName">שם הילד (אופציונלי)</Label>
+                        <Input
+                          id="childName"
+                          value={recommendationForm.child_name}
+                          onChange={(e) => setRecommendationForm(prev => ({ ...prev, child_name: e.target.value }))}
+                          placeholder="למשל: יוסף כהן"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <Label htmlFor="recommendationText">תוכן ההמלצה *</Label>
+                        <Textarea
+                          id="recommendationText"
+                          value={recommendationForm.recommendation_text}
+                          onChange={(e) => setRecommendationForm(prev => ({ ...prev, recommendation_text: e.target.value }))}
+                          placeholder="כתוב כאן את תוכן ההמלצה..."
+                          rows={4}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="rating">דירוג (1-5)</Label>
+                        <Select 
+                          value={recommendationForm.rating?.toString() || '5'} 
+                          onValueChange={(value) => setRecommendationForm(prev => ({ ...prev, rating: parseInt(value) }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1">1 כוכב</SelectItem>
+                            <SelectItem value="2">2 כוכבים</SelectItem>
+                            <SelectItem value="3">3 כוכבים</SelectItem>
+                            <SelectItem value="4">4 כוכבים</SelectItem>
+                            <SelectItem value="5">5 כוכבים</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="sortOrder">סדר הצגה</Label>
+                        <Input
+                          id="sortOrder"
+                          type="number"
+                          value={recommendationForm.sort_order}
+                          onChange={(e) => setRecommendationForm(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
+                          placeholder="0"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          המלצות עם מספר נמוך יותר יוצגו ראשונות
+                        </p>
+                      </div>
+
+                      <div className="md:col-span-2 flex items-center gap-6">
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            id="isApproved"
+                            checked={recommendationForm.is_approved}
+                            onCheckedChange={(checked) => setRecommendationForm(prev => ({ ...prev, is_approved: checked }))}
+                          />
+                          <Label htmlFor="isApproved" className="cursor-pointer">
+                            מאושר להצגה באתר
+                          </Label>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            id="isFeatured"
+                            checked={recommendationForm.is_featured}
+                            onCheckedChange={(checked) => setRecommendationForm(prev => ({ ...prev, is_featured: checked }))}
+                          />
+                          <Label htmlFor="isFeatured" className="cursor-pointer">
+                            המלצה מובילה
+                          </Label>
+                        </div>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <Button onClick={saveRecommendation} className="w-full">
+                          <Save className="h-4 w-4 ml-2" />
+                          {editingRecommendation ? 'עדכן המלצה' : 'שמור המלצה'}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="space-y-4">
+                  {recommendations.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      עדיין אין המלצות. לחץ על "הוסף המלצה חדשה" כדי להתחיל.
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {recommendations.map((rec) => (
+                        <Card key={rec.id} className={rec.is_featured ? 'border-primary/50' : ''}>
+                          <CardContent className="pt-6">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h4 className="font-semibold">{rec.parent_name}</h4>
+                                  {rec.child_name && (
+                                    <span className="text-sm text-muted-foreground">(הורה של {rec.child_name})</span>
+                                  )}
+                                  {rec.is_featured && (
+                                    <Badge variant="default" className="bg-primary">מובילה</Badge>
+                                  )}
+                                  {rec.is_approved ? (
+                                    <Badge variant="outline" className="text-green-600 border-green-600">מאושר</Badge>
+                                  ) : (
+                                    <Badge variant="outline" className="text-orange-600 border-orange-600">ממתין לאישור</Badge>
+                                  )}
+                                  {rec.rating && (
+                                    <div className="flex items-center gap-1">
+                                      {[...Array(5)].map((_, i) => (
+                                        <Star
+                                          key={i}
+                                          className={`h-4 w-4 ${
+                                            i < rec.rating!
+                                              ? 'fill-yellow-400 text-yellow-400'
+                                              : 'text-gray-300'
+                                          }`}
+                                        />
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                <p className="text-muted-foreground mb-2">"{rec.recommendation_text}"</p>
+                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                  <span>סדר: {rec.sort_order || 0}</span>
+                                  <span>נוצר: {new Date(rec.created_at).toLocaleDateString('he-IL')}</span>
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => editRecommendation(rec)}
+                                >
+                                  <Edit className="h-4 w-4 ml-2" />
+                                  ערוך
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => deleteRecommendation(rec.id)}
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4 ml-2" />
+                                  מחק
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
