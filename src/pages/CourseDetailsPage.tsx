@@ -72,11 +72,28 @@ interface CourseSchedule {
   end_time: string | null;
 }
 
+interface CourseVariant {
+  id: string;
+  course_id: string;
+  name: string;
+  gender: string;
+  location: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string | null;
+  min_grade: string | null;
+  max_grade: string | null;
+  learning_period: string | null;
+  is_active: boolean;
+  sort_order: number;
+}
+
 const CourseDetailsPage = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [course, setCourse] = useState<any>(null);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
+  const [variants, setVariants] = useState<CourseVariant[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
 
@@ -87,6 +104,7 @@ const CourseDetailsPage = () => {
 
       fetchCourse();
       fetchSchedules();
+      fetchVariants();
     }
   }, [courseId]);
 
@@ -125,6 +143,42 @@ const CourseDetailsPage = () => {
     } catch (error) {
       console.error("Error:", error);
     }
+  };
+
+  const fetchVariants = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("course_variants")
+        .select("*")
+        .eq("course_id", courseId)
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching variants:", error);
+      } else {
+        setVariants(data || []);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const getGenderLabel = (gender: string) => {
+    switch (gender) {
+      case "boys": return "בנים";
+      case "girls": return "בנות";
+      case "mixed": return "מעורב";
+      default: return gender;
+    }
+  };
+
+  const getGradeRange = (minGrade: string | null, maxGrade: string | null) => {
+    if (!minGrade && !maxGrade) return null;
+    if (minGrade && maxGrade) return `${minGrade} - ${maxGrade}`;
+    if (minGrade) return `מ${minGrade}`;
+    if (maxGrade) return `עד ${maxGrade}`;
+    return null;
   };
 
   // Group schedules by location type (online vs frontal)
@@ -360,6 +414,62 @@ const CourseDetailsPage = () => {
                   </div>
                 </CardContent>
               </Card>
+            )}
+
+            {/* Course Variants Section */}
+            {variants.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Calendar className="h-6 w-6 text-primary" />
+                  מחזורי לימוד
+                </h2>
+                <div className="grid gap-4">
+                  {variants.map((variant) => (
+                    <Card key={variant.id} className="border border-border hover:border-primary/30 transition-colors">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                          <div className="space-y-3 flex-1">
+                            <h3 className="text-lg font-semibold text-foreground">
+                              {variant.name}
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="outline" className="bg-muted">
+                                <Users className="h-3 w-3 ml-1" />
+                                {getGenderLabel(variant.gender)}
+                              </Badge>
+                              <Badge variant="outline" className="bg-muted">
+                                <MapPin className="h-3 w-3 ml-1" />
+                                {variant.location}
+                              </Badge>
+                              <Badge variant="outline" className="bg-muted">
+                                <Clock className="h-3 w-3 ml-1" />
+                                {variant.day_of_week} {variant.start_time}{variant.end_time ? ` - ${variant.end_time}` : ''}
+                              </Badge>
+                              {getGradeRange(variant.min_grade, variant.max_grade) && (
+                                <Badge variant="outline" className="bg-muted">
+                                  כיתות: {getGradeRange(variant.min_grade, variant.max_grade)}
+                                </Badge>
+                              )}
+                              {variant.learning_period && (
+                                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                                  {variant.learning_period}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            className="bg-gradient-primary hover:opacity-90 transition-opacity shrink-0"
+                            onClick={handleRegister}
+                          >
+                            להרשמה
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* FAQ Section */}
