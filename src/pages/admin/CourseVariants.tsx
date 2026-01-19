@@ -205,14 +205,14 @@ const CourseVariants = () => {
           .eq('id', editingVariant.id);
 
         if (error) throw error;
-        toast({ title: "מקבץ עודכן בהצלחה" });
+        toast({ title: "מחזור לימוד עודכן בהצלחה" });
       } else {
         const { error } = await supabase
           .from('course_variants')
           .insert(variantData);
 
         if (error) throw error;
-        toast({ title: "מקבץ נוסף בהצלחה" });
+        toast({ title: "מחזור לימוד נוסף בהצלחה" });
       }
 
       resetForm();
@@ -220,7 +220,7 @@ const CourseVariants = () => {
     } catch (error: any) {
       console.error('Error saving variant:', error);
       toast({
-        title: "שגיאה בשמירת מקבץ",
+        title: "שגיאה בשמירת מחזור לימוד",
         description: error.message,
         variant: "destructive"
       });
@@ -228,7 +228,7 @@ const CourseVariants = () => {
   };
 
   const handleDelete = async (variantId: string) => {
-    if (!confirm('האם אתה בטוח שברצונך למחוק את המקבץ?')) return;
+    if (!confirm('האם אתה בטוח שברצונך למחוק את מחזור הלימוד?')) return;
 
     try {
       const { error } = await supabase
@@ -237,11 +237,11 @@ const CourseVariants = () => {
         .eq('id', variantId);
 
       if (error) throw error;
-      toast({ title: "מקבץ נמחק בהצלחה" });
+      toast({ title: "מחזור לימוד נמחק בהצלחה" });
       fetchVariants();
     } catch (error: any) {
       toast({
-        title: "שגיאה במחיקת מקבץ",
+        title: "שגיאה במחיקת מחזור לימוד",
         description: error.message,
         variant: "destructive"
       });
@@ -309,7 +309,7 @@ const CourseVariants = () => {
                 <Settings className="h-4 w-4 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">ניהול מקבצים</h1>
+                <h1 className="text-xl font-bold">ניהול מחזורי לימוד</h1>
                 <p className="text-sm text-muted-foreground">{course?.title}</p>
               </div>
             </div>
@@ -322,9 +322,9 @@ const CourseVariants = () => {
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
-                <CardTitle>מקבצי קורס</CardTitle>
+                <CardTitle>מחזורי לימוד</CardTitle>
                 <CardDescription>
-                  הגדר אפשרויות מקובצות (מגדר + מיקום + יום/שעה + כיתות + תקופת לימוד)
+                  הגדר מחזורי לימוד (מגדר + מיקום + יום/שעה + כיתות + תקופת לימוד)
                 </CardDescription>
               </div>
               <div className="flex gap-2">
@@ -334,7 +334,7 @@ const CourseVariants = () => {
                 </Button>
                 <Button onClick={() => { resetForm(); setShowForm(true); }}>
                   <Plus className="h-4 w-4 ml-2" />
-                  הוסף מקבץ
+                  הוסף מחזור לימוד
                 </Button>
               </div>
             </div>
@@ -344,14 +344,14 @@ const CourseVariants = () => {
               <div className="mb-6 p-6 border rounded-lg bg-muted/30 space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold">
-                    {editingVariant ? 'עריכת מקבץ' : 'הוספת מקבץ חדש'}
+                    {editingVariant ? 'עריכת מחזור לימוד' : 'הוספת מחזור לימוד חדש'}
                   </h3>
                   <Button variant="outline" onClick={resetForm}>ביטול</Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="md:col-span-2 lg:col-span-3">
-                    <Label>שם המקבץ (נוצר אוטומטית)</Label>
+                    <Label>שם מחזור הלימוד (נוצר אוטומטית)</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
@@ -479,7 +479,7 @@ const CourseVariants = () => {
                       checked={formData.is_active}
                       onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
                     />
-                    <Label>מקבץ פעיל</Label>
+                    <Label>מחזור פעיל</Label>
                   </div>
 
                   <div>
@@ -494,15 +494,15 @@ const CourseVariants = () => {
 
                 <Button onClick={handleSave} className="w-full md:w-auto">
                   <Save className="h-4 w-4 ml-2" />
-                  {editingVariant ? 'עדכן מקבץ' : 'שמור מקבץ'}
+                  {editingVariant ? 'עדכן מחזור לימוד' : 'שמור מחזור לימוד'}
                 </Button>
               </div>
             )}
 
             {variants.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
-                <p>אין מקבצים לקורס זה.</p>
-                <p className="text-sm mt-2">הוסף מקבץ ראשון כדי להתחיל.</p>
+                <p>אין מחזורי לימוד לקורס זה.</p>
+                <p className="text-sm mt-2">הוסף מחזור לימוד ראשון כדי להתחיל.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
