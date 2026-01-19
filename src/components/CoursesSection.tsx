@@ -43,10 +43,20 @@ const contactFormSchema = z.object({
   grade: z.string().min(1, "יש לבחור כיתה").max(50, "כיתה לא תקינה"),
   time: z.string().min(1, "יש לבחור יום ושעה").max(100, "זמן לא תקין"),
   gender: z.string().min(1, "יש לבחור מגדר"),
+  learning_period: z.string().max(200, "תקופת לימוד לא תקינה").optional(),
   message: z.string().max(2000, "הודעה ארוכה מדי").optional(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
+
+interface CoursePeriod {
+  id: string;
+  course_id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+}
 
 interface CourseSchedule {
   id: string;
@@ -61,6 +71,7 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
   const [open, setOpen] = useState(forceOpen);
   const [selectedCourseData, setSelectedCourseData] = useState<any>(null);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
+  const [periods, setPeriods] = useState<CoursePeriod[]>([]);
   const [selectedLocationSchedules, setSelectedLocationSchedules] = useState<CourseSchedule[]>([]);
   const { toast } = useToast();
   
@@ -89,15 +100,17 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
       grade: "",
       time: "",
       gender: "",
+      learning_period: "",
       message: "",
     },
   });
 
-  // Fetch schedules when course changes
+  // Fetch schedules and periods when course changes
   useEffect(() => {
     const fetchSchedules = async () => {
       if (!selectedCourseData?.id) {
         setSchedules([]);
+        setPeriods([]);
         return;
       }
       
@@ -112,8 +125,27 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
         setSchedules(data || []);
       }
     };
+
+    const fetchPeriods = async () => {
+      if (!selectedCourseData?.id) {
+        setPeriods([]);
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('course_periods')
+        .select('*')
+        .eq('course_id', selectedCourseData.id)
+        .eq('is_active', true)
+        .order('start_date');
+      
+      if (!error && data) {
+        setPeriods(data);
+      }
+    };
     
     fetchSchedules();
+    fetchPeriods();
   }, [selectedCourseData?.id]);
 
   // Get unique locations - from schedules if available, otherwise from course locations
@@ -181,6 +213,7 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
           grade: data.grade,
           time: data.time,
           gender: data.gender,
+          learning_period: data.learning_period || null,
           message: data.message || null,
         });
 
@@ -424,6 +457,37 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
                       ) : (
                         <div className="p-2 text-sm text-muted-foreground text-center">
                           {form.getValues("location") ? "לא הוגדרו זמנים למקום זה" : "בחר קודם מקום לימוד"}
+                        </div>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="learning_period"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>תקופת לימוד</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="בחר תקופת לימוד" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="z-[9999]">
+                      {periods.length > 0 ? (
+                        periods.map((period) => (
+                          <SelectItem key={period.id} value={period.name}>
+                            {period.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <div className="p-2 text-sm text-muted-foreground text-center">
+                          {selectedCourseData ? "לא הוגדרו תקופות לימוד לקורס זה" : "בחר קודם קורס"}
                         </div>
                       )}
                     </SelectContent>
