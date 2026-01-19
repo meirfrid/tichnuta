@@ -96,6 +96,7 @@ const CourseDetailsPage = () => {
   const [variants, setVariants] = useState<CourseVariant[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState<CourseVariant | null>(null);
 
   useEffect(() => {
     if (courseId) {
@@ -232,8 +233,9 @@ const CourseDetailsPage = () => {
     return "scratch";
   };
 
-  const handleRegister = () => {
+  const handleRegister = (variant?: CourseVariant) => {
     // Open registration form dialog on this page (stay on course details)
+    setSelectedVariant(variant || null);
     setIsRegistrationOpen(true);
   };
 
@@ -460,7 +462,7 @@ const CourseDetailsPage = () => {
                           <Button
                             size="sm"
                             className="bg-gradient-primary hover:opacity-90 transition-opacity shrink-0"
-                            onClick={handleRegister}
+                            onClick={() => handleRegister(variant)}
                           >
                             להרשמה
                           </Button>
@@ -609,7 +611,7 @@ const CourseDetailsPage = () => {
                   {/* CTA Button */}
                   <Button
                     className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
-                    onClick={handleRegister}
+                    onClick={() => handleRegister()}
                   >
                     להרשמה לקורס
                   </Button>
@@ -630,7 +632,18 @@ const CourseDetailsPage = () => {
           selectedCourse={course.title}
           courses={[course]}
           forceOpen={true}
-          onClose={() => setIsRegistrationOpen(false)}
+          onClose={() => {
+            setIsRegistrationOpen(false);
+            setSelectedVariant(null);
+          }}
+          prefilledVariant={selectedVariant ? {
+            gender: selectedVariant.gender,
+            location: selectedVariant.location,
+            day_of_week: selectedVariant.day_of_week,
+            start_time: selectedVariant.start_time,
+            end_time: selectedVariant.end_time,
+            learning_period: selectedVariant.learning_period
+          } : undefined}
         />
       )}
 

@@ -82,7 +82,16 @@ interface CourseVariant {
   is_active: boolean;
 }
 
-export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [], forceOpen = false, onClose }: { selectedCourse?: string; buttonText?: string; courses?: any[]; forceOpen?: boolean; onClose?: () => void }) => {
+interface PrefilledVariant {
+  gender: string;
+  location: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string | null;
+  learning_period: string | null;
+}
+
+export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והרשמה", courses = [], forceOpen = false, onClose, prefilledVariant }: { selectedCourse?: string; buttonText?: string; courses?: any[]; forceOpen?: boolean; onClose?: () => void; prefilledVariant?: PrefilledVariant }) => {
   const [open, setOpen] = useState(forceOpen);
   const [selectedCourseData, setSelectedCourseData] = useState<any>(null);
   const [variants, setVariants] = useState<CourseVariant[]>([]);
@@ -93,6 +102,9 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
   const [filteredLocations, setFilteredLocations] = useState<string[]>([]);
   const [filteredTimes, setFilteredTimes] = useState<{ display: string; value: string; learning_period?: string | null }[]>([]);
   const [filteredPeriods, setFilteredPeriods] = useState<string[]>([]);
+  
+  // Track if we've applied prefilled data
+  const [prefilledApplied, setPrefilledApplied] = useState(false);
   
   const { toast } = useToast();
   
@@ -107,6 +119,17 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
     setOpen(newOpen);
     if (!newOpen && onClose) {
       onClose();
+      setPrefilledApplied(false); // Reset when dialog closes
+    }
+  };
+
+  // Convert gender from English to Hebrew for form
+  const getGenderValue = (gender: string) => {
+    switch (gender) {
+      case "boys": return "בן";
+      case "girls": return "בת";
+      case "mixed": return "בן"; // Default to בן for mixed
+      default: return gender;
     }
   };
 
@@ -196,6 +219,32 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
       setSelectedCourseData(course);
     }
   }, [selectedCourse, courses, open]);
+
+  // Apply prefilled variant data after variants are loaded
+  useEffect(() => {
+    if (prefilledVariant && variants.length > 0 && !prefilledApplied && open) {
+      // Set gender first (this triggers location filtering)
+      const genderValue = getGenderValue(prefilledVariant.gender);
+      form.setValue("gender", genderValue);
+      
+      // We need to wait for the location filter to update, then set location
+      setTimeout(() => {
+        form.setValue("location", prefilledVariant.location);
+        
+        // Wait for time filter to update, then set time
+        setTimeout(() => {
+          const timeValue = `יום ${prefilledVariant.day_of_week} ${prefilledVariant.start_time}${prefilledVariant.end_time ? ` - ${prefilledVariant.end_time}` : ''}`;
+          form.setValue("time", timeValue);
+          
+          if (prefilledVariant.learning_period) {
+            form.setValue("learning_period", prefilledVariant.learning_period);
+          }
+          
+          setPrefilledApplied(true);
+        }, 100);
+      }, 100);
+    }
+  }, [prefilledVariant, variants, prefilledApplied, open, form]);
 
   // Filter locations based on selected gender (only when using variants)
   useEffect(() => {
