@@ -104,8 +104,9 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
   const [filteredTimes, setFilteredTimes] = useState<{ display: string; value: string; learning_period?: string | null; learning_periods?: string[] }[]>([]);
   const [filteredPeriods, setFilteredPeriods] = useState<string[]>([]);
   
-  // Track if we've applied prefilled data
+  // Track if we've applied prefilled data and if prefilling is in progress
   const [prefilledApplied, setPrefilledApplied] = useState(false);
+  const [isPrefillingInProgress, setIsPrefillingInProgress] = useState(false);
   
   const { toast } = useToast();
   
@@ -121,6 +122,7 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
     if (!newOpen && onClose) {
       onClose();
       setPrefilledApplied(false); // Reset when dialog closes
+      setIsPrefillingInProgress(false); // Reset prefilling state
     }
   };
 
@@ -225,28 +227,48 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
   // Apply prefilled variant data after variants are loaded
   useEffect(() => {
     if (prefilledVariant && variants.length > 0 && !prefilledApplied && open) {
+      // Start prefilling process
+      setIsPrefillingInProgress(true);
+      
       // Set gender first (this triggers location filtering)
       const genderValue = getGenderValue(prefilledVariant.gender);
-      form.setValue("gender", genderValue);
+      form.setValue("gender", genderValue, { shouldDirty: true });
       
-      // We need to wait for the location filter to update, then set location
-      setTimeout(() => {
-        form.setValue("location", prefilledVariant.location);
-        
-        // Wait for time filter to update, then set time
-        setTimeout(() => {
-          const timeValue = `יום ${prefilledVariant.day_of_week} ${prefilledVariant.start_time}${prefilledVariant.end_time ? ` - ${prefilledVariant.end_time}` : ''}`;
-          form.setValue("time", timeValue);
-          
-          if (prefilledVariant.learning_period) {
-            form.setValue("learning_period", prefilledVariant.learning_period);
-          }
-          
-          setPrefilledApplied(true);
-        }, 100);
-      }, 100);
+      // Mark as applied immediately to prevent re-runs
+      setPrefilledApplied(true);
     }
   }, [prefilledVariant, variants, prefilledApplied, open, form]);
+
+  // Continue prefilling after locations are filtered
+  useEffect(() => {
+    if (prefilledVariant && isPrefillingInProgress && filteredLocations.length > 0 && !form.getValues("location")) {
+      if (filteredLocations.includes(prefilledVariant.location)) {
+        form.setValue("location", prefilledVariant.location, { shouldDirty: true });
+      }
+    }
+  }, [prefilledVariant, isPrefillingInProgress, filteredLocations, form]);
+
+  // Continue prefilling after times are filtered
+  useEffect(() => {
+    if (prefilledVariant && isPrefillingInProgress && filteredTimes.length > 0 && form.getValues("location") && !form.getValues("time")) {
+      const timeValue = `יום ${prefilledVariant.day_of_week} ${prefilledVariant.start_time}${prefilledVariant.end_time ? ` - ${prefilledVariant.end_time}` : ''}`;
+      const matchingTime = filteredTimes.find(t => t.value === timeValue);
+      if (matchingTime) {
+        form.setValue("time", timeValue, { shouldDirty: true });
+      }
+    }
+  }, [prefilledVariant, isPrefillingInProgress, filteredTimes, form]);
+
+  // Continue prefilling after periods are filtered
+  useEffect(() => {
+    if (prefilledVariant && isPrefillingInProgress && filteredPeriods.length > 0 && form.getValues("time")) {
+      if (prefilledVariant.learning_period && filteredPeriods.includes(prefilledVariant.learning_period)) {
+        form.setValue("learning_period", prefilledVariant.learning_period, { shouldDirty: true });
+      }
+      // End prefilling process
+      setIsPrefillingInProgress(false);
+    }
+  }, [prefilledVariant, isPrefillingInProgress, filteredPeriods, form]);
 
   // Convert form gender to variant gender for filtering
   const getVariantGender = (formGender: string) => {
@@ -365,9 +387,12 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
     }
   }, [hasVariants, filteredTimes, periods, form.watch("time")]);
 
-  // Watch for form changes and reset dependent fields
+  // Watch for form changes and reset dependent fields (skip during prefilling)
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
+      // Skip resetting fields during prefilling process
+      if (isPrefillingInProgress) return;
+      
       if (name === 'course') {
         const course = courses.find(c => c.title === value.course);
         setSelectedCourseData(course);
@@ -407,7 +432,7 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
     });
     
     return () => subscription.unsubscribe();
-  }, [courses, form, hasVariants]);
+  }, [courses, form, hasVariants, isPrefillingInProgress, filteredTimes]);
 
   const onSubmit = async (data: ContactFormData) => {
     try {
