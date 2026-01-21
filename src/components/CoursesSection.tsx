@@ -101,12 +101,11 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
   
   // Filtered options based on selections
   const [filteredLocations, setFilteredLocations] = useState<string[]>([]);
-  const [filteredTimes, setFilteredTimes] = useState<{ display: string; value: string; learning_period?: string | null; learning_periods?: string[] }[]>([]);
+  const [filteredTimes, setFilteredTimes] = useState<{ display: string; value: string; learning_period?: string | null }[]>([]);
   const [filteredPeriods, setFilteredPeriods] = useState<string[]>([]);
   
-  // Track if we've applied prefilled data and if prefilling is in progress
+  // Track if we've applied prefilled data
   const [prefilledApplied, setPrefilledApplied] = useState(false);
-  const [isPrefillingInProgress, setIsPrefillingInProgress] = useState(false);
   
   const { toast } = useToast();
   
@@ -122,7 +121,6 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
     if (!newOpen && onClose) {
       onClose();
       setPrefilledApplied(false); // Reset when dialog closes
-      setIsPrefillingInProgress(false); // Reset prefilling state
     }
   };
 
@@ -227,66 +225,36 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
   // Apply prefilled variant data after variants are loaded
   useEffect(() => {
     if (prefilledVariant && variants.length > 0 && !prefilledApplied && open) {
-      // Start prefilling process
-      setIsPrefillingInProgress(true);
-      
       // Set gender first (this triggers location filtering)
       const genderValue = getGenderValue(prefilledVariant.gender);
-      form.setValue("gender", genderValue, { shouldDirty: true });
+      form.setValue("gender", genderValue);
       
-      // Mark as applied immediately to prevent re-runs
-      setPrefilledApplied(true);
+      // We need to wait for the location filter to update, then set location
+      setTimeout(() => {
+        form.setValue("location", prefilledVariant.location);
+        
+        // Wait for time filter to update, then set time
+        setTimeout(() => {
+          const timeValue = `יום ${prefilledVariant.day_of_week} ${prefilledVariant.start_time}${prefilledVariant.end_time ? ` - ${prefilledVariant.end_time}` : ''}`;
+          form.setValue("time", timeValue);
+          
+          if (prefilledVariant.learning_period) {
+            form.setValue("learning_period", prefilledVariant.learning_period);
+          }
+          
+          setPrefilledApplied(true);
+        }, 100);
+      }, 100);
     }
   }, [prefilledVariant, variants, prefilledApplied, open, form]);
-
-  // Continue prefilling after locations are filtered
-  useEffect(() => {
-    if (prefilledVariant && isPrefillingInProgress && filteredLocations.length > 0 && !form.getValues("location")) {
-      if (filteredLocations.includes(prefilledVariant.location)) {
-        form.setValue("location", prefilledVariant.location, { shouldDirty: true });
-      }
-    }
-  }, [prefilledVariant, isPrefillingInProgress, filteredLocations, form]);
-
-  // Continue prefilling after times are filtered
-  useEffect(() => {
-    if (prefilledVariant && isPrefillingInProgress && filteredTimes.length > 0 && form.getValues("location") && !form.getValues("time")) {
-      const timeValue = `יום ${prefilledVariant.day_of_week} ${prefilledVariant.start_time}${prefilledVariant.end_time ? ` - ${prefilledVariant.end_time}` : ''}`;
-      const matchingTime = filteredTimes.find(t => t.value === timeValue);
-      if (matchingTime) {
-        form.setValue("time", timeValue, { shouldDirty: true });
-      }
-    }
-  }, [prefilledVariant, isPrefillingInProgress, filteredTimes, form]);
-
-  // Continue prefilling after periods are filtered
-  useEffect(() => {
-    if (prefilledVariant && isPrefillingInProgress && filteredPeriods.length > 0 && form.getValues("time")) {
-      if (prefilledVariant.learning_period && filteredPeriods.includes(prefilledVariant.learning_period)) {
-        form.setValue("learning_period", prefilledVariant.learning_period, { shouldDirty: true });
-      }
-      // End prefilling process
-      setIsPrefillingInProgress(false);
-    }
-  }, [prefilledVariant, isPrefillingInProgress, filteredPeriods, form]);
-
-  // Convert form gender to variant gender for filtering
-  const getVariantGender = (formGender: string) => {
-    switch (formGender) {
-      case "בן": return "boys";
-      case "בת": return "girls";
-      default: return formGender;
-    }
-  };
 
   // Filter locations based on selected gender (only when using variants)
   useEffect(() => {
     if (hasVariants) {
       const selectedGender = form.getValues("gender");
       if (selectedGender) {
-        const variantGender = getVariantGender(selectedGender);
         const matchingVariants = variants.filter(v => 
-          v.gender === variantGender || v.gender === 'mixed'
+          v.gender === selectedGender || v.gender === 'מעורב'
         );
         const locations = [...new Set(matchingVariants.map(v => v.location))];
         setFilteredLocations(locations);
@@ -308,44 +276,23 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
       const selectedGender = form.getValues("gender");
       const selectedLocation = form.getValues("location");
       if (selectedGender && selectedLocation) {
-        const variantGender = getVariantGender(selectedGender);
         const matchingVariants = variants.filter(v => 
-          (v.gender === variantGender || v.gender === 'mixed') && 
+          (v.gender === selectedGender || v.gender === 'מעורב') && 
           v.location === selectedLocation
         );
-        // Create unique time options (without duplicating for different learning periods)
-        const timeMap = new Map<string, { display: string; value: string; learning_periods: string[] }>();
-        matchingVariants.forEach(v => {
-          const timeValue = `יום ${v.day_of_week} ${v.start_time}${v.end_time ? ` - ${v.end_time}` : ''}`;
-          if (!timeMap.has(timeValue)) {
-            timeMap.set(timeValue, {
-              display: timeValue,
-              value: timeValue,
-              learning_periods: []
-            });
-          }
-          if (v.learning_period) {
-            const existing = timeMap.get(timeValue)!;
-            if (!existing.learning_periods.includes(v.learning_period)) {
-              existing.learning_periods.push(v.learning_period);
-            }
-          }
-        });
-        
-        // Convert to array with display showing periods if multiple exist
-        const times = Array.from(timeMap.values()).map(t => ({
-          display: t.learning_periods.length > 1 
-            ? t.display 
-            : t.learning_periods.length === 1 
-              ? `${t.display} (${t.learning_periods[0]})` 
-              : t.display,
-          value: t.value,
-          learning_period: t.learning_periods.length === 1 ? t.learning_periods[0] : null,
-          learning_periods: t.learning_periods
+        const times = matchingVariants.map(v => ({
+          display: `יום ${v.day_of_week} ${v.start_time}${v.end_time ? ` - ${v.end_time}` : ''}${v.learning_period ? ` (${v.learning_period})` : ''}`,
+          value: `יום ${v.day_of_week} ${v.start_time}${v.end_time ? ` - ${v.end_time}` : ''}`,
+          learning_period: v.learning_period
         }));
         setFilteredTimes(times);
+        
+        // Also set available periods from matching variants
+        const variantPeriods = [...new Set(matchingVariants.filter(v => v.learning_period).map(v => v.learning_period!))];
+        setFilteredPeriods(variantPeriods.length > 0 ? variantPeriods : periods.map(p => p.name));
       } else {
         setFilteredTimes([]);
+        setFilteredPeriods([]);
       }
     } else {
       // Fallback to old behavior
@@ -355,44 +302,22 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
         const times = locationSchedules.map(s => ({
           display: `${s.day_of_week} ${s.start_time}${s.end_time ? ` - ${s.end_time}` : ''}`,
           value: `${s.day_of_week} ${s.start_time}${s.end_time ? ` - ${s.end_time}` : ''}`,
-          learning_period: null,
-          learning_periods: []
+          learning_period: null
         }));
         setFilteredTimes(times);
       } else if (selectedLocation && selectedCourseData?.times?.length > 0) {
-        const times = selectedCourseData.times.map((t: string) => ({ display: t, value: t, learning_period: null, learning_periods: [] }));
+        const times = selectedCourseData.times.map((t: string) => ({ display: t, value: t, learning_period: null }));
         setFilteredTimes(times);
       } else {
         setFilteredTimes([]);
       }
-    }
-  }, [hasVariants, variants, schedules, selectedCourseData, form.watch("gender"), form.watch("location")]);
-
-  // Filter periods based on selected time
-  useEffect(() => {
-    if (hasVariants) {
-      const selectedTime = form.getValues("time");
-      if (selectedTime) {
-        const matchingTime = filteredTimes.find(t => t.value === selectedTime);
-        if (matchingTime && matchingTime.learning_periods && matchingTime.learning_periods.length > 0) {
-          setFilteredPeriods(matchingTime.learning_periods);
-        } else {
-          setFilteredPeriods(periods.map(p => p.name));
-        }
-      } else {
-        setFilteredPeriods([]);
-      }
-    } else {
       setFilteredPeriods(periods.map(p => p.name));
     }
-  }, [hasVariants, filteredTimes, periods, form.watch("time")]);
+  }, [hasVariants, variants, schedules, selectedCourseData, periods, form.watch("gender"), form.watch("location")]);
 
-  // Watch for form changes and reset dependent fields (skip during prefilling)
+  // Watch for form changes and reset dependent fields
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      // Skip resetting fields during prefilling process
-      if (isPrefillingInProgress) return;
-      
       if (name === 'course') {
         const course = courses.find(c => c.title === value.course);
         setSelectedCourseData(course);
@@ -417,22 +342,17 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
         form.setValue("learning_period", "");
       }
       if (name === 'time' && hasVariants) {
-        // Reset learning_period first
-        form.setValue("learning_period", "");
-        // Auto-select learning period if only one option exists for this time
+        // Auto-select learning period from the selected time variant
         const selectedTime = value.time;
         const matchingTime = filteredTimes.find(t => t.value === selectedTime);
-        if (matchingTime?.learning_periods && matchingTime.learning_periods.length === 1) {
-          form.setValue("learning_period", matchingTime.learning_periods[0]);
-        } else if (matchingTime?.learning_period) {
-          // Fallback to single learning_period if exists
+        if (matchingTime?.learning_period) {
           form.setValue("learning_period", matchingTime.learning_period);
         }
       }
     });
     
     return () => subscription.unsubscribe();
-  }, [courses, form, hasVariants, isPrefillingInProgress, filteredTimes]);
+  }, [courses, form, hasVariants]);
 
   const onSubmit = async (data: ContactFormData) => {
     try {
@@ -709,34 +629,22 @@ export const ContactForm = ({ selectedCourse, buttonText = "לפרטים והר�
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>תקופת לימוד</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    value={field.value} 
-                    disabled={hasVariants && (!form.getValues("gender") || !form.getValues("location") || !form.getValues("time"))}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={
-                          hasVariants && !form.getValues("time") 
-                            ? "בחר קודם יום ושעה" 
-                            : "בחר תקופת לימוד"
-                        } />
+                        <SelectValue placeholder="בחר תקופת לימוד" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="z-[9999]">
-                      {filteredPeriods.length > 0 ? (
-                        filteredPeriods.map((periodName, index) => (
-                          <SelectItem key={index} value={periodName}>
-                            {periodName}
+                      {periods.length > 0 ? (
+                        periods.map((period) => (
+                          <SelectItem key={period.id} value={period.name}>
+                            {period.name}
                           </SelectItem>
                         ))
                       ) : (
                         <div className="p-2 text-sm text-muted-foreground text-center">
-                          {hasVariants && !form.getValues("time") 
-                            ? "בחר קודם יום ושעה" 
-                            : selectedCourseData 
-                              ? "לא הוגדרו תקופות לימוד לקורס זה" 
-                              : "בחר קודם קורס"}
+                          {selectedCourseData ? "לא הוגדרו תקופות לימוד לקורס זה" : "בחר קודם קורס"}
                         </div>
                       )}
                     </SelectContent>
