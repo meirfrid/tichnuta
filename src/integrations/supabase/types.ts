@@ -44,6 +44,24 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_session_users: {
+        Row: {
+          created_at: string | null
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       course_allowed_emails: {
         Row: {
           course_id: string

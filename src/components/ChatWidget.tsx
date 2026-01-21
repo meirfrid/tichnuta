@@ -28,7 +28,7 @@ const ChatWidget = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Generate or retrieve session ID
+  // Generate or retrieve session ID and register it with the authenticated user
   useEffect(() => {
     let storedSessionId = localStorage.getItem("chat_session_id");
     if (!storedSessionId) {
@@ -36,6 +36,22 @@ const ChatWidget = () => {
       localStorage.setItem("chat_session_id", storedSessionId);
     }
     setSessionId(storedSessionId);
+
+    // Register session with authenticated user for proper RLS access
+    const registerSession = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && storedSessionId) {
+        // Upsert the session mapping - ignore errors if already exists
+        await supabase
+          .from("chat_session_users")
+          .upsert(
+            { session_id: storedSessionId, user_id: user.id },
+            { onConflict: 'session_id' }
+          );
+      }
+    };
+    
+    registerSession();
   }, []);
 
   // Load messages for this session
@@ -45,7 +61,7 @@ const ChatWidget = () => {
     const loadMessages = async () => {
       const { data, error } = await supabase
         .from("chat_messages")
-        .select("*")
+        .select("id, message, sender_type, created_at")
         .eq("session_id", sessionId)
         .order("created_at", { ascending: true });
 
