@@ -111,7 +111,11 @@ const Hero = () => {
               {courses.map((course) => {
                 const IconComponent = iconMap[course.icon] || Code2;
                 return (
-                  <Card key={course.id} className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[200px]">
+                  <Card 
+                    key={course.id} 
+                    className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[200px] cursor-pointer"
+                    onClick={() => navigate(`/courses/${course.slug || course.id}`)}
+                  >
                     <div className="flex justify-center mb-3">
                       <IconComponent className="h-6 w-6" />
                     </div>
