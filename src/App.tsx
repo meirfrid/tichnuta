@@ -10,12 +10,14 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AboutUs from "./pages/AboutUs";
+import Gallery from "./pages/Gallery";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminChat from "./pages/admin/Chat";
 import CourseLessons from "./pages/admin/CourseLessons";
 import CoursePeriods from "./pages/admin/CoursePeriods";
 import CoursePermissions from "./pages/admin/CoursePermissions";
 import CourseVariants from "./pages/admin/CourseVariants";
+import GalleryManagement from "./pages/admin/GalleryManagement";
 import StudentDashboard from "./pages/student/Dashboard";
 import CoursePage from "./pages/student/CoursePage";
 import LessonPage from "./pages/student/LessonPage";
@@ -38,10 +40,12 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/gallery" element={<Gallery />} />
             <Route path="/online-learning" element={<OnlineLearning />} />
             <Route path="/frontal-learning" element={<FrontalLearning />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/chat" element={<AdminChat />} />
+            <Route path="/admin/gallery" element={<GalleryManagement />} />
             <Route path="/admin/courses/:courseId/lessons" element={<CourseLessons />} />
             <Route path="/admin/courses/:courseId/permissions" element={<CoursePermissions />} />
             <Route path="/admin/courses/:courseId/periods" element={<CoursePeriods />} />

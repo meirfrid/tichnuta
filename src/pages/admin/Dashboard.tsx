@@ -24,7 +24,8 @@ import {
   MessageCircle,
   TrendingUp,
   Calendar,
-  Star
+  Star,
+  Image
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -725,10 +726,14 @@ const AdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
           
-          <div className="mb-4">
+          <div className="mb-4 flex gap-2">
             <Button onClick={() => navigate('/admin/chat')} variant="outline">
               <MessageCircle className="h-4 w-4 ml-2" />
               צ׳אט תמיכה
+            </Button>
+            <Button onClick={() => navigate('/admin/gallery')} variant="outline">
+              <Image className="h-4 w-4 ml-2" />
+              ניהול גלריה
             </Button>
           </div>
 
