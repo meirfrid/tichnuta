@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Quote, ChevronDown, ChevronUp } from "lucide-react";
+import { Quote, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Recommendation {
@@ -47,22 +47,6 @@ const RecommendationCard = ({ rec, isFeatured = false }: RecommendationCardProps
             <Quote className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              {rec.rating && (
-                <div className="flex items-center gap-0.5 sm:gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-3 w-3 sm:h-4 sm:w-4 ${
-                        i < rec.rating!
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
             <p className="font-semibold text-xs sm:text-sm">{rec.parent_name}</p>
             {rec.child_name && (
               <p className="text-xs text-muted-foreground">הורה של {rec.child_name}</p>
