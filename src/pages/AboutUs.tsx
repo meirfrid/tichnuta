@@ -159,24 +159,6 @@ const AboutUs = () => {
                         יכול ללמוד תכנות, כשהוא מקבל את ההדרכה הנכונה ביחס אישי.
                       </p>
                       
-                      <div className="grid grid-cols-2 gap-4 mt-6">
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Award className="h-5 w-5 text-primary" />
-                          <span>בוגר ישיבת חברון</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <BookOpen className="h-5 w-5 text-primary" />
-                          <span>תואר בפסיכולוגיה</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Code className="h-5 w-5 text-primary" />
-                          <span>תואר במדעי המחשב</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Users className="h-5 w-5 text-primary" />
-                          <span>מתכנת בתעשייה</span>
-                        </div>
-                      </div>
                     </CardContent>
                   </Card>
                 </div>
