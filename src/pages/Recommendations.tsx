@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Quote, ChevronDown, ChevronUp, MessageSquareQuote } from "lucide-react";
+import { Quote, ChevronDown, ChevronUp, MessageSquareQuote, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Recommendation {
@@ -91,6 +92,7 @@ const RecommendationCard = ({ rec, isFeatured = false }: RecommendationCardProps
 };
 
 const Recommendations = () => {
+  const navigate = useNavigate();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -133,9 +135,17 @@ const Recommendations = () => {
           <div className="container mx-auto px-4 text-center text-primary-foreground">
             <MessageSquareQuote className="h-16 w-16 mx-auto mb-6" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">המלצות הורים</h1>
-            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto mb-6">
               הורים ותלמידים מספרים על החוויה שלהם בתכנותא
             </p>
+            <Button 
+              variant="outline" 
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+              onClick={() => navigate("/")}
+            >
+              <ArrowRight className="ml-2 h-4 w-4" />
+              חזרה לדף הבית
+            </Button>
           </div>
         </section>
 

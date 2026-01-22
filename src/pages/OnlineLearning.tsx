@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Monitor, Clock, Home, Video, MessageSquare, RefreshCcw, CheckCircle, ArrowLeft, Users } from "lucide-react";
+import { Monitor, Clock, Home, Video, MessageSquare, RefreshCcw, CheckCircle, ArrowLeft, Users, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 const OnlineLearning = () => {
   const navigate = useNavigate();
@@ -41,9 +41,17 @@ const OnlineLearning = () => {
           <div className="container mx-auto px-4 text-center text-primary-foreground">
             <Monitor className="h-16 w-16 mx-auto mb-6" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">קורסים אונליין</h1>
-            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto mb-6">
               שיעורים חיים בזום עם מדריך מקצועי - למידה אינטראקטיבית מכל מקום
             </p>
+            <Button 
+              variant="outline" 
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+              onClick={() => navigate("/")}
+            >
+              <ArrowRight className="ml-2 h-4 w-4" />
+              חזרה לדף הבית
+            </Button>
           </div>
         </section>
 

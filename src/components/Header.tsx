@@ -32,12 +32,12 @@ const Header = () => {
           {/* Logo Image - centered */}
           <button 
             onClick={() => navigate("/")}
-            className="flex items-center justify-center h-16 md:h-20"
+            className="flex items-center justify-center h-16 md:h-20 hover:opacity-80 transition-opacity"
           >
             <img
               src={logo}
               alt="תכנותא - חוגי תכנות מקצועיים לילדים"
-              className="h-12 md:h-16 w-auto object-contain"
+              className="h-14 md:h-16 w-auto object-contain"
             />
           </button>
 

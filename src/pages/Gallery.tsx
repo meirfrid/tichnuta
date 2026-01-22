@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Play, Image as ImageIcon } from "lucide-react";
+import { Play, Image as ImageIcon, ArrowRight } from "lucide-react";
 
 interface GalleryItem {
   id: string;
@@ -17,6 +19,7 @@ interface GalleryItem {
 }
 
 const Gallery = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
@@ -74,16 +77,31 @@ const Gallery = () => {
     <div className="min-h-screen flex flex-col" dir="rtl">
       <Header />
       
-      <main className="flex-1 py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="bg-gradient-hero py-16 md:py-24">
+          <div className="container mx-auto px-4 text-center text-primary-foreground">
+            <ImageIcon className="h-16 w-16 mx-auto mb-6" />
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
               גלריה
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg opacity-90 max-w-2xl mx-auto mb-6">
               תמונות וסרטונים מהפעילויות והקורסים שלנו
             </p>
+            <Button 
+              variant="outline" 
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+              onClick={() => navigate("/")}
+            >
+              <ArrowRight className="ml-2 h-4 w-4" />
+              חזרה לדף הבית
+            </Button>
           </div>
+        </section>
+
+        {/* Gallery Grid */}
+        <section className="py-16 bg-muted/30">
+          <div className="container mx-auto px-4">
 
           {loading ? (
             <div className="flex justify-center items-center py-20">
@@ -128,7 +146,8 @@ const Gallery = () => {
               ))}
             </div>
           )}
-        </div>
+          </div>
+        </section>
       </main>
 
       {/* Media Dialog */}
