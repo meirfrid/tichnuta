@@ -20,6 +20,7 @@ import LessonPage from "./pages/student/LessonPage";
 import CourseDetailsPage from "./pages/CourseDetailsPage";
 import OnlineLearning from "./pages/OnlineLearning";
 import FrontalLearning from "./pages/FrontalLearning";
+import AboutUs from "./pages/AboutUs";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/online-learning" element={<OnlineLearning />} />
             <Route path="/frontal-learning" element={<FrontalLearning />} />
+            <Route path="/about-us" element={<AboutUs />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/chat" element={<AdminChat />} />
             <Route path="/admin/courses/:courseId/lessons" element={<CourseLessons />} />
