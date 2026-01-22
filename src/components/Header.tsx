@@ -65,10 +65,10 @@ const Header = () => {
                 בית
               </button>
               <button 
-                onClick={() => { setIsMenuOpen(false); navigate("/about-us"); }} 
+                onClick={() => handleNavigation("about")} 
                 className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
               >
-                מי אנחנו
+                אודות
               </button>
               <button 
                 onClick={() => handleNavigation("courses")} 
