@@ -32,6 +32,9 @@ const Footer = () => {
                 <a href="#home" className="opacity-80 hover:opacity-100 transition-opacity">בית</a>
               </li>
               <li>
+                <Link to="/about-us" className="opacity-80 hover:opacity-100 transition-opacity">מי אנחנו</Link>
+              </li>
+              <li>
                 <a href="#courses" className="opacity-80 hover:opacity-100 transition-opacity">קורסים</a>
               </li>
               <li>
