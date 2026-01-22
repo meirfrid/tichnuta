@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Target, Heart, BookOpen, Lightbulb, Award, GraduationCap, Code, Sparkles } from "lucide-react";
+import founderPhoto from "@/assets/founder-photo.jpeg";
 
 const AboutUs = () => {
   return (
@@ -64,18 +65,14 @@ const AboutUs = () => {
               </div>
               
               <div className="grid md:grid-cols-3 gap-8 items-start">
-                {/* Founder Image Placeholder */}
+                {/* Founder Image */}
                 <div className="md:col-span-1">
-                  <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center border-2 border-dashed border-primary/30 overflow-hidden">
-                    {/* Placeholder for founder's photo */}
-                    <div className="text-center p-6">
-                      <div className="w-24 h-24 bg-primary/10 rounded-full mx-auto mb-4 flex items-center justify-center">
-                        <Users className="h-12 w-12 text-primary/50" />
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        תמונת המייסד תתווסף כאן
-                      </p>
-                    </div>
+                  <div className="aspect-square rounded-2xl overflow-hidden shadow-lg">
+                    <img 
+                      src={founderPhoto} 
+                      alt="מאיר פריד - מייסד תכנותא" 
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
                 
