@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AboutUs from "./pages/AboutUs";
 import Gallery from "./pages/Gallery";
+import Courses from "./pages/Courses";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminChat from "./pages/admin/Chat";
 import CourseLessons from "./pages/admin/CourseLessons";
@@ -40,9 +41,10 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/online-learning" element={<OnlineLearning />} />
-            <Route path="/frontal-learning" element={<FrontalLearning />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/online-learning" element={<OnlineLearning />} />
+          <Route path="/frontal-learning" element={<FrontalLearning />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/chat" element={<AdminChat />} />
             <Route path="/admin/gallery" element={<GalleryManagement />} />

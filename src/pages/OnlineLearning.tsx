@@ -100,7 +100,7 @@ const OnlineLearning = () => {
             <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
               בחרו את הקורס שמתאים לכם והתחילו ללמוד כבר היום
             </p>
-            <Button size="lg" className="bg-white text-primary hover:bg-white/90" onClick={() => navigate("/#courses")}>
+            <Button size="lg" className="bg-white text-primary hover:bg-white/90" onClick={() => navigate("/courses")}>
               <ArrowLeft className="ml-2 h-5 w-5" />
               לצפייה בקורסים
             </Button>
