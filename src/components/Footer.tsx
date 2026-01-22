@@ -39,7 +39,7 @@ const Footer = () => {
                 <Link to="/about-us" className="opacity-80 hover:opacity-100 transition-opacity">מי אנחנו</Link>
               </li>
               <li>
-                <button onClick={() => handleNavigation("courses")} className="opacity-80 hover:opacity-100 transition-opacity">קורסים</button>
+                <Link to="/courses" className="opacity-80 hover:opacity-100 transition-opacity">קורסים</Link>
               </li>
               <li>
                 <Link to="/gallery" className="opacity-80 hover:opacity-100 transition-opacity">גלריה</Link>

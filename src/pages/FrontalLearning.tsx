@@ -146,7 +146,7 @@ const FrontalLearning = () => {
             <Button 
               size="lg" 
               className="bg-white text-primary hover:bg-white/90"
-              onClick={() => navigate("/#courses")}
+              onClick={() => navigate("/courses")}
             >
               <ArrowLeft className="ml-2 h-5 w-5" />
               לצפייה בקורסים
