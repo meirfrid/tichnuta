@@ -106,20 +106,36 @@ const CourseDetailsPage = () => {
     if (courseId) {
       // גלילה לראש הדף בכל כניסה לעמוד פרטי קורס
       window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-
       fetchCourse();
-      fetchSchedules();
-      fetchVariants();
     }
   }, [courseId]);
 
+  useEffect(() => {
+    if (course?.id) {
+      fetchSchedules(course.id);
+      fetchVariants(course.id);
+    }
+  }, [course?.id]);
+
   const fetchCourse = async () => {
     try {
-      const { data, error } = await supabase
+      // First try to find by slug
+      let { data, error } = await supabase
         .from("courses")
         .select("*")
-        .eq("id", courseId)
+        .eq("slug", courseId)
         .single();
+
+      // If not found by slug, try by id (for backwards compatibility)
+      if (error || !data) {
+        const result = await supabase
+          .from("courses")
+          .select("*")
+          .eq("id", courseId)
+          .single();
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) {
         console.error("Error fetching course:", error);
@@ -133,12 +149,12 @@ const CourseDetailsPage = () => {
     }
   };
 
-  const fetchSchedules = async () => {
+  const fetchSchedules = async (realCourseId: string) => {
     try {
       const { data, error } = await supabase
         .from("course_schedules")
         .select("*")
-        .eq("course_id", courseId);
+        .eq("course_id", realCourseId);
 
       if (error) {
         console.error("Error fetching schedules:", error);
@@ -150,12 +166,12 @@ const CourseDetailsPage = () => {
     }
   };
 
-  const fetchVariants = async () => {
+  const fetchVariants = async (realCourseId: string) => {
     try {
       const { data, error } = await supabase
         .from("course_variants")
         .select("*")
-        .eq("course_id", courseId)
+        .eq("course_id", realCourseId)
         .eq("is_active", true)
         .order("sort_order", { ascending: true });
 
