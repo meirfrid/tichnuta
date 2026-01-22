@@ -12,6 +12,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AboutUs from "./pages/AboutUs";
 import Gallery from "./pages/Gallery";
 import Courses from "./pages/Courses";
+import Recommendations from "./pages/Recommendations";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminChat from "./pages/admin/Chat";
 import CourseLessons from "./pages/admin/CourseLessons";
@@ -45,6 +46,7 @@ const App = () => (
           <Route path="/courses" element={<Courses />} />
           <Route path="/online-learning" element={<OnlineLearning />} />
           <Route path="/frontal-learning" element={<FrontalLearning />} />
+          <Route path="/recommendations" element={<Recommendations />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/chat" element={<AdminChat />} />
             <Route path="/admin/gallery" element={<GalleryManagement />} />
