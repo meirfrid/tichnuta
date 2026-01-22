@@ -205,20 +205,6 @@ const CourseDetailsPage = () => {
     Bot,
   };
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case "מתחילים":
-        return "bg-green-100 text-green-800";
-      case "בסיסי":
-        return "bg-blue-100 text-blue-800";
-      case "בינוני":
-        return "bg-orange-100 text-orange-800";
-      case "מתקדם":
-        return "bg-purple-100 text-purple-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
 
   const getCourseTypeInfo = (course: any) => {
     const type = course?.course_type || 'frontal';
@@ -301,7 +287,6 @@ const CourseDetailsPage = () => {
                 <IconComponent className="h-8 w-8 text-white" />
               </div>
               <div className="flex flex-wrap gap-2">
-                <Badge className={getLevelColor(course.level)}>{course.level}</Badge>
                 {courseTypeInfo.isBoth ? (
                   <>
                     <Badge

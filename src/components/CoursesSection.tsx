@@ -19,20 +19,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 const courses = [];
 
-const getLevelColor = (level: string) => {
-  switch (level) {
-    case "מתחילים":
-      return "bg-green-100 text-green-800";
-    case "בסיסי":
-      return "bg-blue-100 text-blue-800";
-    case "בינוני":
-      return "bg-orange-100 text-orange-800";
-    case "מתקדם":
-      return "bg-purple-100 text-purple-800";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
-};
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "שם חייב להכיל לפחות 2 תווים").max(100, "שם ארוך מדי"),
@@ -783,9 +769,6 @@ const CoursesSection = () => {
                           <p className="text-muted-foreground font-medium">{course.subtitle}</p>
                         </div>
                       </div>
-                      <Badge className={getLevelColor(course.level)}>
-                        {course.level}
-                      </Badge>
                     </div>
                   </CardHeader>
                   
