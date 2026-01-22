@@ -2,64 +2,37 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Monitor, 
-  Clock, 
-  Home, 
-  Video, 
-  MessageSquare, 
-  RefreshCcw,
-  CheckCircle,
-  ArrowLeft
-} from "lucide-react";
+import { Monitor, Clock, Home, Video, MessageSquare, RefreshCcw, CheckCircle, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
 const OnlineLearning = () => {
   const navigate = useNavigate();
-
-  const advantages = [
-    {
-      icon: Home,
-      title: "למידה מהבית",
-      description: "ללמוד מכל מקום - מהסלון, מחדר השינה או מכל מקום שנוח לכם"
-    },
-    {
-      icon: Clock,
-      title: "גמישות בזמנים",
-      description: "שיעורים מוקלטים זמינים 24/7, ניתן ללמוד בכל שעה שמתאימה לכם"
-    },
-    {
-      icon: Video,
-      title: "שיעורים מוקלטים",
-      description: "כל השיעורים מוקלטים באיכות גבוהה וזמינים לצפייה חוזרת בכל עת"
-    },
-    {
-      icon: RefreshCcw,
-      title: "חזרה על החומר",
-      description: "אפשר לעצור, להריץ אחורה ולצפות שוב בכל קטע עד שמבינים לגמרי"
-    },
-    {
-      icon: MessageSquare,
-      title: "פורום תמיכה",
-      description: "פורום ייעודי לכל קורס עם מענה מהיר לשאלות מהמדריכים שלנו"
-    },
-    {
-      icon: Monitor,
-      title: "ממשק ידידותי",
-      description: "פלטפורמה נוחה ופשוטה לשימוש, מותאמת לילדים ולהורים"
-    }
-  ];
-
-  const methodSteps = [
-    "נרשמים לקורס ומקבלים גישה מיידית לפלטפורמה",
-    "צופים בשיעורים המוקלטים בקצב שלכם",
-    "מתרגלים עם תרגילים מעשיים אחרי כל שיעור",
-    "שואלים שאלות בפורום ומקבלים מענה מהמדריך",
-    "מתקדמים לשיעור הבא כשאתם מוכנים"
-  ];
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  const advantages = [{
+    icon: Home,
+    title: "למידה מהבית",
+    description: "ללמוד מכל מקום - מהסלון, מחדר השינה או מכל מקום שנוח לכם"
+  }, {
+    icon: Clock,
+    title: "גמישות בזמנים",
+    description: "שיעורים מוקלטים זמינים 24/7, ניתן ללמוד בכל שעה שמתאימה לכם"
+  }, {
+    icon: Video,
+    title: "שיעורים מוקלטים",
+    description: "כל השיעורים מוקלטים באיכות גבוהה וזמינים לצפייה חוזרת בכל עת"
+  }, {
+    icon: RefreshCcw,
+    title: "חזרה על החומר",
+    description: "אפשר לעצור, להריץ אחורה ולצפות שוב בכל קטע עד שמבינים לגמרי"
+  }, {
+    icon: MessageSquare,
+    title: "פורום תמיכה",
+    description: "פורום ייעודי לכל קורס עם מענה מהיר לשאלות מהמדריכים שלנו"
+  }, {
+    icon: Monitor,
+    title: "ממשק ידידותי",
+    description: "פלטפורמה נוחה ופשוטה לשימוש, מותאמת לילדים ולהורים"
+  }];
+  const methodSteps = ["נרשמים לקורס ומקבלים גישה מיידית לפלטפורמה", "צופים בשיעורים המוקלטים בקצב שלכם", "מתרגלים עם תרגילים מעשיים אחרי כל שיעור", "שואלים שאלות בפורום ומקבלים מענה מהמדריך", "מתקדמים לשיעור הבא כשאתם מוכנים"];
+  return <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-1">
@@ -69,7 +42,7 @@ const OnlineLearning = () => {
             <Monitor className="h-16 w-16 mx-auto mb-6" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">קורסים אונליין</h1>
             <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
-              למידה מהבית בקצב שלכם, עם גישה לכל השיעורים בכל זמן
+              למידה מהבית בזום, עם גישה לכל השיעורים בכל זמן
             </p>
           </div>
         </section>
@@ -80,16 +53,14 @@ const OnlineLearning = () => {
             <h2 className="text-3xl font-bold text-center mb-12">איך זה עובד?</h2>
             <div className="max-w-3xl mx-auto">
               <div className="space-y-6">
-                {methodSteps.map((step, index) => (
-                  <div key={index} className="flex items-start gap-4">
+                {methodSteps.map((step, index) => <div key={index} className="flex items-start gap-4">
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
                       {index + 1}
                     </div>
                     <div className="flex-1 pt-2">
                       <p className="text-lg">{step}</p>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
           </div>
@@ -100,15 +71,13 @@ const OnlineLearning = () => {
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12">היתרונות של למידה אונליין</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              {advantages.map((advantage, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
+              {advantages.map((advantage, index) => <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <advantage.icon className="h-10 w-10 text-primary mb-4" />
                     <h3 className="text-xl font-semibold mb-2">{advantage.title}</h3>
                     <p className="text-muted-foreground">{advantage.description}</p>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
           </div>
         </section>
@@ -119,18 +88,10 @@ const OnlineLearning = () => {
             <h2 className="text-3xl font-bold text-center mb-12">למי זה מתאים?</h2>
             <div className="max-w-3xl mx-auto">
               <div className="grid gap-4">
-                {[
-                  "ילדים שרוצים ללמוד בקצב שלהם",
-                  "משפחות עם לוח זמנים עמוס",
-                  "ילדים שגרים רחוק מהמרכז",
-                  "מי שאוהב לחזור על החומר כמה פעמים",
-                  "ילדים ביישנים שמעדיפים ללמוד בסביבה מוכרת"
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
+                {["ילדים שרוצים ללמוד בקצב שלהם", "משפחות עם לוח זמנים עמוס", "ילדים שגרים רחוק מהמרכז", "מי שאוהב לחזור על החומר כמה פעמים", "ילדים ביישנים שמעדיפים ללמוד בסביבה מוכרת"].map((item, index) => <div key={index} className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
                     <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
                     <span className="text-lg">{item}</span>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
           </div>
@@ -143,11 +104,7 @@ const OnlineLearning = () => {
             <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
               בחרו את הקורס שמתאים לכם והתחילו ללמוד כבר היום
             </p>
-            <Button 
-              size="lg" 
-              className="bg-white text-primary hover:bg-white/90"
-              onClick={() => navigate("/#courses")}
-            >
+            <Button size="lg" className="bg-white text-primary hover:bg-white/90" onClick={() => navigate("/#courses")}>
               <ArrowLeft className="ml-2 h-5 w-5" />
               לצפייה בקורסים
             </Button>
@@ -156,8 +113,6 @@ const OnlineLearning = () => {
       </main>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default OnlineLearning;
