@@ -2,32 +2,36 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Monitor, Clock, Home, Video, MessageSquare, RefreshCcw, CheckCircle, ArrowLeft } from "lucide-react";
+import { Monitor, Clock, Home, Video, MessageSquare, RefreshCcw, CheckCircle, ArrowLeft, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 const OnlineLearning = () => {
   const navigate = useNavigate();
   const advantages = [{
-    icon: Home,
-    title: "למידה מהבית",
-    description: "ללמוד מכל מקום - מהסלון, מחדר השינה או מכל מקום שנוח לכם"
-  }, {
-    icon: Clock,
-    title: "גמישות בזמנים",
-    description: "שיעורים מוקלטים זמינים 24/7, ניתן ללמוד בכל שעה שמתאימה לכם"
-  }, {
     icon: Video,
-    title: "שיעורים מוקלטים",
-    description: "כל השיעורים מוקלטים באיכות גבוהה וזמינים לצפייה חוזרת בכל עת"
+    title: "שיעורים חיים בזום",
+    description: "למידה אינטראקטיבית בזמן אמת עם מדריך מקצועי - בדיוק כמו כיתה רגילה"
+  }, {
+    icon: Home,
+    title: "למידה מכל מקום",
+    description: "ללמוד מהבית, מהסבתא או מכל מקום עם חיבור אינטרנט"
+  }, {
+    icon: Users,
+    title: "עבודת צוות",
+    description: "הילדים לומדים לעבוד יחד על פרויקטים משותפים ולפתור בעיות בשיתוף פעולה"
   }, {
     icon: RefreshCcw,
-    title: "חזרה על החומר",
-    description: "אפשר לעצור, להריץ אחורה ולצפות שוב בכל קטע עד שמבינים לגמרי"
+    title: "צפייה חוזרת בהקלטות",
+    description: "כל השיעורים מוקלטים וזמינים באזור האישי לחזרה על החומר בכל עת"
   }, {
     icon: MessageSquare,
-    title: "פורום תמיכה",
+    title: "תמיכה רציפה",
     description: "פורום ייעודי לכל קורס עם מענה מהיר לשאלות מהמדריכים שלנו"
+  }, {
+    icon: Clock,
+    title: "חיסכון בזמן",
+    description: "ללא נסיעות והמתנות - יותר זמן ללמידה ופחות זמן על הדרך"
   }];
-  const methodSteps = ["נרשמים לקורס ומקבלים גישה מיידית לפלטפורמה", "משתתפים בשיעור חי בזום בשעה קבועה עם המדריך.\nבנוסף, כל השיעורים מוקלטים וזמינים לצפייה חוזרת", "מתרגלים עם תרגילים מעשיים אחרי כל שיעור", "שואלים שאלות בפורום ומקבלים מענה מהמדריך"];
+  const methodSteps = ["נרשמים לקורס ומקבלים גישה לפלטפורמה", "מצטרפים לשיעור חי בזום בשעה קבועה עם המדריך והקבוצה", "לומדים ומתרגלים יחד עם חברי הקבוצה בזמן אמת", "צופים בהקלטות ומתרגלים עצמאית באזור האישי", "שואלים שאלות בפורום ומקבלים מענה מהמדריך"];
   return <div className="min-h-screen flex flex-col">
       <Header />
       
@@ -38,7 +42,7 @@ const OnlineLearning = () => {
             <Monitor className="h-16 w-16 mx-auto mb-6" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">קורסים אונליין</h1>
             <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
-              למידה מהבית בזום, עם גישה לכל השיעורים בכל זמן
+              שיעורים חיים בזום עם מדריך מקצועי - למידה אינטראקטיבית מכל מקום
             </p>
           </div>
         </section>
@@ -84,7 +88,7 @@ const OnlineLearning = () => {
             <h2 className="text-3xl font-bold text-center mb-12">למי זה מתאים?</h2>
             <div className="max-w-3xl mx-auto">
               <div className="grid gap-4">
-                {["ילדים שרוצים ללמוד בקצב שלהם", "משפחות עם לוח זמנים עמוס", "ילדים שגרים רחוק מהמרכז", "מי שאוהב לחזור על החומר כמה פעמים", "ילדים ביישנים שמעדיפים ללמוד בסביבה מוכרת"].map((item, index) => <div key={index} className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
+                {["ילדים שרוצים חוויית למידה אינטראקטיבית מהבית", "משפחות שמעדיפות חיסכון בזמן נסיעות", "מי שאוהב לחזור על החומר עם צפייה בהקלטות", "ילדים שנהנים מסביבה מוכרת ונוחה", "כל מי שרוצה ללמוד תכנות בקבוצה - מכל מקום בארץ"].map((item, index) => <div key={index} className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
                     <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
                     <span className="text-lg">{item}</span>
                   </div>)}
