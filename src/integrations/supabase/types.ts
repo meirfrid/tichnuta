@@ -386,6 +386,45 @@ export type Database = {
           },
         ]
       }
+      gallery_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          drive_url: string
+          id: string
+          is_active: boolean
+          media_type: string
+          sort_order: number
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          drive_url: string
+          id?: string
+          is_active?: boolean
+          media_type?: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          drive_url?: string
+          id?: string
+          is_active?: boolean
+          media_type?: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lesson_forum_replies: {
         Row: {
           author_id: string

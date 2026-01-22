@@ -77,6 +77,12 @@ const Header = () => {
                 קורסים
               </button>
               <button 
+                onClick={() => { setIsMenuOpen(false); navigate("/gallery"); }} 
+                className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
+              >
+                גלריה
+              </button>
+              <button 
                 onClick={() => handleNavigation("recommendations")} 
                 className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
               >

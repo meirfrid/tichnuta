@@ -42,6 +42,9 @@ const Footer = () => {
                 <button onClick={() => handleNavigation("courses")} className="opacity-80 hover:opacity-100 transition-opacity">קורסים</button>
               </li>
               <li>
+                <Link to="/gallery" className="opacity-80 hover:opacity-100 transition-opacity">גלריה</Link>
+              </li>
+              <li>
                 <button onClick={() => handleNavigation("contact")} className="opacity-80 hover:opacity-100 transition-opacity">צור קשר</button>
               </li>
               <li>
