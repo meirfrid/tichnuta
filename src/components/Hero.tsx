@@ -94,29 +94,6 @@ const Hero = () => {
           </Card>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground">
-            <GroupsIcon fontSize="large" />
-            <div className="text-2xl font-bold">מיומנות עבודה בצוות</div>
-            <div className="text-sm opacity-80">בניית פרוייקטים בעבודה משותפת</div>
-          </Card>
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground">
-            <Gamepad2 className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">פיתוח משחקים</div>
-            <div className="text-sm opacity-80">יצירה, תכנון ובנייה של משחקים</div>
-          </Card>
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground">
-            <Smartphone className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">בניית אפליקציות</div>
-            <div className="text-sm opacity-80"> לימוד פיתוח אפליקציות אמיתיות</div>
-          </Card>
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-center text-primary-foreground">
-            <Monitor className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">תכנות מתקדם לילדים</div>
-            <div className="text-sm opacity-80">פיתוח חשיבה אלגוריתמית ופתרון בעיות</div>
-          </Card>
-        </div>
 
         {/* Age Groups Preview */}
         {courses.length > 0 && (
