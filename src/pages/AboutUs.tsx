@@ -1,10 +1,78 @@
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Users, Target, Heart, BookOpen, Lightbulb, Award, GraduationCap, Code, Sparkles } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import founderPhoto from "@/assets/founder-photo.jpeg";
 
 const AboutUs = () => {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    message: ""
+  });
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.firstName || !formData.phone || !formData.email) {
+      toast({
+        title: "שגיאה",
+        description: "אנא מלא את כל השדות הנדרשים",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+
+      const { error } = await supabase
+        .from('registrations')
+        .insert({
+          name: fullName,
+          phone: formData.phone,
+          email: formData.email,
+          course: "יצירת קשר מדף מי אנחנו",
+          message: formData.message,
+          status: "new"
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "הודעה נשלחה בהצלחה!",
+        description: "נחזור אליך תוך 24 שעות",
+      });
+
+      setFormData({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        message: ""
+      });
+    } catch (error: any) {
+      toast({
+        title: "שגיאה",
+        description: "אירעה שגיאה בשליחת ההודעה. אנא נסה שוב.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background" dir="rtl">
       <Header />
@@ -282,21 +350,81 @@ const AboutUs = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-16 bg-primary text-primary-foreground">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              מוכנים להתחיל?
-            </h2>
-            <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-              הצטרפו למאות הילדים שכבר מפתחים את הכישורים של העתיד
-            </p>
-            <a 
-              href="/#contact" 
-              className="inline-block bg-background text-foreground px-8 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
-            >
-              צרו קשר עכשיו
-            </a>
+        {/* CTA Section with Contact Form */}
+        <section className="py-16 bg-primary">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-4">
+                מוכנים להתחיל?
+              </h2>
+              <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto">
+                הצטרפו למאות הילדים שכבר מפתחים את הכישורים של העתיד
+              </p>
+            </div>
+            
+            <div className="max-w-xl mx-auto">
+              <Card className="shadow-lg">
+                <CardContent className="p-6 md:p-8">
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">שם פרטי *</label>
+                        <Input
+                          placeholder="הכנס את השם הפרטי"
+                          value={formData.firstName}
+                          onChange={(e) => handleInputChange("firstName", e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">שם משפחה</label>
+                        <Input
+                          placeholder="הכנס את שם המשפחה"
+                          value={formData.lastName}
+                          onChange={(e) => handleInputChange("lastName", e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">טלפון *</label>
+                      <Input
+                        placeholder="הכנס מספר טלפון"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">כתובת אימייל *</label>
+                      <Input
+                        placeholder="הכנס כתובת אימייל"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange("email", e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">הודעה</label>
+                      <Textarea
+                        placeholder="כתב לנו מה אתה רוצה לדעת..."
+                        className="min-h-[100px]"
+                        value={formData.message}
+                        onChange={(e) => handleInputChange("message", e.target.value)}
+                      />
+                    </div>
+
+                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
+                      שלח הודעה
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </section>
       </main>
