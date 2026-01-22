@@ -1,11 +1,15 @@
-
 import { Mail, Phone } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import logo from "@/assets/smallWhiteLogo.png";
 
 const Footer = () => {
   const { siteContent } = useSiteContent();
+  const navigate = useNavigate();
+
+  const handleNavigation = (section: string) => {
+    navigate(`/#${section}`);
+  };
 
   return (
     <footer className="bg-foreground text-background py-12">
@@ -29,16 +33,16 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4">קישורים מהירים</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#home" className="opacity-80 hover:opacity-100 transition-opacity">בית</a>
+                <button onClick={() => handleNavigation("home")} className="opacity-80 hover:opacity-100 transition-opacity">בית</button>
               </li>
               <li>
                 <Link to="/about-us" className="opacity-80 hover:opacity-100 transition-opacity">מי אנחנו</Link>
               </li>
               <li>
-                <a href="#courses" className="opacity-80 hover:opacity-100 transition-opacity">קורסים</a>
+                <button onClick={() => handleNavigation("courses")} className="opacity-80 hover:opacity-100 transition-opacity">קורסים</button>
               </li>
               <li>
-                <a href="#contact" className="opacity-80 hover:opacity-100 transition-opacity">צור קשר</a>
+                <button onClick={() => handleNavigation("contact")} className="opacity-80 hover:opacity-100 transition-opacity">צור קשר</button>
               </li>
               <li>
                 <Link to="/privacy-policy" className="opacity-80 hover:opacity-100 transition-opacity">מדיניות פרטיות</Link>
