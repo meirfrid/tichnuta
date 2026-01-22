@@ -6,6 +6,23 @@ import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, GraduationCap, ArrowLef
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import scratchLogo from "@/assets/scratch-logo.png";
+import pythonLogo from "@/assets/python-logo.png";
+import appinventorLogo from "@/assets/appinventor-logo.png";
+
+const getCourseImage = (title: string): string | null => {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) {
+    return scratchLogo;
+  }
+  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) {
+    return pythonLogo;
+  }
+  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) {
+    return appinventorLogo;
+  }
+  return null;
+};
 
 const Courses = () => {
   const [courses, setCourses] = useState<any[]>([]);
@@ -75,18 +92,29 @@ const Courses = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 {courses.map((course) => {
                   const IconComponent = iconMap[course.icon] || Code2;
+                  const courseImage = getCourseImage(course.title);
                   return (
                     <Card 
                       key={course.id} 
                       className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group"
                       onClick={() => navigate(`/courses/${course.slug || course.id}`)}
                     >
-                      <div 
-                        className="h-32 flex items-center justify-center"
-                        style={{ backgroundColor: course.color || 'hsl(var(--primary))' }}
-                      >
-                        <IconComponent className="h-16 w-16 text-white" />
-                      </div>
+                      {courseImage ? (
+                        <div className="h-40 overflow-hidden">
+                          <img 
+                            src={courseImage} 
+                            alt={course.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      ) : (
+                        <div 
+                          className="h-32 flex items-center justify-center"
+                          style={{ backgroundColor: course.color || 'hsl(var(--primary))' }}
+                        >
+                          <IconComponent className="h-16 w-16 text-white" />
+                        </div>
+                      )}
                       <CardContent className="p-6">
                         <div className="mb-4">
                           <span className="inline-block px-3 py-1 text-sm rounded-full bg-primary/10 text-primary font-medium">
