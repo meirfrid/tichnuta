@@ -99,11 +99,11 @@ const Hero = () => {
         {courses.length > 0 && (
           <div className="text-center text-primary-foreground">
             <h2 className="text-3xl font-bold mb-8">קורסים לכל הגילאים</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="flex flex-wrap justify-center gap-6">
               {courses.map((course) => {
                 const IconComponent = iconMap[course.icon] || Code2;
                 return (
-                  <Card key={course.id} className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors">
+                  <Card key={course.id} className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[200px]">
                     <div className="flex justify-center mb-3">
                       <IconComponent className="h-6 w-6" />
                     </div>
