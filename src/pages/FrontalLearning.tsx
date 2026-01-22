@@ -10,7 +10,8 @@ import {
   Sparkles,
   Target,
   CheckCircle,
-  ArrowLeft
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -68,9 +69,17 @@ const FrontalLearning = () => {
           <div className="container mx-auto px-4 text-center text-primary-foreground">
             <Users className="h-16 w-16 mx-auto mb-6" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">קורסים פרונטליים</h1>
-            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto mb-6">
               למידה פנים אל פנים עם מדריך מקצועי בקבוצות קטנות
             </p>
+            <Button 
+              variant="outline" 
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+              onClick={() => navigate("/")}
+            >
+              <ArrowRight className="ml-2 h-4 w-4" />
+              חזרה לדף הבית
+            </Button>
           </div>
         </section>
 

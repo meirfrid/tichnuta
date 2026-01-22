@@ -1,16 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, Target, Heart, BookOpen, Lightbulb, Award, GraduationCap, Code, Sparkles } from "lucide-react";
+import { Users, Target, Heart, BookOpen, Lightbulb, Award, GraduationCap, Code, Sparkles, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import founderPhoto from "@/assets/founder-photo.jpeg";
 
 const AboutUs = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -87,9 +89,17 @@ const AboutUs = () => {
             <p className="text-xl md:text-2xl text-primary font-medium mb-4">
               תכנותא – חוגי תכנות מקצועיים לילדים
             </p>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6">
               מפתחים את דור המתכנתים הצעיר – בצורה מקצועית, חווייתית וערכית
             </p>
+            <Button 
+              variant="outline" 
+              className="border-primary/30 text-primary hover:bg-primary/10"
+              onClick={() => navigate("/")}
+            >
+              <ArrowRight className="ml-2 h-4 w-4" />
+              חזרה לדף הבית
+            </Button>
           </div>
         </section>
 

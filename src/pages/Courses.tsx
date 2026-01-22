@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, GraduationCap, ArrowLeft } from "lucide-react";
+import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, GraduationCap, ArrowLeft, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -71,9 +71,17 @@ const Courses = () => {
           <div className="container mx-auto px-4 text-center text-primary-foreground">
             <GraduationCap className="h-16 w-16 mx-auto mb-6" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">הקורסים שלנו</h1>
-            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto mb-6">
               קורסי תכנות מקצועיים לילדים בכל הגילאים
             </p>
+            <Button 
+              variant="outline" 
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+              onClick={() => navigate("/")}
+            >
+              <ArrowRight className="ml-2 h-4 w-4" />
+              חזרה לדף הבית
+            </Button>
           </div>
         </section>
 
