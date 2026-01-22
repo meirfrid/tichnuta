@@ -217,29 +217,6 @@ const AboutUs = () => {
                   </CardContent>
                 </Card>
                 
-                <Card className="border-none shadow-md hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="p-3 bg-primary/10 rounded-full w-fit mb-4">
-                      <Heart className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">גשר בין עולמות</h3>
-                    <p className="text-muted-foreground">
-                      ליצור גשר בין עולם הערכים החרדי לבין עולם ההייטק
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                <Card className="border-none shadow-md hover:shadow-lg transition-shadow md:col-span-2 lg:col-span-2">
-                  <CardContent className="p-6">
-                    <div className="p-3 bg-primary/10 rounded-full w-fit mb-4">
-                      <GraduationCap className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">בסיס לעתיד</h3>
-                    <p className="text-muted-foreground">
-                      להעניק לילדים בסיס חזק להמשך לימודים ולהשתלבות עתידית במקצועות טכנולוגיים
-                    </p>
-                  </CardContent>
-                </Card>
               </div>
             </div>
           </div>
@@ -285,7 +262,7 @@ const AboutUs = () => {
                       <div>
                         <h3 className="font-semibold mb-1">קבוצות קטנות</h3>
                         <p className="text-muted-foreground text-sm">
-                          עד 10 ילדים בקבוצה לאינטראקציה אופטימלית
+                          עד 15 ילדים בקבוצה לאינטראקציה אופטימלית
                         </p>
                       </div>
                     </div>
