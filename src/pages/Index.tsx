@@ -30,9 +30,9 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
       <Hero />
-      <CoursesSection />
       <ParentRecommendationsSection />
       <AboutSection />
+      <CoursesSection />
       <ContactSection />
       <Footer />
       <ChatWidget />
