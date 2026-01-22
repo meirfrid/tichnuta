@@ -83,7 +83,7 @@ const Header = () => {
                 גלריה
               </button>
               <button 
-                onClick={() => handleNavigation("recommendations")} 
+                onClick={() => { setIsMenuOpen(false); navigate("/recommendations"); }} 
                 className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
               >
                 המלצות
