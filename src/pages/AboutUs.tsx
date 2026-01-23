@@ -181,11 +181,11 @@ const AboutUs = () => {
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-l from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground relative inline-block">
                   החזון שלנו
+                  <span className="absolute -bottom-2 right-0 left-0 h-1 bg-gradient-to-l from-primary to-primary/40 rounded-full"></span>
                 </h2>
-                <p className="text-muted-foreground mt-2">מה מניע אותנו כל יום</p>
               </div>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
