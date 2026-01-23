@@ -112,29 +112,6 @@ const FrontalLearning = () => {
           </div>
         </section>
 
-        {/* Who is it for Section */}
-        <section className="py-16 bg-background">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">למי זה מתאים?</h2>
-            <div className="max-w-3xl mx-auto">
-              <div className="grid gap-4">
-                {[
-                  "ילדים שאוהבים ללמוד בקבוצה",
-                  "מי שצריך הדרכה אישית וצמודה",
-                  "ילדים שמתקשים להתרכז בלימוד עצמאי",
-                  "מי שרוצה חוויה חברתית לצד הלמידה",
-                  "ילדים שאוהבים שגרה ומפגשים קבועים"
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
-                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-lg">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* CTA Section */}
         <section className="py-16 bg-gradient-hero">
           <div className="container mx-auto px-4 text-center text-primary-foreground">
