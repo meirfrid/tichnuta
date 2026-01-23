@@ -53,7 +53,7 @@ const Header = () => {
         {/* Slide-down Navigation Menu */}
         <div 
           className={`overflow-hidden transition-all duration-300 ease-in-out ${
-            isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            isMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
           <nav className="py-4 border-t border-border mt-2">
