@@ -6,8 +6,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import GroupsIcon from '@mui/icons-material/Groups';
-import heroBg from "@/assets/hero-coding-child.jpg";
-
 const Hero = () => {
   const { siteContent } = useSiteContent();
   const [courses, setCourses] = useState<any[]>([]);
@@ -44,14 +42,14 @@ const Hero = () => {
   } as any;
 
   return (
-    <section id="home" className="min-h-screen relative overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBg})` }}
-      />
-      {/* Dark Overlay for readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/85 via-primary/80 to-primary/90" />
+    <section id="home" className="min-h-screen bg-gradient-hero relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-10 text-6xl">{"</>"}</div>
+        <div className="absolute top-40 right-20 text-4xl">{"{ }"}</div>
+        <div className="absolute bottom-40 left-20 text-5xl">{"</ >"}</div>
+        <div className="absolute bottom-20 right-10 text-3xl">{"( )"}</div>
+      </div>
 
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="text-center text-primary-foreground mb-16">
