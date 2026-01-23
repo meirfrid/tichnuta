@@ -291,7 +291,7 @@ const CourseDetailsPage = () => {
           className="mb-6 gap-2"
         >
           <ArrowRight className="h-4 w-4" />
-          חזרה לכל הקורסים
+          חזרה לדף הבית
         </Button>
 
         {/* Hero Section */}
