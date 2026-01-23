@@ -41,13 +41,10 @@ const Header = () => {
             />
           </button>
 
-          {/* Auth Button - left side (RTL) - hidden on mobile, visible on desktop */}
-          <div className="w-24 hidden md:flex justify-end items-center h-16 md:h-20">
+          {/* Auth Button - left side (RTL) - visible on both mobile and desktop */}
+          <div className="w-24 flex justify-end items-center h-16 md:h-20">
             <AuthButton />
           </div>
-          
-          {/* Empty placeholder for mobile to maintain centering */}
-          <div className="w-24 md:hidden"></div>
         </div>
 
         {/* Slide-down Navigation Menu */}
