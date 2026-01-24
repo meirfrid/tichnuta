@@ -1688,9 +1688,9 @@ const AdminDashboard = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">כל הקורסים</SelectItem>
-                        {Array.from(new Set(registrations.map(reg => reg.course))).map(course => (
-                          <SelectItem key={course} value={course}>
-                            {course}
+                        {courses.map(course => (
+                          <SelectItem key={course.id} value={course.title}>
+                            {course.title}
                           </SelectItem>
                         ))}
                       </SelectContent>
