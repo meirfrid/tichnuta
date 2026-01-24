@@ -72,10 +72,7 @@ const Hero = () => {
             <Button
               size="lg"
               className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-3"
-              onClick={() => {
-                const coursesSection = document.getElementById('courses');
-                coursesSection?.scrollIntoView({ behavior: 'smooth' });
-              }}
+              onClick={() => navigate("/courses")}
             >
               {siteContent.heroButtonText}
             </Button>
