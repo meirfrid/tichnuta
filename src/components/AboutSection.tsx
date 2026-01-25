@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, UserCheck, Shield, Clock, Gamepad2, Brain } from "lucide-react";
+import { Users, UserCheck, Shield, Clock, Gamepad2, Brain, Handshake, Video } from "lucide-react";
 
 const AboutSection = () => {
   return (
@@ -87,6 +87,38 @@ const AboutSection = () => {
                   <h3 className="text-xl font-bold mb-3">פיתוח חשיבה לוגית</h3>
                   <p className="text-muted-foreground">
                     התכנות מפתח יכולות חשיבה, פתרון בעיות ויצירתיות שמלוות את הילד לכל החיים
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-none shadow-lg hover:shadow-xl transition-shadow">
+            <CardContent className="pt-8 pb-6">
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Handshake className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-3">עבודה בצוות</h3>
+                  <p className="text-muted-foreground">
+                    הילדים עובדים יחד על פרויקטים משותפים, לומדים לשתף פעולה ולפתח יחסי חברות
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-none shadow-lg hover:shadow-xl transition-shadow">
+            <CardContent className="pt-8 pb-6">
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Video className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-3">שיעורים מוקלטים</h3>
+                  <p className="text-muted-foreground">
+                    כל השיעורים מוקלטים ונמצאים באזור האישי - ניתן להשלים שיעור שפספסתם או לחזור על החומר בכל זמן
                   </p>
                 </div>
               </div>
