@@ -82,32 +82,46 @@ const VariantAttendance = () => {
   };
 
   const fetchStudents = async () => {
-    // Get students from registrations linked to this variant with status 'נרשם'
-    const { data: registrations } = await supabase
-      .from('registrations')
-      .select('name, email')
-      .eq('variant_id', variantId!)
-      .eq('status', 'נרשם');
-
-    // Get students from variant_allowed_emails (fallback)
+    // Get students from variant_allowed_emails
     const { data: variantEmails } = await supabase
       .from('variant_allowed_emails')
       .select('email')
       .eq('variant_id', variantId!);
 
-    const studentMap = new Map<string, string>();
-    // First add registrations (they have names)
-    registrations?.forEach(r => studentMap.set(r.email.toLowerCase(), r.name));
-    // Add variant emails that aren't already from registrations
-    variantEmails?.forEach(e => {
-      const email = e.email.toLowerCase();
-      if (!studentMap.has(email)) {
-        studentMap.set(email, email.split('@')[0]);
-      }
-    });
+    // Get ALL registrations for this variant to find names
+    const { data: variantRegistrations } = await supabase
+      .from('registrations')
+      .select('name, email')
+      .eq('variant_id', variantId!);
 
-    const result = Array.from(studentMap.entries())
-      .map(([email, name]) => ({ email, name }))
+    // Build a name lookup from registrations (email -> name)
+    const nameLookup = new Map<string, string>();
+    variantRegistrations?.forEach(r => nameLookup.set(r.email.toLowerCase(), r.name));
+
+    // Also try to find names for variant emails from all registrations
+    const variantEmailsList = variantEmails?.map(e => e.email.toLowerCase()) || [];
+    if (variantEmailsList.length > 0) {
+      const { data: regByEmail } = await supabase
+        .from('registrations')
+        .select('name, email')
+        .in('email', variantEmailsList);
+      regByEmail?.forEach(r => {
+        if (!nameLookup.has(r.email.toLowerCase())) {
+          nameLookup.set(r.email.toLowerCase(), r.name);
+        }
+      });
+    }
+
+    // Merge all emails
+    const allEmails = new Set<string>();
+    variantEmails?.forEach(e => allEmails.add(e.email.toLowerCase()));
+    variantRegistrations?.forEach(r => allEmails.add(r.email.toLowerCase()));
+
+    const result = Array.from(allEmails)
+      .map(email => ({
+        email,
+        name: nameLookup.get(email) || email.split('@')[0],
+      }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
     setStudents(result);
