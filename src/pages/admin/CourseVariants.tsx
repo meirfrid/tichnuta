@@ -549,7 +549,15 @@ const CourseVariants = () => {
                           />
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-wrap">
+                            <Button variant="outline" size="sm" onClick={() => navigate(`/admin/courses/${courseId}/variants/${variant.id}/lessons`)}>
+                              <BookOpen className="h-4 w-4 ml-1" />
+                              שיעורים
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => navigate(`/admin/courses/${courseId}/variants/${variant.id}/permissions`)}>
+                              <Mail className="h-4 w-4 ml-1" />
+                              הרשאות
+                            </Button>
                             <Button variant="outline" size="sm" onClick={() => handleEdit(variant)}>
                               <Edit className="h-4 w-4" />
                             </Button>
