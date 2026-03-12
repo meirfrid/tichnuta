@@ -236,7 +236,7 @@ const LessonPage = () => {
           <div className="flex items-center justify-between mb-6">
             <Button
               variant="ghost"
-              onClick={() => navigate(`/learn/${courseSlug}`)}
+              onClick={() => navigate(basePath)}
             >
               ← חזרה לקורס
             </Button>
