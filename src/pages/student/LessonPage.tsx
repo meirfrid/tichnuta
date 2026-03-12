@@ -386,7 +386,7 @@ const LessonPage = () => {
             {prevLesson ? (
               <Button
                 variant="outline"
-                onClick={() => navigate(`/learn/${courseSlug}/${prevLesson.id}`)}
+                onClick={() => navigate(`${basePath}/${prevLesson.id}`)}
                 className="flex-1 min-w-0 max-w-full overflow-hidden"
               >
                 <ChevronRight className="ml-2 h-4 w-4 shrink-0" />
