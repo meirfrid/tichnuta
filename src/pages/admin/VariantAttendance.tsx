@@ -169,12 +169,12 @@ const VariantAttendance = () => {
     try {
       // Build all records from current state
       const records: AttendanceRecord[] = [];
-      for (const email of students) {
+      for (const student of students) {
         for (const date of lessonDates) {
-          const key = `${email}|${date}`;
+          const key = `${student.email}|${date}`;
           records.push({
             variant_id: variantId!,
-            student_email: email,
+            student_email: student.email,
             lesson_date: date,
             attended: attendance.get(key) || false,
           });
