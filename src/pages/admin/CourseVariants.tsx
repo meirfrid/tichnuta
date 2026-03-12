@@ -533,7 +533,7 @@ const CourseVariants = () => {
                         </TableCell>
                         <TableCell>{variant.location}</TableCell>
                         <TableCell>
-                          יום {variant.day_of_week} {variant.start_time}
+                          {variant.day_of_week.startsWith('כל') ? variant.day_of_week : `יום ${variant.day_of_week}`} {variant.start_time}
                           {variant.end_time && `-${variant.end_time}`}
                         </TableCell>
                         <TableCell>
