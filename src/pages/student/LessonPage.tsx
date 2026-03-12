@@ -398,7 +398,7 @@ const LessonPage = () => {
 
             {nextLesson ? (
               <Button
-                onClick={() => navigate(`/learn/${courseSlug}/${nextLesson.id}`)}
+                onClick={() => navigate(`${basePath}/${nextLesson.id}`)}
                 className="flex-1 min-w-0 max-w-full overflow-hidden"
               >
                 <span className="truncate">שיעור הבא: {nextLesson.title}</span>
