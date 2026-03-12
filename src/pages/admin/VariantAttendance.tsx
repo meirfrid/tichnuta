@@ -27,7 +27,7 @@ const VariantAttendance = () => {
 
   const [variant, setVariant] = useState<any>(null);
   const [course, setCourse] = useState<any>(null);
-  const [students, setStudents] = useState<string[]>([]);
+  const [students, setStudents] = useState<{ email: string; name: string }[]>([]);
   const [attendance, setAttendance] = useState<Map<string, boolean>>(new Map());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -82,24 +82,35 @@ const VariantAttendance = () => {
   };
 
   const fetchStudents = async () => {
-    // Get students from variant_allowed_emails
+    // Get students from registrations linked to this variant with status 'נרשם'
+    const { data: registrations } = await supabase
+      .from('registrations')
+      .select('name, email')
+      .eq('variant_id', variantId!)
+      .eq('status', 'נרשם');
+
+    // Get students from variant_allowed_emails (fallback)
     const { data: variantEmails } = await supabase
       .from('variant_allowed_emails')
       .select('email')
       .eq('variant_id', variantId!);
 
-    // Get students from registrations linked to this variant with status 'נרשם'
-    const { data: registrations } = await supabase
-      .from('registrations')
-      .select('email')
-      .eq('variant_id', variantId!)
-      .eq('status', 'נרשם');
+    const studentMap = new Map<string, string>();
+    // First add registrations (they have names)
+    registrations?.forEach(r => studentMap.set(r.email.toLowerCase(), r.name));
+    // Add variant emails that aren't already from registrations
+    variantEmails?.forEach(e => {
+      const email = e.email.toLowerCase();
+      if (!studentMap.has(email)) {
+        studentMap.set(email, email.split('@')[0]);
+      }
+    });
 
-    const emailSet = new Set<string>();
-    variantEmails?.forEach(e => emailSet.add(e.email.toLowerCase()));
-    registrations?.forEach(r => emailSet.add(r.email.toLowerCase()));
+    const result = Array.from(studentMap.entries())
+      .map(([email, name]) => ({ email, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-    setStudents(Array.from(emailSet).sort());
+    setStudents(result);
   };
 
   const fetchAttendance = async () => {
@@ -115,7 +126,7 @@ const VariantAttendance = () => {
     setAttendance(map);
   };
 
-  // Generate lesson dates based on variant day_of_week and period dates
+  // Generate lesson dates: first weekday in start month through last weekday in end month
   const lessonDates = useMemo(() => {
     if (!variant || !period) return [];
 
@@ -123,16 +134,20 @@ const VariantAttendance = () => {
     if (dayIndex === undefined) return [];
 
     const dates: string[] = [];
-    const start = new Date(period.start_date);
-    const end = new Date(period.end_date);
+    // Start from the 1st of the start month
+    const startParts = period.start_date.split('-');
+    const rangeStart = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, 1);
+    // End at the last day of the end month
+    const endParts = period.end_date.split('-');
+    const rangeEnd = new Date(parseInt(endParts[0]), parseInt(endParts[1]), 0); // last day of end month
 
-    // Find first matching day
-    const current = new Date(start);
-    while (current.getDay() !== dayIndex && current <= end) {
+    // Find first matching day in start month
+    const current = new Date(rangeStart);
+    while (current.getDay() !== dayIndex && current <= rangeEnd) {
       current.setDate(current.getDate() + 1);
     }
 
-    while (current <= end) {
+    while (current <= rangeEnd) {
       dates.push(current.toISOString().split('T')[0]);
       current.setDate(current.getDate() + 7);
     }
@@ -154,12 +169,12 @@ const VariantAttendance = () => {
     try {
       // Build all records from current state
       const records: AttendanceRecord[] = [];
-      for (const email of students) {
+      for (const student of students) {
         for (const date of lessonDates) {
-          const key = `${email}|${date}`;
+          const key = `${student.email}|${date}`;
           records.push({
             variant_id: variantId!,
-            student_email: email,
+            student_email: student.email,
             lesson_date: date,
             attended: attendance.get(key) || false,
           });
@@ -184,13 +199,8 @@ const VariantAttendance = () => {
   };
 
   const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
+    const d = new Date(dateStr + 'T00:00:00');
     return d.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit' });
-  };
-
-  const getStudentName = (email: string) => {
-    // Show email, could be enhanced with profile lookup
-    return email.split('@')[0];
   };
 
   // Count attendance per student
@@ -287,28 +297,27 @@ const VariantAttendance = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {students.map(email => (
-                      <tr key={email} className="hover:bg-muted/50">
-                        <td className="sticky right-0 bg-card z-10 border p-2 font-medium text-right" title={email}>
-                          {getStudentName(email)}
-                          <span className="block text-xs text-muted-foreground truncate max-w-[160px]">{email}</span>
+                    {students.map(student => (
+                      <tr key={student.email} className="hover:bg-muted/50">
+                        <td className="sticky right-0 bg-card z-10 border p-2 font-medium text-right" title={student.email}>
+                          {student.name}
                         </td>
                         {lessonDates.map(date => {
-                          const key = `${email}|${date}`;
+                          const key = `${student.email}|${date}`;
                           const isChecked = attendance.get(key) || false;
                           const isPast = new Date(date) <= new Date();
                           return (
                             <td key={date} className={`border p-2 text-center ${!isPast ? 'bg-muted/20' : ''}`}>
                               <Checkbox
                                 checked={isChecked}
-                                onCheckedChange={() => toggleAttendance(email, date)}
+                                onCheckedChange={() => toggleAttendance(student.email, date)}
                                 className="mx-auto"
                               />
                             </td>
                           );
                         })}
                         <td className="border p-2 text-center font-semibold">
-                          {getStudentStats(email)}
+                          {getStudentStats(student.email)}
                         </td>
                       </tr>
                     ))}
