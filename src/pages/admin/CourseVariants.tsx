@@ -396,7 +396,7 @@ const CourseVariants = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {DAYS.map(day => (
-                          <SelectItem key={day} value={day}>יום {day}</SelectItem>
+                          <SelectItem key={day} value={day}>{day.startsWith('כל') ? day : `יום ${day}`}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -533,7 +533,7 @@ const CourseVariants = () => {
                         </TableCell>
                         <TableCell>{variant.location}</TableCell>
                         <TableCell>
-                          יום {variant.day_of_week} {variant.start_time}
+                          {variant.day_of_week.startsWith('כל') ? variant.day_of_week : `יום ${variant.day_of_week}`} {variant.start_time}
                           {variant.end_time && `-${variant.end_time}`}
                         </TableCell>
                         <TableCell>
