@@ -33,20 +33,14 @@ interface Course {
 
 const getCourseImage = (title: string): string | null => {
   const lowerTitle = title.toLowerCase();
-  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) {
-    return scratchLogo;
-  }
-  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) {
-    return pythonLogo;
-  }
-  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) {
-    return appinventorLogo;
-  }
+  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
+  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
+  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
   return null;
 };
 
 const CoursePage = () => {
-  const { courseSlug } = useParams();
+  const { courseSlug, variantId } = useParams();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -54,6 +48,7 @@ const CoursePage = () => {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [variantName, setVariantName] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -68,69 +63,87 @@ const CoursePage = () => {
       try {
         setLoading(true);
 
-        // Fetch course - check if courseSlug is a UUID first
+        // Fetch course
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseSlug);
-        
-        let courseQuery = supabase
-          .from("courses")
-          .select("*")
-          .eq("active", true);
-        
+        let courseQuery = supabase.from("courses").select("*").eq("active", true);
         if (isUUID) {
           courseQuery = courseQuery.or(`slug.eq.${courseSlug},id.eq.${courseSlug}`);
         } else {
           courseQuery = courseQuery.eq("slug", courseSlug);
         }
-        
         const { data: courseData, error: courseError } = await courseQuery.single();
-
         if (courseError) throw courseError;
         setCourse(courseData);
 
-        // Check access
-        const { data: accessData, error: accessError } = await supabase
-          .from("course_allowed_emails")
-          .select("id")
-          .eq("course_id", courseData.id)
-          .eq("email", user.email)
-          .maybeSingle();
+        // Check access based on variant or course level
+        if (variantId) {
+          // Variant-based access
+          const { data: accessData } = await supabase
+            .from("variant_allowed_emails")
+            .select("id")
+            .eq("variant_id", variantId)
+            .eq("email", user.email)
+            .maybeSingle();
 
-        console.log("Access check:", { accessData, accessError, userEmail: user.email, courseId: courseData.id });
+          setHasAccess(!!accessData);
 
-        setHasAccess(!!accessData);
+          if (!accessData) {
+            toast({ title: "אין הרשאה", description: "אין לך גישה למחזור לימוד זה", variant: "destructive" });
+            return;
+          }
 
-        if (!accessData) {
-          toast({
-            title: "אין הרשאה",
-            description: "אין לך גישה לקורס זה",
-            variant: "destructive",
-          });
-          return;
+          // Fetch variant name
+          const { data: variantData } = await supabase
+            .from("course_variants")
+            .select("name")
+            .eq("id", variantId)
+            .single();
+          if (variantData) setVariantName(variantData.name);
+
+          // Fetch lessons for this variant
+          const { data: lessonsData, error: lessonsError } = await supabase
+            .from("lessons")
+            .select("*")
+            .eq("variant_id", variantId)
+            .order("order_index");
+          if (lessonsError) throw lessonsError;
+          setLessons(lessonsData || []);
+        } else {
+          // Legacy course-level access
+          const { data: accessData } = await supabase
+            .from("course_allowed_emails")
+            .select("id")
+            .eq("course_id", courseData.id)
+            .eq("email", user.email)
+            .maybeSingle();
+
+          setHasAccess(!!accessData);
+
+          if (!accessData) {
+            toast({ title: "אין הרשאה", description: "אין לך גישה לקורס זה", variant: "destructive" });
+            return;
+          }
+
+          // Fetch lessons without variant (legacy)
+          const { data: lessonsData, error: lessonsError } = await supabase
+            .from("lessons")
+            .select("*")
+            .eq("course_id", courseData.id)
+            .is("variant_id", null)
+            .order("order_index");
+          if (lessonsError) throw lessonsError;
+          setLessons(lessonsData || []);
         }
-
-        // Fetch lessons
-        const { data: lessonsData, error: lessonsError } = await supabase
-          .from("lessons")
-          .select("*")
-          .eq("course_id", courseData.id)
-          .order("order_index");
-
-        if (lessonsError) throw lessonsError;
-        setLessons(lessonsData || []);
       } catch (error: any) {
         console.error("Error fetching course:", error);
-        toast({
-          title: "שגיאה",
-          description: "לא הצלחנו לטעון את הקורס",
-          variant: "destructive",
-        });
+        toast({ title: "שגיאה", description: "לא הצלחנו לטעון את הקורס", variant: "destructive" });
       } finally {
         setLoading(false);
       }
     };
 
     fetchCourseAndLessons();
-  }, [user, courseSlug, toast]);
+  }, [user, courseSlug, variantId, toast]);
 
   if (authLoading || loading) {
     return (
@@ -166,9 +179,7 @@ const CoursePage = () => {
             <CardContent>
               <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <h2 className="text-xl font-semibold mb-2">אין לך גישה לקורס זה</h2>
-              <p className="text-muted-foreground mb-4">
-                צור קשר עם מנהל האתר לקבלת גישה
-              </p>
+              <p className="text-muted-foreground mb-4">צור קשר עם מנהל האתר לקבלת גישה</p>
               <Button onClick={() => navigate("/dashboard")}>חזרה לדשבורד</Button>
             </CardContent>
           </Card>
@@ -178,33 +189,33 @@ const CoursePage = () => {
     );
   }
 
+  // Build lesson URL base path
+  const lessonBasePath = variantId
+    ? `/learn/${courseSlug}/variant/${variantId}`
+    : `/learn/${courseSlug}`;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/dashboard")}
-            className="mb-6"
-          >
+          <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-6">
             ← חזרה לדשבורד
           </Button>
 
           <Card className="mb-8 overflow-hidden">
             {getCourseImage(course.title) && (
               <div className="h-64 overflow-hidden">
-                <img 
-                  src={getCourseImage(course.title)!} 
-                  alt={course.title}
-                  className="w-full h-full object-cover"
-                />
+                <img src={getCourseImage(course.title)!} alt={course.title} className="w-full h-full object-cover" />
               </div>
             )}
             <CardHeader className={getCourseImage(course.title) ? '' : `${course.color} text-white rounded-t-lg`}>
-              <CardTitle className={`text-2xl ${getCourseImage(course.title) ? '' : 'text-white'}`}>{course.title}</CardTitle>
+              <CardTitle className={`text-2xl ${getCourseImage(course.title) ? '' : 'text-white'}`}>
+                {course.title}
+              </CardTitle>
               <CardDescription className={`text-lg ${getCourseImage(course.title) ? '' : 'text-white/90'}`}>
                 {course.subtitle}
+                {variantName && <span className="block text-sm mt-1">מחזור: {variantName}</span>}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
@@ -227,7 +238,7 @@ const CoursePage = () => {
                 <Card
                   key={lesson.id}
                   className="cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => navigate(`/learn/${courseSlug}/${lesson.id}`)}
+                  onClick={() => navigate(`${lessonBasePath}/${lesson.id}`)}
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between gap-4">
@@ -236,15 +247,11 @@ const CoursePage = () => {
                           <span className="text-muted-foreground">שיעור {index + 1}:</span>
                           {lesson.title}
                           {lesson.is_preview && (
-                            <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                              תצוגה מקדימה
-                            </span>
+                            <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">תצוגה מקדימה</span>
                           )}
                         </CardTitle>
                         {lesson.description && (
-                          <CardDescription className="mt-2">
-                            {lesson.description}
-                          </CardDescription>
+                          <CardDescription className="mt-2">{lesson.description}</CardDescription>
                         )}
                       </div>
                       <PlayCircle className="h-6 w-6 text-primary flex-shrink-0" />
