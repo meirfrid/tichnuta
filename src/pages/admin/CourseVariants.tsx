@@ -55,6 +55,7 @@ const CourseVariants = () => {
   const [loading, setLoading] = useState(true);
   const [editingVariant, setEditingVariant] = useState<CourseVariant | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     gender: 'מעורב',
