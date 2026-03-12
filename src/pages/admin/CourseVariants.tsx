@@ -558,6 +558,10 @@ const CourseVariants = () => {
                               <Mail className="h-4 w-4 ml-1" />
                               הרשאות
                             </Button>
+                            <Button variant="outline" size="sm" onClick={() => navigate(`/admin/courses/${courseId}/variants/${variant.id}/attendance`)}>
+                              <ClipboardCheck className="h-4 w-4 ml-1" />
+                              נוכחות
+                            </Button>
                             <Button variant="outline" size="sm" onClick={() => handleEdit(variant)}>
                               <Edit className="h-4 w-4" />
                             </Button>

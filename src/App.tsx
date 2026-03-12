@@ -59,6 +59,7 @@ const App = () => (
             <Route path="/admin/courses/:courseId/variants" element={<CourseVariants />} />
             <Route path="/admin/courses/:courseId/variants/:variantId/lessons" element={<VariantLessons />} />
             <Route path="/admin/courses/:courseId/variants/:variantId/permissions" element={<VariantPermissions />} />
+            <Route path="/admin/courses/:courseId/variants/:variantId/attendance" element={<VariantAttendance />} />
             <Route path="/dashboard" element={<StudentDashboard />} />
             <Route path="/courses/:courseId" element={<CourseDetailsPage />} />
             <Route path="/learn/:courseSlug" element={<CoursePage />} />
