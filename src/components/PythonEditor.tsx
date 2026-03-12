@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Trash2, Maximize2, Minimize2 } from "lucide-react";
+import { Play, Trash2, Loader2 } from "lucide-react";
 
 interface PythonEditorProps {
   isHidden?: boolean;
@@ -14,41 +14,69 @@ print("שלום עולם!")
 `);
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const pyodideRef = useRef<any>(null);
+
+  const loadPyodide = useCallback(async () => {
+    if (pyodideRef.current) return pyodideRef.current;
+
+    setIsLoading(true);
+    try {
+      // Load Pyodide script if not already loaded
+      if (!(window as any).loadPyodide) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js";
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Failed to load Pyodide"));
+          document.head.appendChild(script);
+        });
+      }
+
+      const pyodide = await (window as any).loadPyodide({
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/",
+      });
+      pyodideRef.current = pyodide;
+      return pyodide;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const runCode = async () => {
     setIsRunning(true);
-    setOutput("מריץ קוד...");
+    setOutput("טוען סביבת פייתון...");
 
     try {
-      // Using Pyodide via CDN for client-side Python execution
-      const response = await fetch("https://emkc.org/api/v2/piston/execute", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          language: "python",
-          version: "3.10",
-          files: [
-            {
-              content: code,
-            },
-          ],
-        }),
-      });
+      const pyodide = await loadPyodide();
 
-      const data = await response.json();
+      // Capture stdout and stderr
+      pyodide.runPython(`
+import sys
+from io import StringIO
+sys.stdout = StringIO()
+sys.stderr = StringIO()
+`);
 
-      if (data.run) {
-        const result = data.run.output || data.run.stderr || "הקוד רץ בהצלחה (ללא פלט)";
-        setOutput(result);
-      } else {
-        setOutput("שגיאה בהרצת הקוד");
+      try {
+        pyodide.runPython(code);
+        const stdout = pyodide.runPython("sys.stdout.getvalue()");
+        const stderr = pyodide.runPython("sys.stderr.getvalue()");
+        const result = (stdout || "") + (stderr || "");
+        setOutput(result || "הקוד רץ בהצלחה (ללא פלט)");
+      } catch (err: any) {
+        setOutput(err.message || "שגיאה בהרצת הקוד");
+      } finally {
+        // Reset stdout/stderr
+        pyodide.runPython(`
+import sys
+sys.stdout = sys.__stdout__
+sys.stderr = sys.__stderr__
+`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error running Python code:", error);
-      setOutput("שגיאה בחיבור לשרת ההרצה");
+      setOutput("שגיאה בטעינת סביבת הפייתון. נסה שוב.");
     } finally {
       setIsRunning(false);
     }
@@ -61,13 +89,11 @@ print("שלום עולם!")
   if (isHidden) return null;
 
   return (
-    <div className={`flex flex-col h-full bg-card border border-border rounded-lg overflow-hidden ${isExpanded ? 'fixed inset-4 z-50' : ''}`}>
-      {/* Header */}
+    <div className="flex flex-col h-full bg-card border border-border rounded-lg overflow-hidden">
       <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
         <span className="font-medium text-sm">עורך פייתון</span>
       </div>
 
-      {/* Editor */}
       <div className="flex-1 flex flex-col min-h-0">
         <textarea
           value={code}
@@ -79,16 +105,19 @@ print("שלום עולם!")
         />
       </div>
 
-      {/* Actions */}
       <div className="flex items-center gap-2 px-4 py-2 border-t border-border bg-muted/30">
         <Button
           size="sm"
           onClick={runCode}
-          disabled={isRunning}
+          disabled={isRunning || isLoading}
           className="gap-2"
         >
-          <Play className="h-4 w-4" />
-          {isRunning ? "מריץ..." : "הרץ קוד"}
+          {isRunning || isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Play className="h-4 w-4" />
+          )}
+          {isLoading ? "טוען..." : isRunning ? "מריץ..." : "הרץ קוד"}
         </Button>
         <Button
           size="sm"
@@ -101,7 +130,6 @@ print("שלום עולם!")
         </Button>
       </div>
 
-      {/* Output */}
       <div className="border-t border-border">
         <div className="px-4 py-2 bg-muted/50 text-sm font-medium border-b border-border">
           פלט:
