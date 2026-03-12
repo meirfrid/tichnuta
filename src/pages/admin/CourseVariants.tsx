@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowRight, Plus, Edit, Trash2, Save, RefreshCw, Settings, BookOpen, Mail } from 'lucide-react';
+import { ArrowRight, Plus, Edit, Trash2, Save, RefreshCw, Settings, BookOpen, Mail, ClipboardCheck } from 'lucide-react';
 
 interface CourseVariant {
   id: string;
@@ -557,6 +557,10 @@ const CourseVariants = () => {
                             <Button variant="outline" size="sm" onClick={() => navigate(`/admin/courses/${courseId}/variants/${variant.id}/permissions`)}>
                               <Mail className="h-4 w-4 ml-1" />
                               הרשאות
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => navigate(`/admin/courses/${courseId}/variants/${variant.id}/attendance`)}>
+                              <ClipboardCheck className="h-4 w-4 ml-1" />
+                              נוכחות
                             </Button>
                             <Button variant="outline" size="sm" onClick={() => handleEdit(variant)}>
                               <Edit className="h-4 w-4" />

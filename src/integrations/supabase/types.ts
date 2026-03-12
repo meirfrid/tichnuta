@@ -855,6 +855,44 @@ export type Database = {
           },
         ]
       }
+      variant_attendance: {
+        Row: {
+          attended: boolean
+          created_at: string
+          id: string
+          lesson_date: string
+          student_email: string
+          updated_at: string
+          variant_id: string
+        }
+        Insert: {
+          attended?: boolean
+          created_at?: string
+          id?: string
+          lesson_date: string
+          student_email: string
+          updated_at?: string
+          variant_id: string
+        }
+        Update: {
+          attended?: boolean
+          created_at?: string
+          id?: string
+          lesson_date?: string
+          student_email?: string
+          updated_at?: string
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "variant_attendance_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "course_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
