@@ -269,18 +269,17 @@ const CourseVariants = () => {
 
   // Auto-generate name when fields change
   useEffect(() => {
+    if (nameManuallyEdited) return;
     if (formData.location && formData.day_of_week && formData.start_time) {
       const genderLabel = GENDERS.find(g => g.value === formData.gender)?.label || formData.gender;
       const gradeRange = formData.min_grade && formData.max_grade 
         ? ` כיתות ${formData.min_grade}-${formData.max_grade}` 
         : formData.min_grade ? ` כיתה ${formData.min_grade}` : '';
-      const autoName = `${formData.location} | ${genderLabel} | יום ${formData.day_of_week} ${formData.start_time}${gradeRange}`;
-      
-      if (!editingVariant || formData.name === editingVariant.name) {
-        setFormData(prev => ({ ...prev, name: autoName }));
-      }
+      const dayLabel = formData.day_of_week.startsWith('כל') ? formData.day_of_week : `יום ${formData.day_of_week}`;
+      const autoName = `${formData.location} | ${genderLabel} | ${dayLabel} ${formData.start_time}${gradeRange}`;
+      setFormData(prev => ({ ...prev, name: autoName }));
     }
-  }, [formData.location, formData.day_of_week, formData.start_time, formData.gender, formData.min_grade, formData.max_grade]);
+  }, [formData.location, formData.day_of_week, formData.start_time, formData.gender, formData.min_grade, formData.max_grade, nameManuallyEdited]);
 
   if (authLoading || loading) {
     return (
