@@ -297,28 +297,27 @@ const VariantAttendance = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {students.map(email => (
-                      <tr key={email} className="hover:bg-muted/50">
-                        <td className="sticky right-0 bg-card z-10 border p-2 font-medium text-right" title={email}>
-                          {getStudentName(email)}
-                          <span className="block text-xs text-muted-foreground truncate max-w-[160px]">{email}</span>
+                    {students.map(student => (
+                      <tr key={student.email} className="hover:bg-muted/50">
+                        <td className="sticky right-0 bg-card z-10 border p-2 font-medium text-right" title={student.email}>
+                          {student.name}
                         </td>
                         {lessonDates.map(date => {
-                          const key = `${email}|${date}`;
+                          const key = `${student.email}|${date}`;
                           const isChecked = attendance.get(key) || false;
                           const isPast = new Date(date) <= new Date();
                           return (
                             <td key={date} className={`border p-2 text-center ${!isPast ? 'bg-muted/20' : ''}`}>
                               <Checkbox
                                 checked={isChecked}
-                                onCheckedChange={() => toggleAttendance(email, date)}
+                                onCheckedChange={() => toggleAttendance(student.email, date)}
                                 className="mx-auto"
                               />
                             </td>
                           );
                         })}
                         <td className="border p-2 text-center font-semibold">
-                          {getStudentStats(email)}
+                          {getStudentStats(student.email)}
                         </td>
                       </tr>
                     ))}
