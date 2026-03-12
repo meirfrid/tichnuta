@@ -152,6 +152,7 @@ const CourseVariants = () => {
       sort_order: variants.length
     });
     setEditingVariant(null);
+    setNameManuallyEdited(false);
     setShowForm(false);
   };
 
