@@ -126,7 +126,7 @@ const VariantAttendance = () => {
     setAttendance(map);
   };
 
-  // Generate lesson dates based on variant day_of_week and period dates
+  // Generate lesson dates: first weekday in start month through last weekday in end month
   const lessonDates = useMemo(() => {
     if (!variant || !period) return [];
 
@@ -134,16 +134,20 @@ const VariantAttendance = () => {
     if (dayIndex === undefined) return [];
 
     const dates: string[] = [];
-    const start = new Date(period.start_date);
-    const end = new Date(period.end_date);
+    // Start from the 1st of the start month
+    const startParts = period.start_date.split('-');
+    const rangeStart = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, 1);
+    // End at the last day of the end month
+    const endParts = period.end_date.split('-');
+    const rangeEnd = new Date(parseInt(endParts[0]), parseInt(endParts[1]), 0); // last day of end month
 
-    // Find first matching day
-    const current = new Date(start);
-    while (current.getDay() !== dayIndex && current <= end) {
+    // Find first matching day in start month
+    const current = new Date(rangeStart);
+    while (current.getDay() !== dayIndex && current <= rangeEnd) {
       current.setDate(current.getDate() + 1);
     }
 
-    while (current <= end) {
+    while (current <= rangeEnd) {
       dates.push(current.toISOString().split('T')[0]);
       current.setDate(current.getDate() + 7);
     }
