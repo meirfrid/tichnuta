@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowRight, Plus, Edit, Trash2, Save, RefreshCw, Settings, BookOpen, Mail } from 'lucide-react';
+import { ArrowRight, Plus, Edit, Trash2, Save, RefreshCw, Settings, BookOpen, Mail, ClipboardCheck } from 'lucide-react';
 
 interface CourseVariant {
   id: string;
