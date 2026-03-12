@@ -91,7 +91,7 @@ interface Course {
 }
 
 const LessonPage = () => {
-  const { courseSlug, lessonId } = useParams();
+  const { courseSlug, lessonId, variantId } = useParams();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
