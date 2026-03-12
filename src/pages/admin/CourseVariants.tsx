@@ -356,7 +356,7 @@ const CourseVariants = () => {
                     <Label>שם מחזור הלימוד (נוצר אוטומטית)</Label>
                     <Input
                       value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) => { setNameManuallyEdited(true); setFormData(prev => ({ ...prev, name: e.target.value })); }}
                       placeholder="השם נוצר אוטומטית מהפרטים"
                     />
                   </div>
