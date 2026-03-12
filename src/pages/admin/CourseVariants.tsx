@@ -171,6 +171,7 @@ const CourseVariants = () => {
       is_active: variant.is_active,
       sort_order: variant.sort_order
     });
+    setNameManuallyEdited(true);
     setShowForm(true);
   };
 
