@@ -1,0 +1,1 @@
+UPDATE course_variants SET day_of_week = 'כל יום בתקופת הלימוד' WHERE day_of_week = 'כל יום';
