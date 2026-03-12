@@ -55,6 +55,7 @@ const CourseVariants = () => {
   const [loading, setLoading] = useState(true);
   const [editingVariant, setEditingVariant] = useState<CourseVariant | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     gender: 'מעורב',
@@ -151,6 +152,7 @@ const CourseVariants = () => {
       sort_order: variants.length
     });
     setEditingVariant(null);
+    setNameManuallyEdited(false);
     setShowForm(false);
   };
 
@@ -169,6 +171,7 @@ const CourseVariants = () => {
       is_active: variant.is_active,
       sort_order: variant.sort_order
     });
+    setNameManuallyEdited(true);
     setShowForm(true);
   };
 
@@ -268,18 +271,17 @@ const CourseVariants = () => {
 
   // Auto-generate name when fields change
   useEffect(() => {
+    if (nameManuallyEdited) return;
     if (formData.location && formData.day_of_week && formData.start_time) {
       const genderLabel = GENDERS.find(g => g.value === formData.gender)?.label || formData.gender;
       const gradeRange = formData.min_grade && formData.max_grade 
         ? ` כיתות ${formData.min_grade}-${formData.max_grade}` 
         : formData.min_grade ? ` כיתה ${formData.min_grade}` : '';
-      const autoName = `${formData.location} | ${genderLabel} | יום ${formData.day_of_week} ${formData.start_time}${gradeRange}`;
-      
-      if (!editingVariant || formData.name === editingVariant.name) {
-        setFormData(prev => ({ ...prev, name: autoName }));
-      }
+      const dayLabel = formData.day_of_week.startsWith('כל') ? formData.day_of_week : `יום ${formData.day_of_week}`;
+      const autoName = `${formData.location} | ${genderLabel} | ${dayLabel} ${formData.start_time}${gradeRange}`;
+      setFormData(prev => ({ ...prev, name: autoName }));
     }
-  }, [formData.location, formData.day_of_week, formData.start_time, formData.gender, formData.min_grade, formData.max_grade]);
+  }, [formData.location, formData.day_of_week, formData.start_time, formData.gender, formData.min_grade, formData.max_grade, nameManuallyEdited]);
 
   if (authLoading || loading) {
     return (
@@ -354,7 +356,7 @@ const CourseVariants = () => {
                     <Label>שם מחזור הלימוד (נוצר אוטומטית)</Label>
                     <Input
                       value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) => { setNameManuallyEdited(true); setFormData(prev => ({ ...prev, name: e.target.value })); }}
                       placeholder="השם נוצר אוטומטית מהפרטים"
                     />
                   </div>
