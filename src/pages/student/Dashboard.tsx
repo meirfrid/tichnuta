@@ -57,8 +57,43 @@ const StudentDashboard = () => {
 
       try {
         setLoading(true);
+        const allAccesses: VariantAccess[] = [];
 
-        // Get variant IDs user has access to
+        // 1. Fetch course-level access (original system)
+        const { data: courseEmails } = await supabase
+          .from("course_allowed_emails")
+          .select("course_id")
+          .eq("email", user.email);
+
+        if (courseEmails && courseEmails.length > 0) {
+          const courseIds = courseEmails.map(e => e.course_id);
+          const { data: courses } = await supabase
+            .from("courses")
+            .select("*")
+            .in("id", courseIds)
+            .eq("active", true)
+            .order("sort_order");
+
+          const legacyAccesses: VariantAccess[] = (courses || []).map(c => ({
+            variant_id: "",
+            variant_name: "",
+            course_id: c.id,
+            course_title: c.title,
+            course_subtitle: c.subtitle,
+            course_description: c.description,
+            course_color: c.color,
+            course_slug: c.slug,
+            location: "",
+            day_of_week: "",
+            start_time: "",
+            end_time: null,
+            gender: "",
+            learning_period: null,
+          }));
+          allAccesses.push(...legacyAccesses);
+        }
+
+        // 2. Fetch variant-level access (new system)
         const { data: variantEmails, error: variantError } = await supabase
           .from("variant_allowed_emails")
           .select("variant_id")
@@ -69,7 +104,6 @@ const StudentDashboard = () => {
         const variantIds = variantEmails?.map(v => v.variant_id) || [];
 
         if (variantIds.length > 0) {
-          // Fetch variants with course info
           const { data: variants, error: variantsError } = await supabase
             .from("course_variants")
             .select("*, courses!course_variants_course_id_fkey(id, title, subtitle, description, color, slug)")
@@ -78,7 +112,7 @@ const StudentDashboard = () => {
 
           if (variantsError) throw variantsError;
 
-          const accesses: VariantAccess[] = (variants || [])
+          const variantAccesses: VariantAccess[] = (variants || [])
             .filter((v: any) => v.courses)
             .map((v: any) => ({
               variant_id: v.id,
@@ -96,46 +130,10 @@ const StudentDashboard = () => {
               gender: v.gender,
               learning_period: v.learning_period,
             }));
-
-          setVariantAccesses(accesses);
-        } else {
-          // Fallback: check old course_allowed_emails for backward compatibility
-          const { data: courseEmails } = await supabase
-            .from("course_allowed_emails")
-            .select("course_id")
-            .eq("email", user.email);
-
-          if (courseEmails && courseEmails.length > 0) {
-            const courseIds = courseEmails.map(e => e.course_id);
-            const { data: courses } = await supabase
-              .from("courses")
-              .select("*")
-              .in("id", courseIds)
-              .eq("active", true)
-              .order("sort_order");
-
-            // Show as legacy course cards (no variant)
-            const legacyAccesses: VariantAccess[] = (courses || []).map(c => ({
-              variant_id: "",
-              variant_name: "",
-              course_id: c.id,
-              course_title: c.title,
-              course_subtitle: c.subtitle,
-              course_description: c.description,
-              course_color: c.color,
-              course_slug: c.slug,
-              location: "",
-              day_of_week: "",
-              start_time: "",
-              end_time: null,
-              gender: "",
-              learning_period: null,
-            }));
-            setVariantAccesses(legacyAccesses);
-          } else {
-            setVariantAccesses([]);
-          }
+          allAccesses.push(...variantAccesses);
         }
+
+        setVariantAccesses(allAccesses);
       } catch (error: any) {
         console.error("Error fetching access:", error);
         toast({
