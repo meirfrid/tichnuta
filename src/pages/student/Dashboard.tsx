@@ -6,33 +6,35 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, BookOpen, GraduationCap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, BookOpen, GraduationCap, MapPin, Clock, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import scratchLogo from "@/assets/scratch-logo.png";
 import pythonLogo from "@/assets/python-logo.png";
 import appinventorLogo from "@/assets/appinventor-logo.png";
 
-interface Course {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  color: string;
-  icon: string;
-  slug: string;
+interface VariantAccess {
+  variant_id: string;
+  variant_name: string;
+  course_id: string;
+  course_title: string;
+  course_subtitle: string;
+  course_description: string;
+  course_color: string;
+  course_slug: string;
+  location: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string | null;
+  gender: string;
+  learning_period: string | null;
 }
 
 const getCourseImage = (title: string): string | null => {
   const lowerTitle = title.toLowerCase();
-  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) {
-    return scratchLogo;
-  }
-  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) {
-    return pythonLogo;
-  }
-  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) {
-    return appinventorLogo;
-  }
+  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
+  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
+  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
   return null;
 };
 
@@ -40,7 +42,7 @@ const StudentDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [variantAccesses, setVariantAccesses] = useState<VariantAccess[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,40 +52,92 @@ const StudentDashboard = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    const fetchMyCourses = async () => {
+    const fetchMyAccess = async () => {
       if (!user) return;
 
       try {
         setLoading(true);
-        
-        // Get courses where user's email is in allowed emails
-        const { data: allowedEmails, error: emailsError } = await supabase
-          .from("course_allowed_emails")
-          .select("course_id")
+
+        // Get variant IDs user has access to
+        const { data: variantEmails, error: variantError } = await supabase
+          .from("variant_allowed_emails")
+          .select("variant_id")
           .eq("email", user.email);
 
-        if (emailsError) throw emailsError;
+        if (variantError) throw variantError;
 
-        if (!allowedEmails || allowedEmails.length === 0) {
-          setCourses([]);
-          setLoading(false);
-          return;
+        const variantIds = variantEmails?.map(v => v.variant_id) || [];
+
+        if (variantIds.length > 0) {
+          // Fetch variants with course info
+          const { data: variants, error: variantsError } = await supabase
+            .from("course_variants")
+            .select("*, courses!course_variants_course_id_fkey(id, title, subtitle, description, color, slug)")
+            .in("id", variantIds)
+            .eq("is_active", true);
+
+          if (variantsError) throw variantsError;
+
+          const accesses: VariantAccess[] = (variants || [])
+            .filter((v: any) => v.courses)
+            .map((v: any) => ({
+              variant_id: v.id,
+              variant_name: v.name,
+              course_id: v.courses.id,
+              course_title: v.courses.title,
+              course_subtitle: v.courses.subtitle,
+              course_description: v.courses.description,
+              course_color: v.courses.color,
+              course_slug: v.courses.slug,
+              location: v.location,
+              day_of_week: v.day_of_week,
+              start_time: v.start_time,
+              end_time: v.end_time,
+              gender: v.gender,
+              learning_period: v.learning_period,
+            }));
+
+          setVariantAccesses(accesses);
+        } else {
+          // Fallback: check old course_allowed_emails for backward compatibility
+          const { data: courseEmails } = await supabase
+            .from("course_allowed_emails")
+            .select("course_id")
+            .eq("email", user.email);
+
+          if (courseEmails && courseEmails.length > 0) {
+            const courseIds = courseEmails.map(e => e.course_id);
+            const { data: courses } = await supabase
+              .from("courses")
+              .select("*")
+              .in("id", courseIds)
+              .eq("active", true)
+              .order("sort_order");
+
+            // Show as legacy course cards (no variant)
+            const legacyAccesses: VariantAccess[] = (courses || []).map(c => ({
+              variant_id: "",
+              variant_name: "",
+              course_id: c.id,
+              course_title: c.title,
+              course_subtitle: c.subtitle,
+              course_description: c.description,
+              course_color: c.color,
+              course_slug: c.slug,
+              location: "",
+              day_of_week: "",
+              start_time: "",
+              end_time: null,
+              gender: "",
+              learning_period: null,
+            }));
+            setVariantAccesses(legacyAccesses);
+          } else {
+            setVariantAccesses([]);
+          }
         }
-
-        const courseIds = allowedEmails.map((e) => e.course_id);
-
-        const { data: coursesData, error: coursesError } = await supabase
-          .from("courses")
-          .select("*")
-          .in("id", courseIds)
-          .eq("active", true)
-          .order("sort_order");
-
-        if (coursesError) throw coursesError;
-
-        setCourses(coursesData || []);
       } catch (error: any) {
-        console.error("Error fetching courses:", error);
+        console.error("Error fetching access:", error);
         toast({
           title: "שגיאה",
           description: "לא הצלחנו לטעון את הקורסים שלך",
@@ -94,7 +148,7 @@ const StudentDashboard = () => {
       }
     };
 
-    fetchMyCourses();
+    fetchMyAccess();
   }, [user, toast]);
 
   if (authLoading || loading) {
@@ -115,7 +169,7 @@ const StudentDashboard = () => {
             <h1 className="text-3xl font-bold">הקורסים שלי</h1>
           </div>
 
-          {courses.length === 0 ? (
+          {variantAccesses.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
                 <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -128,34 +182,53 @@ const StudentDashboard = () => {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course) => {
-                const courseImage = getCourseImage(course.title);
+              {variantAccesses.map((access) => {
+                const courseImage = getCourseImage(access.course_title);
+                const isVariantBased = !!access.variant_id;
+                const navigateTo = isVariantBased
+                  ? `/learn/${access.course_slug || access.course_id}/variant/${access.variant_id}`
+                  : `/learn/${access.course_slug || access.course_id}`;
+
                 return (
                   <Card
-                    key={course.id}
+                    key={access.variant_id || access.course_id}
                     className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
-                    onClick={() => navigate(`/learn/${course.slug || course.id}`)}
+                    onClick={() => navigate(navigateTo)}
                   >
                     {courseImage && (
                       <div className="h-48 overflow-hidden">
-                        <img 
-                          src={courseImage} 
-                          alt={course.title}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={courseImage} alt={access.course_title} className="w-full h-full object-cover" />
                       </div>
                     )}
-                    <CardHeader className={courseImage ? '' : `${course.color} text-white rounded-t-lg`}>
-                      <CardTitle className={courseImage ? '' : 'text-white'}>{course.title}</CardTitle>
+                    <CardHeader className={courseImage ? '' : `${access.course_color} text-white rounded-t-lg`}>
+                      <CardTitle className={courseImage ? '' : 'text-white'}>{access.course_title}</CardTitle>
                       <CardDescription className={courseImage ? '' : 'text-white/90'}>
-                        {course.subtitle}
+                        {access.course_subtitle}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-6">
-                      <p className="text-sm text-muted-foreground line-clamp-3">
-                        {course.description}
-                      </p>
-                      <Button className="w-full mt-4" variant="outline">
+                    <CardContent className="pt-4">
+                      {isVariantBased && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {access.location && (
+                            <Badge variant="outline" className="text-xs">
+                              <MapPin className="h-3 w-3 ml-1" />
+                              {access.location}
+                            </Badge>
+                          )}
+                          {access.day_of_week && (
+                            <Badge variant="outline" className="text-xs">
+                              <Clock className="h-3 w-3 ml-1" />
+                              יום {access.day_of_week} {access.start_time}
+                            </Badge>
+                          )}
+                          {access.learning_period && (
+                            <Badge variant="secondary" className="text-xs">
+                              {access.learning_period}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                      <Button className="w-full" variant="outline">
                         המשך ללמוד
                       </Button>
                     </CardContent>

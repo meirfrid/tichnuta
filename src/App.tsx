@@ -19,6 +19,8 @@ import CourseLessons from "./pages/admin/CourseLessons";
 import CoursePeriods from "./pages/admin/CoursePeriods";
 import CoursePermissions from "./pages/admin/CoursePermissions";
 import CourseVariants from "./pages/admin/CourseVariants";
+import VariantLessons from "./pages/admin/VariantLessons";
+import VariantPermissions from "./pages/admin/VariantPermissions";
 import GalleryManagement from "./pages/admin/GalleryManagement";
 import StudentDashboard from "./pages/student/Dashboard";
 import CoursePage from "./pages/student/CoursePage";
@@ -54,9 +56,13 @@ const App = () => (
             <Route path="/admin/courses/:courseId/permissions" element={<CoursePermissions />} />
             <Route path="/admin/courses/:courseId/periods" element={<CoursePeriods />} />
             <Route path="/admin/courses/:courseId/variants" element={<CourseVariants />} />
+            <Route path="/admin/courses/:courseId/variants/:variantId/lessons" element={<VariantLessons />} />
+            <Route path="/admin/courses/:courseId/variants/:variantId/permissions" element={<VariantPermissions />} />
             <Route path="/dashboard" element={<StudentDashboard />} />
             <Route path="/courses/:courseId" element={<CourseDetailsPage />} />
             <Route path="/learn/:courseSlug" element={<CoursePage />} />
+            <Route path="/learn/:courseSlug/variant/:variantId" element={<CoursePage />} />
+            <Route path="/learn/:courseSlug/variant/:variantId/:lessonId" element={<LessonPage />} />
             <Route path="/learn/:courseSlug/:lessonId" element={<LessonPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

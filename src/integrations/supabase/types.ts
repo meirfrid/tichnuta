@@ -548,6 +548,7 @@ export type Database = {
           slides_url: string | null
           title: string
           updated_at: string
+          variant_id: string | null
           video_url: string | null
         }
         Insert: {
@@ -560,6 +561,7 @@ export type Database = {
           slides_url?: string | null
           title: string
           updated_at?: string
+          variant_id?: string | null
           video_url?: string | null
         }
         Update: {
@@ -572,6 +574,7 @@ export type Database = {
           slides_url?: string | null
           title?: string
           updated_at?: string
+          variant_id?: string | null
           video_url?: string | null
         }
         Relationships: [
@@ -580,6 +583,13 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lessons_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "course_variants"
             referencedColumns: ["id"]
           },
         ]
@@ -816,6 +826,35 @@ export type Database = {
         }
         Relationships: []
       }
+      variant_allowed_emails: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          variant_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          variant_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "variant_allowed_emails_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "course_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -844,6 +883,10 @@ export type Database = {
       }
       user_has_course_access: {
         Args: { _course_id: string; _user_id: string }
+        Returns: boolean
+      }
+      user_has_variant_access: {
+        Args: { _user_id: string; _variant_id: string }
         Returns: boolean
       }
     }

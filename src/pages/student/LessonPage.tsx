@@ -91,7 +91,7 @@ interface Course {
 }
 
 const LessonPage = () => {
-  const { courseSlug, lessonId } = useParams();
+  const { courseSlug, lessonId, variantId } = useParams();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -120,55 +120,63 @@ const LessonPage = () => {
       try {
         setLoading(true);
 
-        // Fetch course - check if courseSlug is a UUID first
+        // Fetch course
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseSlug);
-
-        let courseQuery = supabase
-          .from("courses")
-          .select("*")
-          .eq("active", true);
-
+        let courseQuery = supabase.from("courses").select("*").eq("active", true);
         if (isUUID) {
           courseQuery = courseQuery.or(`slug.eq.${courseSlug},id.eq.${courseSlug}`);
         } else {
           courseQuery = courseQuery.eq("slug", courseSlug);
         }
-
         const { data: courseData, error: courseError } = await courseQuery.single();
-
         if (courseError) throw courseError;
         setCourse(courseData);
 
         // Check access
-        const { data: accessData, error: accessError } = await supabase
-          .from("course_allowed_emails")
-          .select("id")
-          .eq("course_id", courseData.id)
-          .eq("email", user.email)
-          .maybeSingle();
+        if (variantId) {
+          const { data: accessData } = await supabase
+            .from("variant_allowed_emails")
+            .select("id")
+            .eq("variant_id", variantId)
+            .eq("email", user.email)
+            .maybeSingle();
+          setHasAccess(!!accessData);
+          if (!accessData) {
+            toast({ title: "אין הרשאה", description: "אין לך גישה לשיעור זה", variant: "destructive" });
+            return;
+          }
 
+          // Fetch lessons for this variant
+          const { data: lessonsData, error: lessonsError } = await supabase
+            .from("lessons")
+            .select("*")
+            .eq("variant_id", variantId)
+            .order("order_index");
+          if (lessonsError) throw lessonsError;
+          setAllLessons(lessonsData || []);
+        } else {
+          const { data: accessData } = await supabase
+            .from("course_allowed_emails")
+            .select("id")
+            .eq("course_id", courseData.id)
+            .eq("email", user.email)
+            .maybeSingle();
+          setHasAccess(!!accessData);
+          if (!accessData) {
+            toast({ title: "אין הרשאה", description: "אין לך גישה לשיעור זה", variant: "destructive" });
+            return;
+          }
 
-
-        setHasAccess(!!accessData);
-
-        if (!accessData) {
-          toast({
-            title: "אין הרשאה",
-            description: "אין לך גישה לשיעור זה",
-            variant: "destructive",
-          });
-          return;
+          // Fetch all lessons (legacy)
+          const { data: lessonsData, error: lessonsError } = await supabase
+            .from("lessons")
+            .select("*")
+            .eq("course_id", courseData.id)
+            .is("variant_id", null)
+            .order("order_index");
+          if (lessonsError) throw lessonsError;
+          setAllLessons(lessonsData || []);
         }
-
-        // Fetch all lessons for navigation
-        const { data: lessonsData, error: lessonsError } = await supabase
-          .from("lessons")
-          .select("*")
-          .eq("course_id", courseData.id)
-          .order("order_index");
-
-        if (lessonsError) throw lessonsError;
-        setAllLessons(lessonsData || []);
 
         // Fetch specific lesson
         const { data: lessonData, error: lessonError } = await supabase
@@ -176,27 +184,23 @@ const LessonPage = () => {
           .select("*")
           .eq("id", lessonId)
           .single();
-
         if (lessonError) throw lessonError;
         setLesson(lessonData);
       } catch (error: any) {
         console.error("Error fetching lesson:", error);
-        toast({
-          title: "שגיאה",
-          description: "לא הצלחנו לטעון את השיעור",
-          variant: "destructive",
-        });
+        toast({ title: "שגיאה", description: "לא הצלחנו לטעון את השיעור", variant: "destructive" });
       } finally {
         setLoading(false);
       }
     };
 
     fetchLessonData();
-  }, [user, courseSlug, lessonId, toast]);
+  }, [user, courseSlug, lessonId, variantId, toast]);
 
   const currentIndex = allLessons.findIndex((l) => l.id === lessonId);
   const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
   const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
+  const basePath = variantId ? `/learn/${courseSlug}/variant/${variantId}` : `/learn/${courseSlug}`;
 
   if (authLoading || loading) {
     return (
@@ -232,7 +236,7 @@ const LessonPage = () => {
           <div className="flex items-center justify-between mb-6">
             <Button
               variant="ghost"
-              onClick={() => navigate(`/learn/${courseSlug}`)}
+              onClick={() => navigate(basePath)}
             >
               ← חזרה לקורס
             </Button>
@@ -382,7 +386,7 @@ const LessonPage = () => {
             {prevLesson ? (
               <Button
                 variant="outline"
-                onClick={() => navigate(`/learn/${courseSlug}/${prevLesson.id}`)}
+                onClick={() => navigate(`${basePath}/${prevLesson.id}`)}
                 className="flex-1 min-w-0 max-w-full overflow-hidden"
               >
                 <ChevronRight className="ml-2 h-4 w-4 shrink-0" />
@@ -394,7 +398,7 @@ const LessonPage = () => {
 
             {nextLesson ? (
               <Button
-                onClick={() => navigate(`/learn/${courseSlug}/${nextLesson.id}`)}
+                onClick={() => navigate(`${basePath}/${nextLesson.id}`)}
                 className="flex-1 min-w-0 max-w-full overflow-hidden"
               >
                 <span className="truncate">שיעור הבא: {nextLesson.title}</span>
