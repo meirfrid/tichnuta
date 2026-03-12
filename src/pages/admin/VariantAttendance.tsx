@@ -27,7 +27,7 @@ const VariantAttendance = () => {
 
   const [variant, setVariant] = useState<any>(null);
   const [course, setCourse] = useState<any>(null);
-  const [students, setStudents] = useState<string[]>([]);
+  const [students, setStudents] = useState<{ email: string; name: string }[]>([]);
   const [attendance, setAttendance] = useState<Map<string, boolean>>(new Map());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
