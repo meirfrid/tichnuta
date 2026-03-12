@@ -199,13 +199,8 @@ const VariantAttendance = () => {
   };
 
   const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
+    const d = new Date(dateStr + 'T00:00:00');
     return d.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit' });
-  };
-
-  const getStudentName = (email: string) => {
-    // Show email, could be enhanced with profile lookup
-    return email.split('@')[0];
   };
 
   // Count attendance per student
