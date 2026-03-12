@@ -21,6 +21,7 @@ import CoursePermissions from "./pages/admin/CoursePermissions";
 import CourseVariants from "./pages/admin/CourseVariants";
 import VariantLessons from "./pages/admin/VariantLessons";
 import VariantPermissions from "./pages/admin/VariantPermissions";
+import VariantAttendance from "./pages/admin/VariantAttendance";
 import GalleryManagement from "./pages/admin/GalleryManagement";
 import StudentDashboard from "./pages/student/Dashboard";
 import CoursePage from "./pages/student/CoursePage";
