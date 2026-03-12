@@ -82,24 +82,35 @@ const VariantAttendance = () => {
   };
 
   const fetchStudents = async () => {
-    // Get students from variant_allowed_emails
+    // Get students from registrations linked to this variant with status 'נרשם'
+    const { data: registrations } = await supabase
+      .from('registrations')
+      .select('name, email')
+      .eq('variant_id', variantId!)
+      .eq('status', 'נרשם');
+
+    // Get students from variant_allowed_emails (fallback)
     const { data: variantEmails } = await supabase
       .from('variant_allowed_emails')
       .select('email')
       .eq('variant_id', variantId!);
 
-    // Get students from registrations linked to this variant with status 'נרשם'
-    const { data: registrations } = await supabase
-      .from('registrations')
-      .select('email')
-      .eq('variant_id', variantId!)
-      .eq('status', 'נרשם');
+    const studentMap = new Map<string, string>();
+    // First add registrations (they have names)
+    registrations?.forEach(r => studentMap.set(r.email.toLowerCase(), r.name));
+    // Add variant emails that aren't already from registrations
+    variantEmails?.forEach(e => {
+      const email = e.email.toLowerCase();
+      if (!studentMap.has(email)) {
+        studentMap.set(email, email.split('@')[0]);
+      }
+    });
 
-    const emailSet = new Set<string>();
-    variantEmails?.forEach(e => emailSet.add(e.email.toLowerCase()));
-    registrations?.forEach(r => emailSet.add(r.email.toLowerCase()));
+    const result = Array.from(studentMap.entries())
+      .map(([email, name]) => ({ email, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-    setStudents(Array.from(emailSet).sort());
+    setStudents(result);
   };
 
   const fetchAttendance = async () => {
