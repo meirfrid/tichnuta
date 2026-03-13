@@ -117,8 +117,7 @@ const Courses = () => {
                         </div>
                       ) : (
                         <div 
-                          className="h-32 flex items-center justify-center"
-                          style={{ backgroundColor: course.color || 'hsl(var(--primary))' }}
+                          className={`h-32 flex items-center justify-center ${course.color || 'bg-primary'}`}
                         >
                           <IconComponent className="h-16 w-16 text-white" />
                         </div>
