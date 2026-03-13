@@ -72,7 +72,9 @@ const Courses = () => {
         <section className="bg-gradient-hero py-16 md:py-24">
           <div className="container mx-auto px-4 text-center text-primary-foreground">
             <GraduationCap className="h-16 w-16 mx-auto mb-6" />
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">הקורסים שלנו</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              {gradeFilter ? `קורסים ל${gradeFilter}` : 'הקורסים שלנו'}
+            </h1>
             <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto mb-6">
               קורסי תכנות מקצועיים לילדים בכל הגילאים
             </p>
