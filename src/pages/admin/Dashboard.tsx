@@ -394,6 +394,7 @@ const AdminDashboard = () => {
       title: course.title,
       subtitle: course.subtitle,
       description: course.description,
+      syllabus: course.syllabus || '',
       icon: course.icon,
       color: course.color,
       features: course.features.length > 0 ? course.features : [''],
