@@ -1127,10 +1127,22 @@ const AdminDashboard = () => {
                           onChange={(e) => setCourseForm(prev => ({ ...prev, description: e.target.value }))}
                           placeholder="תיאור מפורט על הקורס..."
                           rows={3}
-                        />
-                      </div>
+                         />
+                       </div>
 
-                      <div>
+                       <div className="md:col-span-2">
+                        <Label htmlFor="courseSyllabus">סילבוס הקורס (אופציונלי)</Label>
+                        <Textarea
+                          id="courseSyllabus"
+                          value={courseForm.syllabus}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, syllabus: e.target.value }))}
+                          placeholder="שיעור 1: הכרת הסביבה&#10;שיעור 2: משתנים ולולאות&#10;שיעור 3: פונקציות&#10;..."
+                          rows={6}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          כל שורה תוצג כפריט נפרד בסילבוס. השאר ריק אם לא רלוונטי.
+                        </p>
+                      </div>
                         <Label htmlFor="courseIcon">אייקון</Label>
                         <Select value={courseForm.icon} onValueChange={(value) => setCourseForm(prev => ({ ...prev, icon: value }))}>
                           <SelectTrigger>
