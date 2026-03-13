@@ -185,7 +185,7 @@ const StudentDashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {variantAccesses.map((access) => {
-                const courseImage = getCourseImage(access.course_title);
+                const courseImage = getCourseImage(access);
                 const isVariantBased = !!access.variant_id;
                 const navigateTo = isVariantBased
                   ? `/learn/${access.course_slug || access.course_id}/variant/${access.variant_id}`
