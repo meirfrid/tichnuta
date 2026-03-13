@@ -72,9 +72,16 @@ const Auth = () => {
         });
       }
     } catch (error: any) {
+      const isNetworkBlock = error.message?.includes('Unexpected token') || 
+                             error.message?.includes('is not valid JSON') ||
+                             error.message?.includes('Failed to fetch') ||
+                             error.message?.includes('NetworkError');
+      
       toast({
         title: "שגיאה",
-        description: error.message,
+        description: isNetworkBlock 
+          ? "נראה שהגישה לשרת חסומה ברשת שלך. נסה לבדוק עם מנהל הרשת שהדומיין vnsmtvuohlxgcsfontpb.supabase.co אינו חסום, או נסה מרשת אחרת."
+          : error.message,
         variant: "destructive",
       });
     } finally {
