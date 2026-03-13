@@ -1186,7 +1186,67 @@ const AdminDashboard = () => {
                         />
                       </div>
 
-                      <div>
+                      <div className="md:col-span-2">
+                        <Label>תמונת קורס</Label>
+                        <div className="space-y-3 mt-1">
+                          <Input
+                            value={courseForm.image_url}
+                            onChange={(e) => setCourseForm(prev => ({ ...prev, image_url: e.target.value }))}
+                            placeholder="הכנס קישור לתמונה (Google Drive או URL ישיר)"
+                          />
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-muted-foreground">או</span>
+                            <div>
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                disabled={uploadingImage}
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  setUploadingImage(true);
+                                  try {
+                                    const fileExt = file.name.split('.').pop();
+                                    const fileName = `${Date.now()}.${fileExt}`;
+                                    const { error: uploadError } = await supabase.storage
+                                      .from('course-images')
+                                      .upload(fileName, file);
+                                    if (uploadError) throw uploadError;
+                                    const { data: urlData } = supabase.storage
+                                      .from('course-images')
+                                      .getPublicUrl(fileName);
+                                    setCourseForm(prev => ({ ...prev, image_url: urlData.publicUrl }));
+                                    toast({ title: "התמונה הועלתה בהצלחה" });
+                                  } catch (error: any) {
+                                    console.error('Upload error:', error);
+                                    toast({ title: "שגיאה בהעלאת תמונה", description: error.message, variant: "destructive" });
+                                  } finally {
+                                    setUploadingImage(false);
+                                  }
+                                }}
+                              />
+                            </div>
+                          </div>
+                          {courseForm.image_url && (
+                            <div className="relative">
+                              <img
+                                src={courseForm.image_url}
+                                alt="תצוגה מקדימה"
+                                className="h-32 w-auto rounded-md border object-cover"
+                                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                              />
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                className="absolute top-1 right-1"
+                                onClick={() => setCourseForm(prev => ({ ...prev, image_url: '' }))}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                         <Label htmlFor="courseDuration">משך שיעור</Label>
                         <Input
                           id="courseDuration"
