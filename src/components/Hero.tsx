@@ -101,29 +101,51 @@ const Hero = () => {
 
 
         {/* Age Groups Preview */}
-        {courses.length > 0 && (
-          <div className="text-center text-primary-foreground">
-            <h2 className="text-3xl font-bold mb-8">קורסים לכל הגילאים</h2>
-            <div className="flex flex-wrap justify-center gap-6">
-              {courses.map((course) => {
-                const IconComponent = iconMap[course.icon] || Code2;
-                return (
-                  <Card 
-                    key={course.id} 
-                    className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[200px] cursor-pointer"
-                    onClick={() => navigate(`/courses/${course.slug || course.id}`)}
-                  >
-                    <div className="flex justify-center mb-3">
-                      <IconComponent className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">{course.subtitle}</h3>
-                    <p className="text-sm opacity-80">{course.title}</p>
-                  </Card>
-                );
-              })}
+        {courses.length > 0 && (() => {
+          // Group courses by subtitle (grade range)
+          const groupedBySubtitle = courses.reduce((acc: Record<string, any[]>, course) => {
+            const key = course.subtitle || course.title;
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(course);
+            return acc;
+          }, {});
+
+          return (
+            <div className="text-center text-primary-foreground">
+              <h2 className="text-3xl font-bold mb-8">קורסים לכל הגילאים</h2>
+              <div className="flex flex-wrap justify-center gap-6">
+                {Object.entries(groupedBySubtitle).map(([subtitle, groupCourses]) => {
+                  const firstCourse = groupCourses[0];
+                  const IconComponent = iconMap[firstCourse.icon] || Code2;
+                  const handleClick = () => {
+                    if (groupCourses.length === 1) {
+                      navigate(`/courses/${firstCourse.slug || firstCourse.id}`);
+                    } else {
+                      navigate(`/courses?grade=${encodeURIComponent(subtitle)}`);
+                    }
+                  };
+                  return (
+                    <Card 
+                      key={subtitle} 
+                      className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[200px] cursor-pointer"
+                      onClick={handleClick}
+                    >
+                      <div className="flex justify-center mb-3">
+                        <IconComponent className="h-6 w-6" />
+                      </div>
+                      <h3 className="text-lg font-semibold mb-2">{subtitle}</h3>
+                      <p className="text-sm opacity-80">
+                        {groupCourses.length === 1 
+                          ? firstCourse.title 
+                          : groupCourses.map(c => c.title).join(' | ')}
+                      </p>
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     </section>
   );
