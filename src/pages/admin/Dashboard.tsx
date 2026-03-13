@@ -342,7 +342,7 @@ const AdminDashboard = () => {
             features: courseForm.features.filter(f => f.trim() !== ''),
             locations: courseForm.locations.filter(l => l.trim() !== ''),
             times: courseForm.times.filter(t => t.trim() !== ''),
-            sort_order: courses.length + 1
+            sort_order: courseForm.sort_order
           });
 
         if (error) throw error;
