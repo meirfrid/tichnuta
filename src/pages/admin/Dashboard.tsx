@@ -1151,6 +1151,20 @@ const AdminDashboard = () => {
                         </p>
                       </div>
 
+                      <div className="md:col-span-2">
+                        <Label htmlFor="courseVideoUrl">סרטון הסבר על הקורס (אופציונלי)</Label>
+                        <Input
+                          id="courseVideoUrl"
+                          value={courseForm.video_url}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, video_url: e.target.value }))}
+                          placeholder="https://drive.google.com/file/d/..."
+                          dir="ltr"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          הכנס קישור לסרטון מ-Google Drive (וודא שהקובץ משותף לכולם). יוצג בראש דף פרטי הקורס.
+                        </p>
+                      </div>
+
                       <div>
                         <Label htmlFor="courseIcon">אייקון</Label>
                         <Select value={courseForm.icon} onValueChange={(value) => setCourseForm(prev => ({ ...prev, icon: value }))}>
