@@ -26,6 +26,7 @@ import {
   HelpCircle,
   ArrowRight,
   Loader2,
+  BookOpen,
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
