@@ -6,17 +6,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import GroupsIcon from '@mui/icons-material/Groups';
-import scratchLogo from "@/assets/scratch-logo.png";
-import pythonLogo from "@/assets/python-logo.png";
-import appinventorLogo from "@/assets/appinventor-logo.png";
-
-const getCourseImage = (title: string): string | null => {
-  const lowerTitle = title.toLowerCase();
-  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
-  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
-  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
-  return null;
-};
 const Hero = () => {
   const { siteContent } = useSiteContent();
   const [courses, setCourses] = useState<any[]>([]);
@@ -121,25 +110,14 @@ const Hero = () => {
                 return (
                   <Card 
                     key={course.id} 
-                    className="bg-white/10 backdrop-blur-sm border-white/20 p-0 text-primary-foreground hover:bg-white/20 transition-colors w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[200px] cursor-pointer overflow-hidden"
+                    className="bg-white/10 backdrop-blur-sm border-white/20 p-6 text-primary-foreground hover:bg-white/20 transition-colors w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[200px] cursor-pointer"
                     onClick={() => navigate(`/courses/${course.slug || course.id}`)}
                   >
-                    {(() => {
-                      const courseImage = getCourseImage(course.title);
-                      return courseImage ? (
-                        <div className="h-28 overflow-hidden">
-                          <img src={courseImage} alt={course.title} className="w-full h-full object-cover" />
-                        </div>
-                      ) : (
-                        <div className="flex justify-center py-4">
-                          <IconComponent className="h-6 w-6" />
-                        </div>
-                      );
-                    })()}
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2">{course.subtitle}</h3>
-                      <p className="text-sm opacity-80">{course.title}</p>
+                    <div className="flex justify-center mb-3">
+                      <IconComponent className="h-6 w-6" />
                     </div>
+                    <h3 className="text-lg font-semibold mb-2">{course.subtitle}</h3>
+                    <p className="text-sm opacity-80">{course.title}</p>
                   </Card>
                 );
               })}

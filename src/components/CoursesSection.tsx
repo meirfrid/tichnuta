@@ -8,6 +8,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, Star } from "lucide-react";
+import scratchLogo from "@/assets/scratch-logo.png";
+import pythonLogo from "@/assets/python-logo.png";
+import appinventorLogo from "@/assets/appinventor-logo.png";
+
+const getCourseImage = (title: string): string | null => {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
+  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
+  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
+  return null;
+};
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -756,18 +767,23 @@ const CoursesSection = () => {
           ) : (
             courses.map((course) => {
               const IconComponent = iconMap[course.icon] || Code2;
+              const courseImage = getCourseImage(course.title);
               return (
                 <Card key={course.id} className="overflow-hidden hover:shadow-card transition-shadow duration-300">
+                  {courseImage ? (
+                    <div className="h-40 overflow-hidden">
+                      <img src={courseImage} alt={course.title} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className={`h-32 flex items-center justify-center ${course.color}`}>
+                      <IconComponent className="h-16 w-16 text-white" />
+                    </div>
+                  )}
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-lg ${course.color}`}>
-                          <IconComponent className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-xl mb-1">{course.title}</CardTitle>
-                          <p className="text-muted-foreground font-medium">{course.subtitle}</p>
-                        </div>
+                      <div>
+                        <CardTitle className="text-xl mb-1">{course.title}</CardTitle>
+                        <p className="text-muted-foreground font-medium">{course.subtitle}</p>
                       </div>
                     </div>
                   </CardHeader>
