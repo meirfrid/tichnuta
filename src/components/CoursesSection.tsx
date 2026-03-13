@@ -8,6 +8,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, Star } from "lucide-react";
+import scratchLogo from "@/assets/scratch-logo.png";
+import pythonLogo from "@/assets/python-logo.png";
+import appinventorLogo from "@/assets/appinventor-logo.png";
+
+const getCourseImage = (title: string): string | null => {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
+  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
+  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
+  return null;
+};
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
