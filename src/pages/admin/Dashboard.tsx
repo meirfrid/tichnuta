@@ -87,7 +87,8 @@ const AdminDashboard = () => {
     locations: [''],
     times: [''],
     slug: '',
-    course_type: 'frontal'
+    course_type: 'frontal',
+    sort_order: 0
   });
 
   const [registrations, setRegistrations] = useState<any[]>([]);
