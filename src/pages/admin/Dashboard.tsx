@@ -1171,6 +1171,17 @@ const AdminDashboard = () => {
                       </div>
 
                       <div>
+                        <Label htmlFor="courseSortOrder">סדר תצוגה (מספר נמוך = מוצג ראשון)</Label>
+                        <Input
+                          id="courseSortOrder"
+                          type="number"
+                          value={courseForm.sort_order}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
+                          placeholder="0"
+                        />
+                      </div>
+
+                      <div>
                         <Label htmlFor="courseDuration">משך שיעור</Label>
                         <Input
                           id="courseDuration"
