@@ -1057,7 +1057,8 @@ const AdminDashboard = () => {
                           times: [''],
                           slug: '',
                           course_type: 'frontal',
-                          sort_order: courses.length
+                          sort_order: courses.length,
+                          image_url: ''
                         });
                     }}>
                       <Plus className="h-4 w-4 ml-2" />
