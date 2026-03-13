@@ -1048,6 +1048,7 @@ const AdminDashboard = () => {
                           title: '',
                           subtitle: '',
                           description: '',
+                          syllabus: '',
                           icon: 'Code2',
                           color: 'bg-gradient-to-br from-blue-500 to-blue-600',
                           features: [''],
