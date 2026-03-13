@@ -90,7 +90,8 @@ const AdminDashboard = () => {
     slug: '',
     course_type: 'frontal',
     sort_order: 0,
-    image_url: ''
+    image_url: '',
+    video_url: ''
   });
   const [uploadingImage, setUploadingImage] = useState(false);
 
