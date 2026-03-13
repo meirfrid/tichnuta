@@ -410,7 +410,8 @@ const AdminDashboard = () => {
       slug: course.slug || '',
       course_type: course.course_type || 'frontal',
       sort_order: course.sort_order || 0,
-      image_url: course.image_url || ''
+      image_url: course.image_url || '',
+      video_url: course.video_url || ''
     });
     setShowNewCourseForm(true);
   };
