@@ -364,6 +364,34 @@ const CourseDetailsPage = () => {
             </div>
           </div>
 
+            {/* Intro Video */}
+            {course.video_url && (() => {
+              let fileId = '';
+              const match1 = course.video_url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
+              const match2 = course.video_url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+              if (match1) fileId = match1[1];
+              else if (match2) fileId = match2[1];
+              const embedUrl = fileId 
+                ? `https://drive.google.com/file/d/${fileId}/preview`
+                : course.video_url;
+              return (
+                <div className="space-y-3">
+                  <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                    <Monitor className="h-6 w-6 text-primary" />
+                    סרטון הסבר על הקורס
+                  </h2>
+                  <div className="rounded-xl overflow-hidden border">
+                    <iframe
+                      src={embedUrl}
+                      className="w-full aspect-video"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Description */}
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-muted-foreground leading-relaxed">

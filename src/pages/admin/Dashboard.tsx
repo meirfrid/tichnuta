@@ -90,7 +90,8 @@ const AdminDashboard = () => {
     slug: '',
     course_type: 'frontal',
     sort_order: 0,
-    image_url: ''
+    image_url: '',
+    video_url: ''
   });
   const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -375,7 +376,8 @@ const AdminDashboard = () => {
         slug: '',
         course_type: 'frontal',
         sort_order: courses.length,
-        image_url: ''
+        image_url: '',
+        video_url: ''
       });
       fetchCourses();
     } catch (error) {
@@ -408,7 +410,8 @@ const AdminDashboard = () => {
       slug: course.slug || '',
       course_type: course.course_type || 'frontal',
       sort_order: course.sort_order || 0,
-      image_url: course.image_url || ''
+      image_url: course.image_url || '',
+      video_url: course.video_url || ''
     });
     setShowNewCourseForm(true);
   };
@@ -1062,7 +1065,8 @@ const AdminDashboard = () => {
                           slug: '',
                           course_type: 'frontal',
                           sort_order: courses.length,
-                          image_url: ''
+                          image_url: '',
+                          video_url: ''
                         });
                     }}>
                       <Plus className="h-4 w-4 ml-2" />
@@ -1144,6 +1148,20 @@ const AdminDashboard = () => {
                         />
                         <p className="text-xs text-muted-foreground mt-1">
                           כל שורה תוצג כפריט נפרד בסילבוס. השאר ריק אם לא רלוונטי.
+                        </p>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <Label htmlFor="courseVideoUrl">סרטון הסבר על הקורס (אופציונלי)</Label>
+                        <Input
+                          id="courseVideoUrl"
+                          value={courseForm.video_url}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, video_url: e.target.value }))}
+                          placeholder="https://drive.google.com/file/d/..."
+                          dir="ltr"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          הכנס קישור לסרטון מ-Google Drive (וודא שהקובץ משותף לכולם). יוצג בראש דף פרטי הקורס.
                         </p>
                       </div>
 
