@@ -78,14 +78,25 @@ const Courses = () => {
             <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto mb-6">
               קורסי תכנות מקצועיים לילדים בכל הגילאים
             </p>
-            <Button 
-              variant="outline" 
-              className="bg-white/10 border-white/30 text-white hover:bg-white/20"
-              onClick={() => navigate("/")}
-            >
-              <ArrowRight className="ml-2 h-4 w-4" />
-              חזרה לדף הבית
-            </Button>
+            <div className="flex gap-3 justify-center">
+              <Button 
+                variant="outline" 
+                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                onClick={() => navigate("/")}
+              >
+                <ArrowRight className="ml-2 h-4 w-4" />
+                חזרה לדף הבית
+              </Button>
+              {gradeFilter && (
+                <Button 
+                  variant="outline" 
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                  onClick={() => navigate("/courses")}
+                >
+                  כל הקורסים
+                </Button>
+              )}
+            </div>
           </div>
         </section>
 
