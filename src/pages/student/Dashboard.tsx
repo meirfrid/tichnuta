@@ -22,6 +22,7 @@ interface VariantAccess {
   course_description: string;
   course_color: string;
   course_slug: string;
+  course_image_url: string | null;
   location: string;
   day_of_week: string;
   start_time: string;
@@ -30,8 +31,9 @@ interface VariantAccess {
   learning_period: string | null;
 }
 
-const getCourseImage = (title: string): string | null => {
-  const lowerTitle = title.toLowerCase();
+const getCourseImage = (access: VariantAccess): string | null => {
+  if (access.course_image_url) return access.course_image_url;
+  const lowerTitle = access.course_title.toLowerCase();
   if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
   if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
   if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
@@ -83,6 +85,7 @@ const StudentDashboard = () => {
             course_description: c.description,
             course_color: c.color,
             course_slug: c.slug,
+            course_image_url: c.image_url || null,
             location: "",
             day_of_week: "",
             start_time: "",
@@ -106,7 +109,7 @@ const StudentDashboard = () => {
         if (variantIds.length > 0) {
           const { data: variants, error: variantsError } = await supabase
             .from("course_variants")
-            .select("*, courses!course_variants_course_id_fkey(id, title, subtitle, description, color, slug)")
+            .select("*, courses!course_variants_course_id_fkey(id, title, subtitle, description, color, slug, image_url)")
             .in("id", variantIds)
             .eq("is_active", true);
 
@@ -123,6 +126,7 @@ const StudentDashboard = () => {
               course_description: v.courses.description,
               course_color: v.courses.color,
               course_slug: v.courses.slug,
+              course_image_url: v.courses.image_url || null,
               location: v.location,
               day_of_week: v.day_of_week,
               start_time: v.start_time,
@@ -181,7 +185,7 @@ const StudentDashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {variantAccesses.map((access) => {
-                const courseImage = getCourseImage(access.course_title);
+                const courseImage = getCourseImage(access);
                 const isVariantBased = !!access.variant_id;
                 const navigateTo = isVariantBased
                   ? `/learn/${access.course_slug || access.course_id}/variant/${access.variant_id}`

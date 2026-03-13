@@ -318,6 +318,7 @@ export type Database = {
           group_size: string
           icon: string
           id: string
+          image_url: string | null
           level: string
           locations: string[] | null
           price_number: number
@@ -341,6 +342,7 @@ export type Database = {
           group_size: string
           icon?: string
           id?: string
+          image_url?: string | null
           level: string
           locations?: string[] | null
           price_number?: number
@@ -364,6 +366,7 @@ export type Database = {
           group_size?: string
           icon?: string
           id?: string
+          image_url?: string | null
           level?: string
           locations?: string[] | null
           price_number?: number

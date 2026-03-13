@@ -10,17 +10,12 @@ import scratchLogo from "@/assets/scratch-logo.png";
 import pythonLogo from "@/assets/python-logo.png";
 import appinventorLogo from "@/assets/appinventor-logo.png";
 
-const getCourseImage = (title: string): string | null => {
-  const lowerTitle = title.toLowerCase();
-  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) {
-    return scratchLogo;
-  }
-  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) {
-    return pythonLogo;
-  }
-  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) {
-    return appinventorLogo;
-  }
+const getCourseImage = (course: any): string | null => {
+  if (course.image_url) return course.image_url;
+  const lowerTitle = course.title.toLowerCase();
+  if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
+  if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
+  if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
   return null;
 };
 
@@ -100,7 +95,7 @@ const Courses = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 {courses.map((course) => {
                   const IconComponent = iconMap[course.icon] || Code2;
-                  const courseImage = getCourseImage(course.title);
+                  const courseImage = getCourseImage(course);
                   return (
                     <Card 
                       key={course.id} 

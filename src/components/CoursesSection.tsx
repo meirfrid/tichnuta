@@ -12,8 +12,9 @@ import scratchLogo from "@/assets/scratch-logo.png";
 import pythonLogo from "@/assets/python-logo.png";
 import appinventorLogo from "@/assets/appinventor-logo.png";
 
-const getCourseImage = (title: string): string | null => {
-  const lowerTitle = title.toLowerCase();
+const getCourseImage = (course: any): string | null => {
+  if (course.image_url) return course.image_url;
+  const lowerTitle = course.title.toLowerCase();
   if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
   if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
   if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
@@ -767,7 +768,7 @@ const CoursesSection = () => {
           ) : (
             courses.map((course) => {
               const IconComponent = iconMap[course.icon] || Code2;
-              const courseImage = getCourseImage(course.title);
+              const courseImage = getCourseImage(course);
               return (
                 <Card key={course.id} className="overflow-hidden hover:shadow-card transition-shadow duration-300">
                   {courseImage ? (
