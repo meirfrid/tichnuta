@@ -88,8 +88,10 @@ const AdminDashboard = () => {
     times: [''],
     slug: '',
     course_type: 'frontal',
-    sort_order: 0
+    sort_order: 0,
+    image_url: ''
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
