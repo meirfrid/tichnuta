@@ -768,7 +768,7 @@ const CoursesSection = () => {
           ) : (
             courses.map((course) => {
               const IconComponent = iconMap[course.icon] || Code2;
-              const courseImage = getCourseImage(course.title);
+              const courseImage = getCourseImage(course);
               return (
                 <Card key={course.id} className="overflow-hidden hover:shadow-card transition-shadow duration-300">
                   {courseImage ? (

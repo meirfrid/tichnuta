@@ -30,8 +30,9 @@ interface VariantAccess {
   learning_period: string | null;
 }
 
-const getCourseImage = (title: string): string | null => {
-  const lowerTitle = title.toLowerCase();
+const getCourseImage = (access: VariantAccess): string | null => {
+  if (access.course_image_url) return access.course_image_url;
+  const lowerTitle = access.course_title.toLowerCase();
   if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
   if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
   if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
