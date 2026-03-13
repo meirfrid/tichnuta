@@ -22,6 +22,7 @@ interface VariantAccess {
   course_description: string;
   course_color: string;
   course_slug: string;
+  course_image_url: string | null;
   location: string;
   day_of_week: string;
   start_time: string;
