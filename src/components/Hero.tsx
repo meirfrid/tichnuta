@@ -114,7 +114,7 @@ const Hero = () => {
             <div className="text-center text-primary-foreground">
               <h2 className="text-3xl font-bold mb-8">קורסים לכל הגילאים</h2>
               <div className="flex flex-wrap justify-center gap-6">
-                {Object.entries(groupedBySubtitle).map(([subtitle, groupCourses]) => {
+                {Object.entries(groupedBySubtitle).map(([subtitle, groupCourses]: [string, any[]]) => {
                   const firstCourse = groupCourses[0];
                   const IconComponent = iconMap[firstCourse.icon] || Code2;
                   const handleClick = () => {
