@@ -376,7 +376,8 @@ const AdminDashboard = () => {
         slug: '',
         course_type: 'frontal',
         sort_order: courses.length,
-        image_url: ''
+        image_url: '',
+        video_url: ''
       });
       fetchCourses();
     } catch (error) {
