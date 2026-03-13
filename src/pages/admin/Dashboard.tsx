@@ -1143,6 +1143,8 @@ const AdminDashboard = () => {
                           כל שורה תוצג כפריט נפרד בסילבוס. השאר ריק אם לא רלוונטי.
                         </p>
                       </div>
+
+                      <div>
                         <Label htmlFor="courseIcon">אייקון</Label>
                         <Select value={courseForm.icon} onValueChange={(value) => setCourseForm(prev => ({ ...prev, icon: value }))}>
                           <SelectTrigger>
