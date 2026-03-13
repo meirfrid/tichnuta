@@ -403,7 +403,8 @@ const AdminDashboard = () => {
       times: course.times?.length > 0 ? course.times : [''],
       slug: course.slug || '',
       course_type: course.course_type || 'frontal',
-      sort_order: course.sort_order || 0
+      sort_order: course.sort_order || 0,
+      image_url: course.image_url || ''
     });
     setShowNewCourseForm(true);
   };
