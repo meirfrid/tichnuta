@@ -126,6 +126,7 @@ const StudentDashboard = () => {
               course_description: v.courses.description,
               course_color: v.courses.color,
               course_slug: v.courses.slug,
+              course_image_url: v.courses.image_url || null,
               location: v.location,
               day_of_week: v.day_of_week,
               start_time: v.start_time,
