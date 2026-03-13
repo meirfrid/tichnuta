@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, GraduationCap, ArrowLeft, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import scratchLogo from "@/assets/scratch-logo.png";
 import pythonLogo from "@/assets/python-logo.png";
 import appinventorLogo from "@/assets/appinventor-logo.png";
@@ -28,6 +28,8 @@ const Courses = () => {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const gradeFilter = searchParams.get('grade');
 
   useEffect(() => {
     fetchCourses();
@@ -70,18 +72,31 @@ const Courses = () => {
         <section className="bg-gradient-hero py-16 md:py-24">
           <div className="container mx-auto px-4 text-center text-primary-foreground">
             <GraduationCap className="h-16 w-16 mx-auto mb-6" />
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">הקורסים שלנו</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              {gradeFilter ? `קורסים ל${gradeFilter}` : 'הקורסים שלנו'}
+            </h1>
             <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto mb-6">
               קורסי תכנות מקצועיים לילדים בכל הגילאים
             </p>
-            <Button 
-              variant="outline" 
-              className="bg-white/10 border-white/30 text-white hover:bg-white/20"
-              onClick={() => navigate("/")}
-            >
-              <ArrowRight className="ml-2 h-4 w-4" />
-              חזרה לדף הבית
-            </Button>
+            <div className="flex gap-3 justify-center">
+              <Button 
+                variant="outline" 
+                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                onClick={() => navigate("/")}
+              >
+                <ArrowRight className="ml-2 h-4 w-4" />
+                חזרה לדף הבית
+              </Button>
+              {gradeFilter && (
+                <Button 
+                  variant="outline" 
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                  onClick={() => navigate("/courses")}
+                >
+                  כל הקורסים
+                </Button>
+              )}
+            </div>
           </div>
         </section>
 
@@ -98,7 +113,7 @@ const Courses = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                {courses.map((course) => {
+                {courses.filter(c => !gradeFilter || c.subtitle === gradeFilter).map((course) => {
                   const IconComponent = iconMap[course.icon] || Code2;
                   const courseImage = getCourseImage(course.title);
                   return (
