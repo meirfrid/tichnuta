@@ -12,8 +12,9 @@ import scratchLogo from "@/assets/scratch-logo.png";
 import pythonLogo from "@/assets/python-logo.png";
 import appinventorLogo from "@/assets/appinventor-logo.png";
 
-const getCourseImage = (title: string): string | null => {
-  const lowerTitle = title.toLowerCase();
+const getCourseImage = (course: any): string | null => {
+  if (course.image_url) return course.image_url;
+  const lowerTitle = course.title.toLowerCase();
   if (lowerTitle.includes('סקראץ') || lowerTitle.includes('scratch')) return scratchLogo;
   if (lowerTitle.includes('פייתון') || lowerTitle.includes('python')) return pythonLogo;
   if (lowerTitle.includes('אפליקציות') || lowerTitle.includes('app')) return appinventorLogo;
