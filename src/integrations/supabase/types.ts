@@ -327,6 +327,7 @@ export type Database = {
           slug: string | null
           sort_order: number
           subtitle: string
+          syllabus: string | null
           times: string[] | null
           title: string
           updated_at: string
@@ -351,6 +352,7 @@ export type Database = {
           slug?: string | null
           sort_order?: number
           subtitle: string
+          syllabus?: string | null
           times?: string[] | null
           title: string
           updated_at?: string
@@ -375,6 +377,7 @@ export type Database = {
           slug?: string | null
           sort_order?: number
           subtitle?: string
+          syllabus?: string | null
           times?: string[] | null
           title?: string
           updated_at?: string
