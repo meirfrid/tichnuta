@@ -76,6 +76,7 @@ const AdminDashboard = () => {
     title: '',
     subtitle: '',
     description: '',
+    syllabus: '',
     icon: 'Code2',
     color: 'bg-gradient-to-br from-blue-500 to-blue-600',
     features: [''],
@@ -360,6 +361,7 @@ const AdminDashboard = () => {
         title: '',
         subtitle: '',
         description: '',
+        syllabus: '',
         icon: 'Code2',
         color: 'bg-gradient-to-br from-blue-500 to-blue-600',
         features: [''],
@@ -392,6 +394,7 @@ const AdminDashboard = () => {
       title: course.title,
       subtitle: course.subtitle,
       description: course.description,
+      syllabus: course.syllabus || '',
       icon: course.icon,
       color: course.color,
       features: course.features.length > 0 ? course.features : [''],
@@ -1045,6 +1048,7 @@ const AdminDashboard = () => {
                           title: '',
                           subtitle: '',
                           description: '',
+                          syllabus: '',
                           icon: 'Code2',
                           color: 'bg-gradient-to-br from-blue-500 to-blue-600',
                           features: [''],
@@ -1126,7 +1130,21 @@ const AdminDashboard = () => {
                           onChange={(e) => setCourseForm(prev => ({ ...prev, description: e.target.value }))}
                           placeholder="תיאור מפורט על הקורס..."
                           rows={3}
+                         />
+                       </div>
+
+                       <div className="md:col-span-2">
+                        <Label htmlFor="courseSyllabus">סילבוס הקורס (אופציונלי)</Label>
+                        <Textarea
+                          id="courseSyllabus"
+                          value={courseForm.syllabus}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, syllabus: e.target.value }))}
+                          placeholder="שיעור 1: הכרת הסביבה&#10;שיעור 2: משתנים ולולאות&#10;שיעור 3: פונקציות&#10;..."
+                          rows={6}
                         />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          כל שורה תוצג כפריט נפרד בסילבוס. השאר ריק אם לא רלוונטי.
+                        </p>
                       </div>
 
                       <div>

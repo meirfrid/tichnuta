@@ -26,6 +26,7 @@ import {
   HelpCircle,
   ArrowRight,
   Loader2,
+  BookOpen,
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -409,6 +410,27 @@ const CourseDetailsPage = () => {
                 ))}
               </div>
             </div>
+
+            {/* Syllabus */}
+            {course.syllabus && course.syllabus.trim() && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <BookOpen className="h-6 w-6 text-primary" />
+                  סילבוס הקורס
+                </h2>
+                <Card>
+                  <CardContent className="p-6">
+                    <ol className="space-y-3 list-decimal list-inside">
+                      {course.syllabus.split('\n').filter((line: string) => line.trim()).map((line: string, index: number) => (
+                        <li key={index} className="text-foreground leading-relaxed">
+                          {line.trim()}
+                        </li>
+                      ))}
+                    </ol>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* Who Is This For */}
             <Card className="border-primary/20 bg-primary/5">
