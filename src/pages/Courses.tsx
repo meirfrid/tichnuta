@@ -95,7 +95,7 @@ const Courses = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 {courses.map((course) => {
                   const IconComponent = iconMap[course.icon] || Code2;
-                  const courseImage = getCourseImage(course.title);
+                  const courseImage = getCourseImage(course);
                   return (
                     <Card 
                       key={course.id} 
