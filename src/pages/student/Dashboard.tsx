@@ -109,7 +109,7 @@ const StudentDashboard = () => {
         if (variantIds.length > 0) {
           const { data: variants, error: variantsError } = await supabase
             .from("course_variants")
-            .select("*, courses!course_variants_course_id_fkey(id, title, subtitle, description, color, slug)")
+            .select("*, courses!course_variants_course_id_fkey(id, title, subtitle, description, color, slug, image_url)")
             .in("id", variantIds)
             .eq("is_active", true);
 
