@@ -322,7 +322,8 @@ const AdminDashboard = () => {
             slug: finalSlug,
             features: courseForm.features.filter(f => f.trim() !== ''),
             locations: courseForm.locations.filter(l => l.trim() !== ''),
-            times: courseForm.times.filter(t => t.trim() !== '')
+            times: courseForm.times.filter(t => t.trim() !== ''),
+            sort_order: courseForm.sort_order
           })
           .eq('id', editingCourse.id);
 
