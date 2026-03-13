@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Code2, Gamepad2, Smartphone, Bot, Clock, Users, GraduationCap, ArrowLeft, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import scratchLogo from "@/assets/scratch-logo.png";
 import pythonLogo from "@/assets/python-logo.png";
 import appinventorLogo from "@/assets/appinventor-logo.png";
