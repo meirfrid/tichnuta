@@ -87,7 +87,8 @@ const AdminDashboard = () => {
     locations: [''],
     times: [''],
     slug: '',
-    course_type: 'frontal'
+    course_type: 'frontal',
+    sort_order: 0
   });
 
   const [registrations, setRegistrations] = useState<any[]>([]);
@@ -321,7 +322,8 @@ const AdminDashboard = () => {
             slug: finalSlug,
             features: courseForm.features.filter(f => f.trim() !== ''),
             locations: courseForm.locations.filter(l => l.trim() !== ''),
-            times: courseForm.times.filter(t => t.trim() !== '')
+            times: courseForm.times.filter(t => t.trim() !== ''),
+            sort_order: courseForm.sort_order
           })
           .eq('id', editingCourse.id);
 
@@ -340,7 +342,7 @@ const AdminDashboard = () => {
             features: courseForm.features.filter(f => f.trim() !== ''),
             locations: courseForm.locations.filter(l => l.trim() !== ''),
             times: courseForm.times.filter(t => t.trim() !== ''),
-            sort_order: courses.length + 1
+            sort_order: courseForm.sort_order
           });
 
         if (error) throw error;
@@ -367,7 +369,8 @@ const AdminDashboard = () => {
         locations: [''],
         times: [''],
         slug: '',
-        course_type: 'frontal'
+        course_type: 'frontal',
+        sort_order: courses.length
       });
       fetchCourses();
     } catch (error) {
@@ -397,7 +400,8 @@ const AdminDashboard = () => {
       locations: course.locations?.length > 0 ? course.locations : [''],
       times: course.times?.length > 0 ? course.times : [''],
       slug: course.slug || '',
-      course_type: course.course_type || 'frontal'
+      course_type: course.course_type || 'frontal',
+      sort_order: course.sort_order || 0
     });
     setShowNewCourseForm(true);
   };
@@ -1048,7 +1052,8 @@ const AdminDashboard = () => {
                           locations: [''],
                           times: [''],
                           slug: '',
-                          course_type: 'frontal'
+                          course_type: 'frontal',
+                          sort_order: courses.length
                         });
                     }}>
                       <Plus className="h-4 w-4 ml-2" />
@@ -1163,6 +1168,17 @@ const AdminDashboard = () => {
                             <SelectItem value="both">אונליין + פרונטלי</SelectItem>
                           </SelectContent>
                         </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="courseSortOrder">סדר תצוגה (מספר נמוך = מוצג ראשון)</Label>
+                        <Input
+                          id="courseSortOrder"
+                          type="number"
+                          value={courseForm.sort_order}
+                          onChange={(e) => setCourseForm(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
+                          placeholder="0"
+                        />
                       </div>
 
                       <div>
