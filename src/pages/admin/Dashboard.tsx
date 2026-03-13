@@ -400,7 +400,8 @@ const AdminDashboard = () => {
       locations: course.locations?.length > 0 ? course.locations : [''],
       times: course.times?.length > 0 ? course.times : [''],
       slug: course.slug || '',
-      course_type: course.course_type || 'frontal'
+      course_type: course.course_type || 'frontal',
+      sort_order: course.sort_order || 0
     });
     setShowNewCourseForm(true);
   };
