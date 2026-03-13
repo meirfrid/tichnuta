@@ -28,6 +28,8 @@ const Courses = () => {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const gradeFilter = searchParams.get('grade');
 
   useEffect(() => {
     fetchCourses();
