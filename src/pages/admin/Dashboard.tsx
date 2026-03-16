@@ -124,6 +124,7 @@ const AdminDashboard = () => {
       const { data, error } = await supabase
         .from('courses')
         .select('*')
+        .eq('active', true)
         .order('sort_order');
 
       if (error) {
