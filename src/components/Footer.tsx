@@ -36,9 +36,6 @@ const Footer = () => {
                 <button onClick={() => handleNavigation("home")} className="opacity-80 hover:opacity-100 transition-opacity">בית</button>
               </li>
               <li>
-                <Link to="/about-us" className="opacity-80 hover:opacity-100 transition-opacity">מי אנחנו</Link>
-              </li>
-              <li>
                 <Link to="/courses" className="opacity-80 hover:opacity-100 transition-opacity">קורסים</Link>
               </li>
               <li>
