@@ -65,12 +65,6 @@ const Header = () => {
                 בית
               </button>
               <button 
-                onClick={() => { setIsMenuOpen(false); navigate("/about-us"); }} 
-                className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
-              >
-                מי אנחנו
-              </button>
-              <button 
                 onClick={() => { setIsMenuOpen(false); navigate("/courses"); }} 
                 className="text-foreground hover:text-primary hover:bg-muted/50 transition-colors text-right py-3 px-4 rounded-lg text-lg font-medium"
               >
